@@ -1,0 +1,3 @@
+[submodule "vendor/argtable3"]
+	path = vendor/argtable3
+	url = https://github.com/argtable/argtable3

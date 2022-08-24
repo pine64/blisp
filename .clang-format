@@ -1,0 +1,58 @@
+---
+Language: Cpp
+BasedOnStyle: GNU
+IndentWidth: 4
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: false
+  AfterCaseLabel: false
+  AfterEnum: false
+  AfterControlStatement: Never
+  AfterStruct : false
+  AfterUnion : false
+  AfterExternBlock : false
+  BeforeElse : false
+  BeforeWhile : false
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignEscapedNewlines: Right
+AlignOperands: Align
+AllowShortEnumsOnASingleLine: False
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine : false
+AlwaysBreakAfterReturnType: AllDefinitions
+AlignTrailingComments : true
+AlignConsecutiveMacros: AcrossEmptyLines
+KeepEmptyLinesAtTheStartOfBlocks : false
+PointerAlignment : Left
+QualifierAlignment : Left
+ReferenceAlignment : Left
+RemoveBracesLLVM : false
+SpaceAfterCStyleCast : false
+SpaceAfterLogicalNot : false
+SpaceAfterTemplateKeyword : false
+SpaceAroundPointerQualifiers : Before
+SpaceBeforeAssignmentOperators : true
+SpaceBeforeCaseColon : false
+SpaceBeforeCpp11BracedList : false
+SpaceBeforeParens : ControlStatements
+SpaceBeforeParensOptions :
+  AfterControlStatements : true
+  AfterFunctionDeclarationName : false
+  AfterFunctionDefinitionName : false
+  AfterOverloadedOperator : false
+SpaceBeforeRangeBasedForLoopColon : false
+SpaceBeforeSquareBrackets : false
+SpaceInEmptyBlock : false
+SpaceInEmptyParentheses : false
+SpacesInCStyleCastParentheses : false
+SpacesInConditionalStatement : false
+SpacesInContainerLiterals : false
+SpacesInParentheses: false
+SpacesInSquareBrackets : false
+UseTab : Never
+
+BitFieldColonSpacing: None
+BreakBeforeBinaryOperators: All
