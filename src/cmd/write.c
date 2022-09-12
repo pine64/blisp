@@ -14,7 +14,7 @@ cmd_write_args_init() {
     cmd_write_argtable[0] = cmd
         = arg_rex1(NULL, NULL, "write", NULL, REG_ICASE, NULL);
     cmd_write_argtable[1] = binary_to_write
-        = arg_file0(NULL, NULL, "<input>", "Binary to write");
+        = arg_file1(NULL, NULL, "<input>", "Binary to write");
     cmd_write_argtable[2] = end = arg_end(10);
 
     if (arg_nullcheck(cmd_write_argtable) != 0) {
@@ -23,11 +23,21 @@ cmd_write_args_init() {
     }
 }
 
+void cmd_write_args_print_glossary() {
+    fputs("Usage: blisp", stdout);
+    arg_print_syntax(stdout,cmd_write_argtable,"\n");
+    puts("Writes firmware to SPI Flash");
+    arg_print_glossary(stdout,cmd_write_argtable,"  %-25s %s\n");
+}
+
 uint8_t
 cmd_write_parse_exec(int argc, char** argv) {
     int errors = arg_parse(argc, argv, cmd_write_argtable);
     if (errors == 0) {
         printf("yeet\n");
+        return 1;
+    } else if (cmd->count == 1) {
+        cmd_write_args_print_glossary();
         return 1;
     }
     return 0;

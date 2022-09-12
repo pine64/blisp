@@ -22,15 +22,17 @@ int8_t args_init() {
         fprintf(stderr, "insufficient memory\n");
         return -1;
     }
+
+    return 0;
 }
 
 void print_help() {
     puts("Usage:");
     for (uint8_t i = 0; cmds[i] != NULL; i++) {
-        fputs("\tblisp", stdout);
+        fputs("  blisp", stdout);
         cmds[i]->args_print_syntax();
     }
-    fputs("\tblisp", stdout);
+    fputs("  blisp", stdout);
     arg_print_syntax(stdout, argtable,"\n");
 }
 
@@ -82,7 +84,7 @@ main(int argc, char** argv) {
     }
 
     if (!command_found) {
-
+        print_help();
     }
 
 exit:
