@@ -24,16 +24,17 @@ int8_t args_init() {
         fprintf(stderr, "insufficient memory\n");
         return -1;
     }
+
     return 0;
 }
 
 void print_help() {
     puts("Usage:");
     for (uint8_t i = 0; i < cmds_count; i++) {
-        fputs("\tblisp", stdout);
+        fputs("  blisp", stdout);
         cmds[i]->args_print_syntax();
     }
-    fputs("\tblisp", stdout);
+    fputs("  blisp", stdout);
     arg_print_syntax(stdout, argtable,"\n");
 }
 
