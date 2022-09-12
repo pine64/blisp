@@ -21,6 +21,7 @@ cmd_write_args_init() {
         fprintf(stderr, "insufficient memory\n");
         return -1;
     }
+    return 0;
 }
 
 uint8_t

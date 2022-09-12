@@ -1,3 +1,6 @@
 [submodule "vendor/argtable3"]
 	path = vendor/argtable3
 	url = https://github.com/argtable/argtable3
+[submodule "vendor/libserialport"]
+	path = vendor/libserialport
+	url = https://github.com/sigrokproject/libserialport/

@@ -5,8 +5,10 @@
 #include <stdbool.h>
 
 struct cmd* cmds[] = {
-    &cmd_write,
+    &cmd_write
 };
+
+static uint8_t cmds_count = sizeof(cmds) / sizeof(cmds[0]);
 
 static struct arg_lit* help;
 static struct arg_lit* version;
@@ -22,11 +24,12 @@ int8_t args_init() {
         fprintf(stderr, "insufficient memory\n");
         return -1;
     }
+    return 0;
 }
 
 void print_help() {
     puts("Usage:");
-    for (uint8_t i = 0; cmds[i] != NULL; i++) {
+    for (uint8_t i = 0; i < cmds_count; i++) {
         fputs("\tblisp", stdout);
         cmds[i]->args_print_syntax();
     }
@@ -62,7 +65,7 @@ main(int argc, char** argv) {
         goto exit;
     }
 
-    for (uint8_t i = 0; cmds[i] != NULL; i++) {
+    for (uint8_t i = 0; i < cmds_count; i++) {
         if (cmds[i]->args_init() != 0) {
             exit_code = -1;
             goto exit;
@@ -74,7 +77,7 @@ main(int argc, char** argv) {
     }
 
     uint8_t command_found = false;
-    for (uint8_t i = 0; cmds[i] != NULL; i++) {
+    for (uint8_t i = 0; i < cmds_count; i++) {
         if (cmds[i]->args_parse_exec(argc, argv)) {
             command_found = true;
             break;
@@ -82,11 +85,11 @@ main(int argc, char** argv) {
     }
 
     if (!command_found) {
-
+        print_help();
     }
 
 exit:
-    for (uint8_t i = 0; cmds[i] != NULL; i++) {
+    for (uint8_t i = 0; i < cmds_count; i++) {
         cmds[i]->args_free();
     }
     args_free();
