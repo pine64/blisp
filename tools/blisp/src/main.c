@@ -1,8 +1,8 @@
+#include "argtable3.h"
 #include "cmd.h"
-#include <argtable3.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
 
 struct cmd* cmds[] = {
     &cmd_write

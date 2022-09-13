@@ -1,5 +1,10 @@
 #include "../cmd.h"
-#include <argtable3.h>
+#include "argtable3.h"
+
+void blisp_flash_firmware(const char* firmware_path) {
+    printf("");
+}
+
 
 #define REG_EXTENDED 1
 #define REG_ICASE    (REG_EXTENDED << 1)
@@ -35,7 +40,7 @@ uint8_t
 cmd_write_parse_exec(int argc, char** argv) {
     int errors = arg_parse(argc, argv, cmd_write_argtable);
     if (errors == 0) {
-        printf("yeet\n");
+        blisp_flash_firmware(binary_to_write->filename[0]); // TODO: Error code?
         return 1;
     } else if (cmd->count == 1) {
         cmd_write_args_print_glossary();
