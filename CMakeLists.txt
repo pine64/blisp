@@ -3,7 +3,29 @@ project(blisp C)
 
 set(CMAKE_C_STANDARD 23)
 
-add_subdirectory(tools/blisp)
+option(BLISP_BUILD_CLI "Build CLI Tool" OFF)
+option(BLISP_DYNAMIC_LIBRARY "Build dynamic library" OFF)
+
+if(BLISP_DYNAMIC_LIBRARY)
+    add_library(libblisp SHARED)
+else()
+    add_library(libblisp STATIC)
+endif()
+
+target_sources(libblisp PRIVATE lib/blisp_easy.c)
+
+target_include_directories(libblisp PRIVATE ${CMAKE_SOURCE_DIR}/include/)
+
+set_target_properties(libblisp PROPERTIES
+        PUBLIC_HEADER "include/blisp_easy.h"
+        VERSION 1.0
+        SOVERSION 1
+        OUTPUT_NAME "blisp"
+)
+
+if(BLISP_BUILD_CLI)
+    add_subdirectory(tools/blisp)
+endif()
 
 
 #target_sources(blisp PRIVATE
