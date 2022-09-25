@@ -1,0 +1,10 @@
+//
+// Created by ralim on 26/09/22.
+//
+
+#ifndef BLISP_CONFIG_H_IN_H
+#define BLISP_CONFIG_H_IN_H
+
+#define SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+
+#endif // BLISP_CONFIG_H_IN_H
