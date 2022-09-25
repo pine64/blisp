@@ -13,4 +13,5 @@ Tool and library for flashing their RISC-V MCUs.
 # To Do
 
 - [ ] Another code style
-- [ ] Separate `blisp` flashing to library
+- [ ] Finalize API
+- [ ] SDIO and JTAG support
