@@ -50,6 +50,13 @@ elseif(UNIX AND NOT APPLE)
             "SP_PRIV=__attribute__((visibility(\"hidden\")))")
     target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
     write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
+elseif(APPLE)
+    target_sources(libblisp_obj PRIVATE
+            ${CMAKE_SOURCE_DIR}/vendor/libserialport/macosx.c)
+    target_link_libraries(libblisp_obj PRIVATE "-framework IOKit" "-framework CoreFoundation")
+    target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_ATBUILD "SP_API=__attribute__((visibility(\"default\")))")
+    target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+    write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
 endif()
 
 if(BLISP_BUILD_CLI)
