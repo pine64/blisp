@@ -10,6 +10,7 @@ enum blisp_chip_type {
 
 struct blisp_chip { // TODO: Move elsewhere?
     enum blisp_chip_type type;
+    const char* type_str;
     bool usb_isp_available;
 };
 

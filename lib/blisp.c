@@ -59,11 +59,11 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
     uint32_t vid, pid;
     sp_get_port_usb_vid_pid(serial_port, &vid, &pid);
     device->is_usb = pid == 0xFFFF;
-    if (device->is_usb) {
-        device->current_baud_rate = 2000000;
-    } else {
+//    if (device->is_usb) {
+//        device->current_baud_rate = 2000000;
+//    } else {
         device->current_baud_rate = 500000;
-    }
+//    }
     sp_set_baudrate(serial_port, device->current_baud_rate);
     device->serial_port = serial_port;
     return 0;
@@ -76,8 +76,8 @@ int32_t blisp_send_command(struct blisp_device* device, uint8_t command, void* p
 
     device->tx_buffer[0] = command;
     device->tx_buffer[1] = 0;
-    device->tx_buffer[2] = (payload_size >> 8) & 0xFF;
-    device->tx_buffer[3] = payload_size & 0xFF;
+    device->tx_buffer[2] = payload_size & 0xFF;
+    device->tx_buffer[3] = (payload_size >> 8) & 0xFF;
     if (add_checksum) {
         uint32_t checksum = 0;
         checksum += device->tx_buffer[2] + device->tx_buffer[3];
@@ -97,13 +97,28 @@ int32_t blisp_send_command(struct blisp_device* device, uint8_t command, void* p
 }
 
 int32_t blisp_receive_response(struct blisp_device* device, bool expect_payload) {
+    // TODO: Check checksum
     int ret;
     struct sp_port* serial_port = device->serial_port;
     ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 300);
     if (ret < 2) {
         return -1;
+    } else if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
+        if (expect_payload) {
+            sp_blocking_read(serial_port, &device->rx_buffer[2], 2, 100);
+            uint16_t data_length = (device->rx_buffer[3] << 8) | (device->rx_buffer[2]);
+            sp_blocking_read(serial_port, &device->rx_buffer[0], data_length, 100);
+            return data_length;
+        }
+        return 0;
+    } else if (device->rx_buffer[0] == 'P' && device->rx_buffer[1] == 'D') {
+        return -1;
+    } else if (device->rx_buffer[0] == 'F' && device->rx_buffer[1] == 'L') {
+        sp_blocking_read(serial_port, &device->rx_buffer[2], 2, 100);
+        device->error_code = (device->rx_buffer[3] << 8) | (device->rx_buffer[2]);
+        return -4; // Failed
     }
-
+    return -1;
 }
 
 int32_t blisp_device_handshake(struct blisp_device* device)
@@ -112,21 +127,27 @@ int32_t blisp_device_handshake(struct blisp_device* device)
     uint8_t handshake_buffer[600];
     struct sp_port* serial_port = device->serial_port;
 
-    if (device->is_usb) {
-        sp_blocking_write(serial_port, "BOUFFALOLAB5555RESET\0\0", 22, 100);
-    }
     uint32_t bytes_count = 0.003f * (float)device->current_baud_rate / 10.0f; // TODO: 0.003f is only for BL70X!
     if (bytes_count > 600) bytes_count = 600;
     memset(handshake_buffer, 'U', bytes_count);
-    ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count, 100);
-    if (ret < 0) {
-        return -1;
+
+    for (uint8_t i = 0; i < 5; i++) {
+        if (device->is_usb) {
+            sp_blocking_write(serial_port, "BOUFFALOLAB5555RESET\0\0", 22,
+                              100);
+        }
+
+        ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count,
+                                100);
+        if (ret < 0) {
+            return -1;
+        }
+        ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 100);
+        if (ret == 2 && device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
+            return 0;
+        }
     }
-    ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 100);
-    if (ret < 2 || device->rx_buffer[0] != 'O' || device->rx_buffer[1] != 'K') {
-        return -4; // didn't received response
-    }
-    return 0;
+    return -4; // didn't received response
 }
 
 int32_t blisp_device_get_boot_info(struct blisp_device* device, struct blisp_boot_info* boot_info)
@@ -137,6 +158,94 @@ int32_t blisp_device_get_boot_info(struct blisp_device* device, struct blisp_boo
     if (ret < 0) return ret;
 
     ret = blisp_receive_response(device, true);
+    if (ret < 0) return ret;
+
+    if (device->chip->type == BLISP_CHIP_BL70X) {
+        memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4); // TODO: Endianess
+        memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
+    }
+    return 0;
+}
+
+// TODO: Use struct instead of uint8_t*
+int32_t blisp_device_load_boot_header(struct blisp_device* device, uint8_t* boot_header)
+{
+    int ret;
+    ret = blisp_send_command(device, 0x11, boot_header, 176, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_load_segment_header(struct blisp_device* device, struct blisp_segment_header* segment_header)
+{
+    int ret;
+    ret = blisp_send_command(device, 0x17, segment_header, 16, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_load_segment_data(struct blisp_device* device, uint8_t* segment_data, uint32_t segment_data_length)
+{
+    int ret;
+    ret = blisp_send_command(device, 0x18, segment_data, segment_data_length, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, true); // TODO: Handle response
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_check_image(struct blisp_device* device)
+{
+    int ret;
+    ret = blisp_send_command(device, 0x19, NULL, 0, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_write_memory(struct blisp_device* device, uint32_t address, uint32_t value)
+{
+    int ret;
+    uint8_t payload[8];
+    *(uint32_t*)(payload) = address;
+    *(uint32_t*)(payload + 4) = value; // TODO: Endianness
+    ret = blisp_send_command(device, 0x50, payload, 8, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_run_image(struct blisp_device* device)
+{
+    int ret;
+
+    if (device->chip->type == BLISP_CHIP_BL70X) { // ERRATA
+        ret = blisp_device_write_memory(device, 0x4000F100, 0x4E424845);
+        if (ret < 0) return ret;
+        ret = blisp_device_write_memory(device, 0x4000F104, 0x22010000);
+        if (ret < 0) return ret;
+//        ret = blisp_device_write_memory(device, 0x40000018, 0x00000000);
+//        if (ret < 0) return ret;
+        ret = blisp_device_write_memory(device, 0x40000018, 0x00000002);
+        if (ret < 0) return ret;
+        return 0;
+    }
+
+    ret = blisp_send_command(device, 0x1A, NULL, 0, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
 
     return 0;
 }
