@@ -17,6 +17,29 @@ static struct arg_str* port_name, *chip_type;
 static struct arg_end* end;
 static void* cmd_write_argtable[5];
 
+#ifdef __APPLE__
+// Ugh. This stuff is just so messy without C++17 or Qt...
+// These are not thread safe, but it doesn't place the responsibility
+// to free an allocated buffer on the caller.nn
+#include <string.h>
+#include <assert.h>
+#include <stdlib.h>
+
+static void get_executable_path(char* buffer_out, uint32_t max_size) {
+  assert (max_size >= PATH_MAX); // n.b. 1024 on MacOS. 4K on most Linux.
+
+  char raw_path_name[PATH_MAX];  // $HOME/../../var/tmp/x
+  char real_path_name[PATH_MAX]; // /var/tmp/x
+  uint32_t raw_path_size = sizeof(raw_path_name);
+
+  if(!_NSGetExecutablePath(raw_path_name, &raw_path_size)) {
+    realpath(raw_path_name, real_path_name);
+  }
+  // *real_path_name  is appropriately sized and null terminated.
+  strcpy(buffer_out, real_path_name);
+}
+#endif
+
 ssize_t
 get_binary_folder(char* buffer, uint32_t buffer_size) {
 #ifdef __linux__
@@ -24,6 +47,11 @@ get_binary_folder(char* buffer, uint32_t buffer_size) {
     char* pos = strrchr(buffer, '/');
     pos[0] = '\0';
     return pos - buffer;
+#elif defined(__APPLE__)
+  get_executable_path(buffer, buffer_size);
+  char* pos = strrchr(buffer, '/');
+  pos[0] = '\0';
+  return pos - buffer;
 #else
 #error NOT IMPLEMENTED
     WCHAR path[MAX_PATH];
