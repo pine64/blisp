@@ -84,7 +84,7 @@ int32_t blisp_send_command(struct blisp_device* device, uint8_t command, void* p
         uint32_t checksum = 0;
         checksum += device->tx_buffer[2] + device->tx_buffer[3];
         for (uint16_t i = 0; i < payload_size; i++) {
-            checksum += *(uint8_t*)(payload + i);
+            checksum += *(uint8_t*)((uint8_t*)payload + i);
         }
         device->tx_buffer[1] = checksum & 0xFF;
     }

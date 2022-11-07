@@ -35,6 +35,8 @@ target_sources(libblisp_obj PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/serialport.c
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/timing.c)
 
+target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+
 if(WIN32)
     target_link_libraries(libblisp_obj PRIVATE Setupapi.lib)
     target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
@@ -48,7 +50,6 @@ elseif(UNIX AND NOT APPLE)
             LIBSERIALPORT_ATBUILD
             "SP_API=__attribute__((visibility(\"default\")))"
             "SP_PRIV=__attribute__((visibility(\"hidden\")))")
-    target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
     write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
 elseif(APPLE)
     target_sources(libblisp_obj PRIVATE
