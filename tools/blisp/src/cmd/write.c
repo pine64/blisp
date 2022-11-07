@@ -50,7 +50,7 @@ void blisp_flash_firmware() {
         return;
     }
     printf("Sending a handshake...");
-    ret = blisp_device_handshake(&device);
+    ret = blisp_device_handshake(&device, false);
     if (ret != 0) {
         fprintf(stderr, "\nFailed to handshake with device.\n");
         goto exit1;
@@ -62,6 +62,15 @@ void blisp_flash_firmware() {
         fprintf(stderr, "\nFailed to get boot info.\n");
         goto exit1;
     }
+
+    if (boot_info.boot_rom_version[0] == 255 &&
+        boot_info.boot_rom_version[1] == 255 &&
+        boot_info.boot_rom_version[2] == 255 &&
+        boot_info.boot_rom_version[3] == 255) {
+        printf(" OK\nDevice already in eflash_loader.\n");
+        goto eflash_loader;
+    }
+
     printf(" BootROM version %d.%d.%d.%d, ChipID: %02X%02X%02X%02X%02X%02X%02X%02X\n",
            boot_info.boot_rom_version[0],
            boot_info.boot_rom_version[1],
@@ -133,6 +142,17 @@ void blisp_flash_firmware() {
         fprintf(stderr, "Failed to run image.\n");
         goto exit1;
     }
+
+    printf("Sending a handshake...");
+    ret = blisp_device_handshake(&device, false);
+    if (ret != 0) {
+        fprintf(stderr, "\nFailed to handshake with device.\n");
+        goto exit1;
+    }
+    printf(" OK\n");
+
+eflash_loader:
+
 
 exit1:
     if (eflash_loader_file != NULL) fclose(eflash_loader_file);
