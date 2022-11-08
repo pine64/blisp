@@ -3,6 +3,8 @@
 #include <blisp.h>
 #include <string.h>
 #include <inttypes.h>
+#include "blisp_struct.h"
+
 #ifdef __linux__
 #include <unistd.h>
 #include <linux/limits.h>
@@ -19,8 +21,9 @@ typedef SSIZE_T ssize_t;
 static struct arg_rex* cmd;
 static struct arg_file* binary_to_write;
 static struct arg_str* port_name, *chip_type;
+static struct arg_lit* reset;
 static struct arg_end* end;
-static void* cmd_write_argtable[5];
+static void* cmd_write_argtable[6];
 
 ssize_t
 get_binary_folder(char* buffer, uint32_t buffer_size) {
@@ -35,6 +38,150 @@ get_binary_folder(char* buffer, uint32_t buffer_size) {
     return pos - buffer;
 }
 
+void fill_up_boot_header(struct bfl_boot_header* boot_header)
+{
+    memcpy(boot_header->magiccode, "BFNP", 4);;
+    boot_header->revison = 0x01;
+    memcpy(boot_header->flashCfg.magiccode, "FCFG", 4);
+    boot_header->flashCfg.cfg.ioMode = 0x11;
+    boot_header->flashCfg.cfg.cReadSupport = 0x00;
+    boot_header->flashCfg.cfg.clkDelay = 0x01;
+    boot_header->flashCfg.cfg.clkInvert = 0x01;
+    boot_header->flashCfg.cfg.resetEnCmd = 0x66;
+    boot_header->flashCfg.cfg.resetCmd = 0x99;
+    boot_header->flashCfg.cfg.resetCreadCmd = 0xFF;
+    boot_header->flashCfg.cfg.resetCreadCmdSize = 0x03;
+    boot_header->flashCfg.cfg.jedecIdCmd = 0x9F;
+    boot_header->flashCfg.cfg.jedecIdCmdDmyClk = 0x00;
+    boot_header->flashCfg.cfg.qpiJedecIdCmd = 0x9F;
+    boot_header->flashCfg.cfg.qpiJedecIdCmdDmyClk = 0x00;
+    boot_header->flashCfg.cfg.sectorSize = 0x04;
+    boot_header->flashCfg.cfg.mid = 0xC2;
+    boot_header->flashCfg.cfg.pageSize = 0x100;
+    boot_header->flashCfg.cfg.chipEraseCmd = 0xC7;
+    boot_header->flashCfg.cfg.sectorEraseCmd = 0x20;
+    boot_header->flashCfg.cfg.blk32EraseCmd = 0x52;
+    boot_header->flashCfg.cfg.blk64EraseCmd = 0xD8;
+    boot_header->flashCfg.cfg.writeEnableCmd = 0x06;
+    boot_header->flashCfg.cfg.pageProgramCmd = 0x02;
+    boot_header->flashCfg.cfg.qpageProgramCmd = 0x32;
+    boot_header->flashCfg.cfg.qppAddrMode = 0x00;
+    boot_header->flashCfg.cfg.fastReadCmd = 0x0B;
+    boot_header->flashCfg.cfg.frDmyClk = 0x01;
+    boot_header->flashCfg.cfg.qpiFastReadCmd = 0x0B;
+    boot_header->flashCfg.cfg.qpiFrDmyClk = 0x01;
+    boot_header->flashCfg.cfg.fastReadDoCmd = 0x3B;
+    boot_header->flashCfg.cfg.frDoDmyClk = 0x01;
+    boot_header->flashCfg.cfg.fastReadDioCmd = 0xBB;
+    boot_header->flashCfg.cfg.frDioDmyClk = 0x00;
+    boot_header->flashCfg.cfg.fastReadQoCmd = 0x6B;
+    boot_header->flashCfg.cfg.frQoDmyClk = 0x01;
+    boot_header->flashCfg.cfg.fastReadQioCmd = 0xEB;
+    boot_header->flashCfg.cfg.frQioDmyClk = 0x02;
+    boot_header->flashCfg.cfg.qpiFastReadQioCmd = 0xEB;
+    boot_header->flashCfg.cfg.qpiFrQioDmyClk = 0x02;
+    boot_header->flashCfg.cfg.qpiPageProgramCmd = 0x02;
+    boot_header->flashCfg.cfg.writeVregEnableCmd = 0x50;
+    boot_header->flashCfg.cfg.wrEnableIndex = 0x00;
+    boot_header->flashCfg.cfg.qeIndex = 0x01;
+    boot_header->flashCfg.cfg.busyIndex = 0x00;
+    boot_header->flashCfg.cfg.wrEnableBit = 0x01;
+    boot_header->flashCfg.cfg.qeBit = 0x01;
+    boot_header->flashCfg.cfg.busyBit = 0x00;
+    boot_header->flashCfg.cfg.wrEnableWriteRegLen = 0x02;
+    boot_header->flashCfg.cfg.wrEnableReadRegLen = 0x01;
+    boot_header->flashCfg.cfg.qeWriteRegLen = 0x02;
+    boot_header->flashCfg.cfg.qeReadRegLen = 0x01;
+    boot_header->flashCfg.cfg.releasePowerDown = 0xAB;
+    boot_header->flashCfg.cfg.busyReadRegLen = 0x01;
+    boot_header->flashCfg.cfg.readRegCmd[0] = 0x05;
+    boot_header->flashCfg.cfg.readRegCmd[1] = 0x00;
+    boot_header->flashCfg.cfg.readRegCmd[2] = 0x00;
+    boot_header->flashCfg.cfg.readRegCmd[3] = 0x00;
+    boot_header->flashCfg.cfg.writeRegCmd[0] = 0x01;
+    boot_header->flashCfg.cfg.writeRegCmd[1] = 0x00;
+    boot_header->flashCfg.cfg.writeRegCmd[2] = 0x00;
+    boot_header->flashCfg.cfg.writeRegCmd[3] = 0x00;
+    boot_header->flashCfg.cfg.enterQpi = 0x38;
+    boot_header->flashCfg.cfg.exitQpi = 0xFF;
+    boot_header->flashCfg.cfg.cReadMode = 0x00;
+    boot_header->flashCfg.cfg.cRExit = 0xFF;
+    boot_header->flashCfg.cfg.burstWrapCmd = 0x77;
+    boot_header->flashCfg.cfg.burstWrapCmdDmyClk = 0x03;
+    boot_header->flashCfg.cfg.burstWrapDataMode = 0x02;
+    boot_header->flashCfg.cfg.burstWrapData = 0x40;
+    boot_header->flashCfg.cfg.deBurstWrapCmd = 0x77;
+    boot_header->flashCfg.cfg.deBurstWrapCmdDmyClk = 0x03;
+    boot_header->flashCfg.cfg.deBurstWrapDataMode = 0x02;
+    boot_header->flashCfg.cfg.deBurstWrapData = 0xF0;
+    boot_header->flashCfg.cfg.timeEsector = 0x12C;
+    boot_header->flashCfg.cfg.timeE32k = 0x4B0;
+    boot_header->flashCfg.cfg.timeE64k = 0x4B0;
+    boot_header->flashCfg.cfg.timePagePgm = 0x05;
+    boot_header->flashCfg.cfg.timeCe = 0xFFFF;
+    boot_header->flashCfg.cfg.pdDelay = 0x14;
+    boot_header->flashCfg.cfg.qeData = 0x00;
+    boot_header->flashCfg.crc32 = 0xE43C762A;
+    boot_header->clkCfg.cfg.xtal_type = 0x01;
+    boot_header->clkCfg.cfg.pll_clk = 0x04;
+    boot_header->clkCfg.cfg.hclk_div = 0x00;
+    boot_header->clkCfg.cfg.bclk_div = 0x01;
+    boot_header->clkCfg.cfg.flash_clk_type = 0x03;
+    boot_header->clkCfg.cfg.flash_clk_div = 0x00;
+    boot_header->clkCfg.crc32 = 0x72127DBA;
+    boot_header->bootcfg.bval.sign = 0x00;
+    boot_header->bootcfg.bval.encrypt_type = 0x00;
+    boot_header->bootcfg.bval.key_sel = 0x00;
+    boot_header->bootcfg.bval.rsvd6_7 = 0x00;
+    boot_header->bootcfg.bval.no_segment = 0x01;
+    boot_header->bootcfg.bval.cache_enable = 0x01;
+    boot_header->bootcfg.bval.notload_in_bootrom = 0x00;
+    boot_header->bootcfg.bval.aes_region_lock = 0x00;
+    boot_header->bootcfg.bval.cache_way_disable = 0x00;
+    boot_header->bootcfg.bval.crc_ignore = 0x01;
+    boot_header->bootcfg.bval.hash_ignore = 0x01;
+    boot_header->bootcfg.bval.halt_ap = 0x00;
+    boot_header->bootcfg.bval.rsvd19_31 = 0x00;
+    boot_header->segment_info.segment_cnt = 0xCDA8;
+    boot_header->bootentry = 0x00;
+    boot_header->flashoffset = 0x2000;
+    boot_header->hash[0x00] = 0xEF;
+    boot_header->hash[0x01] = 0xBE;
+    boot_header->hash[0x02] = 0xAD;
+    boot_header->hash[0x03] = 0xDE;
+    boot_header->hash[0x04] = 0x00;
+    boot_header->hash[0x05] = 0x00;
+    boot_header->hash[0x06] = 0x00;
+    boot_header->hash[0x07] = 0x00;
+    boot_header->hash[0x08] = 0x00;
+    boot_header->hash[0x09] = 0x00;
+    boot_header->hash[0x0a] = 0x00;
+    boot_header->hash[0x0b] = 0x00;
+    boot_header->hash[0x0c] = 0x00;
+    boot_header->hash[0x0d] = 0x00;
+    boot_header->hash[0x0e] = 0x00;
+    boot_header->hash[0x0f] = 0x00;
+    boot_header->hash[0x10] = 0x00;
+    boot_header->hash[0x11] = 0x00;
+    boot_header->hash[0x12] = 0x00;
+    boot_header->hash[0x13] = 0x00;
+    boot_header->hash[0x14] = 0x00;
+    boot_header->hash[0x15] = 0x00;
+    boot_header->hash[0x16] = 0x00;
+    boot_header->hash[0x17] = 0x00;
+    boot_header->hash[0x18] = 0x00;
+    boot_header->hash[0x19] = 0x00;
+    boot_header->hash[0x1a] = 0x00;
+    boot_header->hash[0x1b] = 0x00;
+    boot_header->hash[0x1c] = 0x00;
+    boot_header->hash[0x1d] = 0x00;
+    boot_header->hash[0x1e] = 0x00;
+    boot_header->hash[0x1f] = 0x00;
+    boot_header->rsv1 = 0x1000;
+    boot_header->rsv2 = 0x2000;
+    boot_header->crc32 = 0xDEADBEEF;
+}
+
 void blisp_flash_firmware() {
     FILE* eflash_loader_file = NULL;
 
@@ -44,7 +191,7 @@ void blisp_flash_firmware() {
         return;
     }
     struct blisp_device device;
-    uint32_t ret;
+    int32_t ret;
     ret = blisp_device_init(&device, &blisp_chip_bl70x);
     if (ret != 0) {
         fprintf(stderr, "Failed to init device.\n");
@@ -97,7 +244,7 @@ void blisp_flash_firmware() {
     snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_32m.bin", exe_path, device.chip->type_str);
 
     eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
-    uint8_t eflash_loader_header[176];
+    uint8_t eflash_loader_header[176]; // TODO: Remap it to the boot header struct
     fread(eflash_loader_header, 176, 1, eflash_loader_file); // TODO: Error handling
 
     printf("Loading eflash_loader...\n");
@@ -107,33 +254,39 @@ void blisp_flash_firmware() {
         goto exit1;
     }
 
-    uint32_t sent_data = 0;
-    uint32_t buffer_size = 0;
-    uint8_t buffer[4092];
+    {
+        uint32_t sent_data = 0;
+        uint32_t buffer_size = 0;
+        uint8_t buffer[4092];
 
-    // TODO: Real checking of segments count
-    for (uint8_t seg_index = 0; seg_index < 1; seg_index++) {
-        struct blisp_segment_header segment_header = {0};
-        fread(&segment_header, 16, 1, eflash_loader_file); // TODO: Error handling
+        // TODO: Real checking of segments count
+        for (uint8_t seg_index = 0; seg_index < 1; seg_index++) {
+            struct blisp_segment_header segment_header = { 0 };
+            fread(&segment_header, 16, 1,
+                  eflash_loader_file); // TODO: Error handling
 
-        ret = blisp_device_load_segment_header(&device, &segment_header);
-        if (ret != 0) {
-            fprintf(stderr, "Failed to load segment header.\n");
-            goto exit1;
-        }
-        printf("Flashing %d. segment\n", seg_index + 1);
-        printf("0b / %" PRIu32 "b (0.00%%)\n", segment_header.length);
-
-        while (sent_data < segment_header.length) {
-            buffer_size = segment_header.length - sent_data;
-            if (buffer_size > 4092) {
-                buffer_size = 4092;
+            ret = blisp_device_load_segment_header(&device, &segment_header);
+            if (ret != 0) {
+                fprintf(stderr, "Failed to load segment header.\n");
+                goto exit1;
             }
-            fread(buffer, buffer_size, 1, eflash_loader_file);
-            blisp_device_load_segment_data(&device, buffer, buffer_size); // TODO: Error handling
-            sent_data += buffer_size;
-            printf("%" PRIu32 "b / %" PRIu32 "b (%.2f%%)\n", sent_data, segment_header.length,
-                   (((float)sent_data / (float)segment_header.length) * 100.0f));
+            printf("Flashing %d. segment\n", seg_index + 1);
+            printf("0b / %" PRIu32 "b (0.00%%)\n", segment_header.length);
+
+            while (sent_data < segment_header.length) {
+                buffer_size = segment_header.length - sent_data;
+                if (buffer_size > 4092) {
+                    buffer_size = 4092;
+                }
+                fread(buffer, buffer_size, 1, eflash_loader_file);
+                blisp_device_load_segment_data(
+                    &device, buffer, buffer_size); // TODO: Error handling
+                sent_data += buffer_size;
+                printf("%" PRIu32 "b / %" PRIu32 "b (%.2f%%)\n", sent_data,
+                       segment_header.length,
+                       (((float)sent_data / (float)segment_header.length)
+                        * 100.0f));
+            }
         }
     }
 
@@ -157,8 +310,82 @@ void blisp_flash_firmware() {
     }
     printf(" OK\n");
 
-eflash_loader:
+eflash_loader:;
+    FILE* firmware_file = fopen(binary_to_write->filename[0], "rb");
+    if (firmware_file == NULL) {
+        fprintf(stderr,"Failed to open firmware file \"%s\".\n", binary_to_write->filename[0]);
+        goto exit1;
+    }
+    fseek(firmware_file, 0, SEEK_END);
+    int64_t firmware_file_size = ftell(firmware_file);
+    rewind(firmware_file);
 
+    struct bfl_boot_header boot_header;
+    fill_up_boot_header(&boot_header);
+
+    const uint32_t firmware_base_address = 0x2000;
+    printf("Erasing flash, this might take a while...");
+    ret = blisp_device_flash_erase(&device, firmware_base_address,
+                                   firmware_base_address + firmware_file_size
+                                       + 1);
+    if (ret != 0) {
+        fprintf(stderr, "\nFailed to erase flash.\n");
+        goto exit2;
+    }
+    ret = blisp_device_flash_erase(&device, 0x0000, sizeof(struct bfl_boot_header));
+    if (ret != 0) {
+        fprintf(stderr, "\nFailed to erase flash.\n");
+        goto exit2;
+    }
+
+    printf(" OK!\nFlashing boot header...");
+    ret = blisp_device_flash_write(&device, 0x0000, (uint8_t*)&boot_header, sizeof(struct bfl_boot_header));
+    if (ret != 0) {
+        fprintf(stderr, "\nFailed to write boot header.\n");
+        goto exit2;
+    }
+    printf(" OK!\nFlashing the firmware...\n");
+    {
+        uint32_t sent_data = 0;
+        uint32_t buffer_size = 0;
+        uint8_t buffer[8184];
+        printf("0b / %ldb (0.00%%)\n", firmware_file_size);
+
+        while (sent_data < firmware_file_size) {
+            buffer_size = firmware_file_size - sent_data;
+            if (buffer_size > 2052) {
+                buffer_size = 2052;
+            }
+            fread(buffer, buffer_size, 1, firmware_file);
+            ret = blisp_device_flash_write(&device, firmware_base_address + sent_data, buffer, buffer_size); // TODO: Error handling
+            if (ret < 0) {
+                fprintf(stderr, "Failed to write firmware! (ret: %d)\n", ret);
+                goto exit2;
+            }
+            sent_data += buffer_size;
+            printf("%" PRIu32 "b / %ldb (%.2f%%)\n", sent_data, firmware_file_size,
+                   (((float)sent_data / (float)firmware_file_size) * 100.0f));
+        }
+    }
+
+    printf("Checking program...");
+    ret = blisp_device_program_check(&device);
+    if (ret != 0) {
+        fprintf(stderr, "\nFailed to check program.\n");
+        goto exit2;
+    }
+    printf("OK\n");
+
+    if (reset->count > 0) {
+        blisp_device_reset(&device);
+        printf("Resetting the chip.\n");
+        // TODO: It seems that GPIO peripheral is not reset after resetting the chip
+    }
+
+    printf("Flash complete!\n");
+
+exit2:
+    if (firmware_file != NULL) fclose(firmware_file);
 exit1:
     if (eflash_loader_file != NULL) fclose(eflash_loader_file);
     blisp_device_close(&device);
@@ -171,9 +398,10 @@ cmd_write_args_init() {
     cmd_write_argtable[1] = chip_type = arg_str1("c", "chip", "<chip_type>", "Chip Type (bl70x)");
     cmd_write_argtable[2] = port_name
         = arg_str0("p", "port", "<port_name>", "Name/Path to the Serial Port (empty for search)");
-    cmd_write_argtable[3] = binary_to_write
+    cmd_write_argtable[3] = reset = arg_lit0(NULL, "reset", "Reset chip after write");
+    cmd_write_argtable[4] = binary_to_write
         = arg_file1(NULL, NULL, "<input>", "Binary to write");
-    cmd_write_argtable[4] = end = arg_end(10);
+    cmd_write_argtable[5] = end = arg_end(10);
 
     if (arg_nullcheck(cmd_write_argtable) != 0) {
         fprintf(stderr, "insufficient memory\n");

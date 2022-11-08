@@ -27,6 +27,8 @@ struct blisp_boot_info {
     uint8_t chip_id[8]; // TODO: BL60X only 6 bytes
 };
 
+// TODO: Refactor variable names, so all will follow same semantic, like image_run, image_check etc.
+
 int32_t blisp_device_init(struct blisp_device* device, struct blisp_chip* chip);
 int32_t blisp_device_open(struct blisp_device* device, const char* port_name);
 int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader);
@@ -39,6 +41,10 @@ int32_t blisp_device_write_memory(struct blisp_device* device,
                                   bool wait_for_res);
 int32_t blisp_device_check_image(struct blisp_device* device);
 int32_t blisp_device_run_image(struct blisp_device* device);
+int32_t blisp_device_flash_erase(struct blisp_device* device, uint32_t start_address, uint32_t end_address);
+int32_t blisp_device_flash_write(struct blisp_device* device, uint32_t start_address, uint8_t* payload, uint32_t payload_size);
+int32_t blisp_device_program_check(struct blisp_device* device);
+int32_t blisp_device_reset(struct blisp_device* device);
 void blisp_device_close(struct blisp_device* device);
 
 #endif

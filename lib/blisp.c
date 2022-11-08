@@ -1,5 +1,6 @@
 #include <blisp.h>
 #include <libserialport.h>
+#include <malloc.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -256,6 +257,58 @@ int32_t blisp_device_run_image(struct blisp_device* device)
     }
 
     ret = blisp_send_command(device, 0x1A, NULL, 0, false);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t
+blisp_device_flash_erase(struct blisp_device* device, uint32_t start_address, uint32_t end_address)
+{
+    uint8_t payload[8];
+    *(uint32_t*)(payload + 0) = start_address;
+    *(uint32_t*)(payload + 4) = end_address;
+
+    int ret = blisp_send_command(device, 0x30, payload, 8, true);
+    if (ret < 0) return ret;
+    do {
+        ret = blisp_receive_response(device, false);
+    } while (ret == -3);
+
+    return 0;
+}
+
+int32_t
+blisp_device_flash_write(struct blisp_device* device, uint32_t start_address, uint8_t* payload, uint32_t payload_size)
+{
+    // TODO: Add max payload size (8184?)
+
+    uint8_t* buffer = malloc(4 + payload_size); // TODO: Don't use malloc + add check
+    *((uint32_t*)(buffer)) = start_address;
+    memcpy(buffer + 4, payload, payload_size);
+    int ret = blisp_send_command(device, 0x31, buffer, payload_size + 4, true);
+    if (ret < 0) goto exit1;
+    ret = blisp_receive_response(device, false);
+exit1:
+    free(buffer);
+    return ret;
+}
+
+int32_t blisp_device_program_check(struct blisp_device* device)
+{
+    int ret = blisp_send_command(device, 0x3A, NULL, 0, true);
+    if (ret < 0) return ret;
+    ret = blisp_receive_response(device, false);
+    if (ret < 0) return ret;
+
+    return 0;
+}
+
+int32_t blisp_device_reset(struct blisp_device* device)
+{
+    int ret = blisp_send_command(device, 0x21, NULL, 0, true);
     if (ret < 0) return ret;
     ret = blisp_receive_response(device, false);
     if (ret < 0) return ret;
