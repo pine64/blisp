@@ -2,6 +2,8 @@
 
 Tool and library for flashing their RISC-V MCUs.
 
+**NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
+
 # Supported MCUs
 
 - [ ] BL602 / BL604
