@@ -36,6 +36,8 @@ get_binary_folder(char* buffer, uint32_t buffer_size) {
 }
 
 void blisp_flash_firmware() {
+    FILE* eflash_loader_file = NULL;
+
     // TODO: We support currently only BL70X
     if (chip_type->count == 0 || strcmp(chip_type->sval[0], "bl70x") != 0) {
         fprintf(stderr, "Chip type is invalid.\n");
@@ -94,7 +96,7 @@ void blisp_flash_firmware() {
     get_binary_folder(exe_path, PATH_MAX); // TODO: Error handling
     snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_32m.bin", exe_path, device.chip->type_str);
 
-    FILE* eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
+    eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
     uint8_t eflash_loader_header[176];
     fread(eflash_loader_header, 176, 1, eflash_loader_file); // TODO: Error handling
 
@@ -156,7 +158,6 @@ void blisp_flash_firmware() {
     printf(" OK\n");
 
 eflash_loader:
-
 
 exit1:
     if (eflash_loader_file != NULL) fclose(eflash_loader_file);
