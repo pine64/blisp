@@ -59,6 +59,7 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
     sp_set_parity(serial_port, SP_PARITY_NONE);
     sp_set_stopbits(serial_port, 1);
     sp_set_flowcontrol(serial_port, SP_FLOWCONTROL_NONE);
+
     uint32_t vid, pid;
     sp_get_port_usb_vid_pid(serial_port, &vid, &pid);
     device->is_usb = pid == 0xFFFF;
@@ -69,6 +70,7 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
 //    }
     sp_set_baudrate(serial_port, device->current_baud_rate);
     device->serial_port = serial_port;
+
     return 0;
 }
 
@@ -103,7 +105,7 @@ int32_t blisp_receive_response(struct blisp_device* device, bool expect_payload)
     // TODO: Check checksum
     int ret;
     struct sp_port* serial_port = device->serial_port;
-    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 300);
+    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 500);
     if (ret < 2) {
 #ifdef DEBUG
         fprintf(stderr, "Failed to receive response. (ret = %d)\n", ret);
@@ -111,7 +113,7 @@ int32_t blisp_receive_response(struct blisp_device* device, bool expect_payload)
         return -1; // TODO: Terrible
     } else if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
         if (expect_payload) {
-            sp_blocking_read(serial_port, &device->rx_buffer[2], 2, 100);
+            sp_blocking_read(serial_port, &device->rx_buffer[2], 2, 100); // TODO: Check if really we received the data.
             uint16_t data_length = (device->rx_buffer[3] << 8) | (device->rx_buffer[2]);
             sp_blocking_read(serial_port, &device->rx_buffer[0], data_length, 100);
             return data_length;
@@ -136,9 +138,11 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
     uint8_t handshake_buffer[600];
     struct sp_port* serial_port = device->serial_port;
 
-    uint32_t bytes_count = 0.003f * (float)device->current_baud_rate / 10.0f; // TODO: 0.003f is only for BL70X!
+    uint32_t bytes_count = device->chip->handshake_byte_multiplier * (float)device->current_baud_rate / 10.0f;
     if (bytes_count > 600) bytes_count = 600;
     memset(handshake_buffer, 'U', bytes_count);
+
+//    sp_flush(serial_port, SP_BUF_BOTH);
 
     for (uint8_t i = 0; i < 5; i++) {
         if (!in_ef_loader) {
@@ -147,15 +151,18 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
                                   100);
             }
         }
-
         ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count,
-                                100);
+                                500);
         if (ret < 0) {
             return -1;
         }
-        ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 100);
-        if (ret == 2 && device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
-            return 0;
+        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 1000);
+        if (ret >= 2) {
+            for (uint8_t j = 0; j < (ret - 1); j++) {
+                if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
+                    return 0;
+                }
+            }
         }
     }
     return -4; // didn't received response
@@ -171,10 +178,11 @@ int32_t blisp_device_get_boot_info(struct blisp_device* device, struct blisp_boo
     ret = blisp_receive_response(device, true);
     if (ret < 0) return ret;
 
+    memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4); // TODO: Endianess
     if (device->chip->type == BLISP_CHIP_BL70X) {
-        memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4); // TODO: Endianess
         memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
     }
+    // TODO: BL60X
     return 0;
 }
 
@@ -206,7 +214,7 @@ int32_t blisp_device_load_segment_data(struct blisp_device* device, uint8_t* seg
     int ret;
     ret = blisp_send_command(device, 0x18, segment_data, segment_data_length, false);
     if (ret < 0) return ret;
-    ret = blisp_receive_response(device, true); // TODO: Handle response
+    ret = blisp_receive_response(device, false);
     if (ret < 0) return ret;
 
     return 0;

@@ -185,14 +185,25 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header)
 void blisp_flash_firmware() {
     FILE* eflash_loader_file = NULL;
 
-    // TODO: We support currently only BL70X
-    if (chip_type->count == 0 || strcmp(chip_type->sval[0], "bl70x") != 0) {
+    if (chip_type->count == 0) {
         fprintf(stderr, "Chip type is invalid.\n");
         return;
     }
+
+    struct blisp_chip* chip = NULL;
+
+    if (strcmp(chip_type->sval[0], "bl70x") == 0) {
+        chip = &blisp_chip_bl70x;
+    } else if (strcmp(chip_type->sval[0], "bl60x") == 0) {
+        chip = &blisp_chip_bl60x;
+    } else {
+        fprintf(stderr, "Chip type is invalid.\n");
+        return;
+    }
+
     struct blisp_device device;
     int32_t ret;
-    ret = blisp_device_init(&device, &blisp_chip_bl70x);
+    ret = blisp_device_init(&device, chip);
     if (ret != 0) {
         fprintf(stderr, "Failed to init device.\n");
         return;
@@ -241,7 +252,7 @@ void blisp_flash_firmware() {
     char exe_path[PATH_MAX];
     char eflash_loader_path[PATH_MAX];
     get_binary_folder(exe_path, PATH_MAX); // TODO: Error handling
-    snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_32m.bin", exe_path, device.chip->type_str);
+    snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin", exe_path, device.chip->type_str, device.chip->default_eflash_loader_xtal);
 
     eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
     uint8_t eflash_loader_header[176]; // TODO: Remap it to the boot header struct
@@ -279,8 +290,12 @@ void blisp_flash_firmware() {
                     buffer_size = 4092;
                 }
                 fread(buffer, buffer_size, 1, eflash_loader_file);
-                blisp_device_load_segment_data(
+                ret = blisp_device_load_segment_data(
                     &device, buffer, buffer_size); // TODO: Error handling
+                if (ret < 0) {
+                    fprintf(stderr, "Failed to load segment data. (ret %d)\n", ret);
+                    goto exit1;
+                }
                 sent_data += buffer_size;
                 printf("%" PRIu32 "b / %" PRIu32 "b (%.2f%%)\n", sent_data,
                        segment_header.length,
