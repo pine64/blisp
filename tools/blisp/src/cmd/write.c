@@ -6,6 +6,11 @@
 #ifdef __linux__
 #include <unistd.h>
 #include <linux/limits.h>
+#elif defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#include <windows.h>
+#define PATH_MAX MAX_PATH
 #endif
 
 #define REG_EXTENDED 1
@@ -20,15 +25,14 @@ static void* cmd_write_argtable[5];
 ssize_t
 get_binary_folder(char* buffer, uint32_t buffer_size) {
 #ifdef __linux__
-    readlink("/proc/self/exe", buffer, BUFSIZ); // TODO: Error handling
+    readlink("/proc/self/exe", buffer, buffer_size); // TODO: Error handling
     char* pos = strrchr(buffer, '/');
+#else
+    GetModuleFileName(NULL, buffer, buffer_size);
+    char* pos = strrchr(buffer, '\\');
+#endif
     pos[0] = '\0';
     return pos - buffer;
-#else
-#error NOT IMPLEMENTED
-    WCHAR path[MAX_PATH];
-    GetModuleFileName(NULL, path, ARRAYSIZE(path));
-#endif
 }
 
 void blisp_flash_firmware() {
@@ -90,7 +94,7 @@ void blisp_flash_firmware() {
     get_binary_folder(exe_path, PATH_MAX); // TODO: Error handling
     snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_32m.bin", exe_path, device.chip->type_str);
 
-    FILE* eflash_loader_file = fopen(eflash_loader_path, "rb");
+    FILE* eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
     uint8_t eflash_loader_header[176];
     fread(eflash_loader_header, 176, 1, eflash_loader_file); // TODO: Error handling
 
