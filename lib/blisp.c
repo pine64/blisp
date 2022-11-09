@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
+#include <blisp_util.h>
 
 #define DEBUG
 
@@ -137,6 +138,15 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
     int ret;
     uint8_t handshake_buffer[600];
     struct sp_port* serial_port = device->serial_port;
+
+    if (!in_ef_loader && !device->is_usb) {
+        sp_set_rts(serial_port, SP_RTS_ON);
+        sp_set_dtr(serial_port, SP_DTR_ON);
+        sleep_ms(50);
+        sp_set_rts(serial_port, SP_RTS_OFF);
+        sleep_ms(100);
+        sp_set_dtr(serial_port, SP_DTR_OFF);
+    }
 
     uint32_t bytes_count = device->chip->handshake_byte_multiplier * (float)device->current_baud_rate / 10.0f;
     if (bytes_count > 600) bytes_count = 600;
