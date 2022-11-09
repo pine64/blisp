@@ -318,7 +318,7 @@ void blisp_flash_firmware() {
     }
 
     printf("Sending a handshake...");
-    ret = blisp_device_handshake(&device, false);
+    ret = blisp_device_handshake(&device, true);
     if (ret != 0) {
         fprintf(stderr, "\nFailed to handshake with device.\n");
         goto exit1;
