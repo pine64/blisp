@@ -13,10 +13,11 @@ Tool and library for flashing their RISC-V MCUs.
 - [ ] `bl808` - BL808
 
 # Building
-
 For building `blisp` command line tool, use following commands:
 
 ```bash
+git clone --recursive https://github.com/pine64/blisp.git
+cd blisp
 mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
