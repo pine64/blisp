@@ -40,6 +40,46 @@ For BL60X, you need to specify also the serial port path:
 blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
+# How to build BLISP Linux flasher for updating Pinecil V2
+==
+_Note: This has been tested on x86-64. The build process also works on aarch64 and armv7._
+
+(1) **Get Source Code** is here for Linux BLISP flasher. This is the one we are using because it's open source & gamiee wrote/supports it. This only works for  V2 pinecil and not the older V1 pinecil which has a different MCU.
+**https://github.com/pine64/blisp**
+Click green Code button, then Download  Zip.
+
+(2) **Linux set-up steps:**
+```
+git clone --recursive https://github.com/pine64/blisp.git
+cd blisp
+mkdir build && cd build
+cmake -DBLISP_BUILD_CLI=ON ..
+cmake --build .
+```
+It will be in tools/blisp folder, so can be run as  ` ./tools/blisp/blisp` later
+(3)` mkdir tools/blisp/data`
+(4) `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
+eflash is not included in this blisp repo downloaded in step (1) and is attached below.
+Unzip it and put it into the bl70x folder.
+
+(5) **Get V2 beta firmware** from Github IronOS Actions like this [ link  below ](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
+Scroll to the very bottom of this linked page: https://github.com/Ralim/IronOS/actions/runs/3409043548
+Get **Pinecilv2.zip** and unzip it.  English =  Pinecilv2_EN.bin file.
+
+(6)  Put the  Pinecilv2_EN.bin (or other language) into  `tools/blisp/data/bl70x/`
+can delete all the rest of the Pinecilv2**.zip as it is not needed.
+
+(7) Connect Pinecil V2 to the PC. Hold (-) button down first and Keep holding (-).
+Then Plug in the USB-C cable. Wait another 15-20sec before releasing the (-) button.
+If successful,  the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
+If this fails, then see troubleshooting below.
+
+(8) Execute    ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
+or a different language Pinecilv2*.bin you extracted earlier.
+
+(9)  Done. Unplug from the PC, and restart V2. Hold down (-) button to see new firmware version number.
+
+
 # Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
 
