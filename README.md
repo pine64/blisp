@@ -41,9 +41,7 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 1. If the Pinecil V2 or device fails to connect to the PC:
 
     (a) try different cables (usb-C to C is recommended over Usb-A)
-    
-    (b) try different Usb ports
-    
+    (b) try different Usb port
     (c) try a different PC/laptop
     
 2. It is important to hold down the (-) minus button _before_ plugging in the Usb-c cable, and do not release the button for another 15-20 seconds. Try to hold it a longer before releasing if your computer is slow and it is not working. In rare circumstances on fussy USB ports, keep holding the (-) for the entire update.
