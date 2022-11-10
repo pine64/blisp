@@ -196,6 +196,8 @@ void blisp_flash_firmware() {
         chip = &blisp_chip_bl70x;
     } else if (strcmp(chip_type->sval[0], "bl60x") == 0) {
         chip = &blisp_chip_bl60x;
+    } else if (strcmp(chip_type->sval[0], "bl808") == 0) {
+        chip = &blisp_chip_bl808;
     } else {
         fprintf(stderr, "Chip type is invalid.\n");
         return;
@@ -248,6 +250,11 @@ void blisp_flash_firmware() {
            boot_info.chip_id[5],
            boot_info.chip_id[6],
            boot_info.chip_id[7]);
+
+    if (device.chip->type == BLISP_CHIP_BL808) {
+        // Since eflash_loader is not needed in BL808, we can jump to flashing.
+        goto eflash_loader; // TODO: Rework
+    }
 
     char exe_path[PATH_MAX];
     char eflash_loader_path[PATH_MAX];
@@ -325,7 +332,13 @@ void blisp_flash_firmware() {
     }
     printf(" OK\n");
 
-eflash_loader:;
+eflash_loader:
+    if (device.chip->type == BLISP_CHIP_BL808) {
+        // Setting CLK configuration
+        // Setting Flash Config
+        // Setting Flash Parameter
+    }
+
     FILE* firmware_file = fopen(binary_to_write->filename[0], "rb");
     if (firmware_file == NULL) {
         fprintf(stderr,"Failed to open firmware file \"%s\".\n", binary_to_write->filename[0]);

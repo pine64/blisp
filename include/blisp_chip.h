@@ -6,7 +6,8 @@
 
 enum blisp_chip_type {
     BLISP_CHIP_BL60X,
-    BLISP_CHIP_BL70X
+    BLISP_CHIP_BL70X,
+    BLISP_CHIP_BL808
 };
 
 struct blisp_chip { // TODO: Move elsewhere?
@@ -19,5 +20,6 @@ struct blisp_chip { // TODO: Move elsewhere?
 
 extern struct blisp_chip blisp_chip_bl60x;
 extern struct blisp_chip blisp_chip_bl70x;
+extern struct blisp_chip blisp_chip_bl808;
 
 #endif

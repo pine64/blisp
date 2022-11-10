@@ -1,0 +1,8 @@
+#include "blisp.h"
+
+struct blisp_chip blisp_chip_bl808 = {
+    .type = BLISP_CHIP_BL808,
+    .type_str = "bl808",
+    .usb_isp_available = true,
+    .handshake_byte_multiplier = 0.006f,
+};

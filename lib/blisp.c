@@ -158,13 +158,19 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         if (!in_ef_loader) {
             if (device->is_usb) {
                 sp_blocking_write(serial_port, "BOUFFALOLAB5555RESET\0\0", 22,
-                                  100);
+                                  100); // TODO: Error handling
             }
         }
         ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count,
                                 500);
         if (ret < 0) {
             return -1;
+        }
+
+        if (device->chip->type == BLISP_CHIP_BL808) {
+            sleep_ms(300);
+            const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+            sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300); // TODO: Error handling
         }
         ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
         if (ret >= 2) {
@@ -189,10 +195,10 @@ int32_t blisp_device_get_boot_info(struct blisp_device* device, struct blisp_boo
     if (ret < 0) return ret;
 
     memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4); // TODO: Endianess
-    if (device->chip->type == BLISP_CHIP_BL70X) {
+    if (device->chip->type == BLISP_CHIP_BL70X || device->chip->type == BLISP_CHIP_BL808) { // TODO: This is only 70X related
         memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
     }
-    // TODO: BL60X
+    // TODO: BL60X, BL808
     return 0;
 }
 
