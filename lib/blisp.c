@@ -166,7 +166,7 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         if (ret < 0) {
             return -1;
         }
-        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 1000);
+        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
         if (ret >= 2) {
             for (uint8_t j = 0; j < (ret - 1); j++) {
                 if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
