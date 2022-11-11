@@ -95,7 +95,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
 
 
-9. Almost done: unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version number, and heat it up.
+9. Almost done: unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version number.
 
 10. Before making menu changes, it is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
    Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. Setting  defaults first avoids unexpected behavior due to some changes in upgrades.
@@ -116,6 +116,10 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 3. If all of this fails, then join one of the [Live Community Chat channels linked](https://wiki.pine64.org/wiki/Pinecil#Community_links) in the Pinecil Wiki as volunteers there might be able to help.
 
 4. Open a an new issue ticket in this Github/Blisp https://github.com/pine64/blisp/issues
+
+5. See [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil) for hardware information.
+
+6. See [Github Ralim's IronOS](https://ralim.github.io/IronOS/#getting-started) for firmware/software information. This is only the Flasher that loads the firmware; all firmware documents are in IronOS.
 
 
 # To Do
