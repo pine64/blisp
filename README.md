@@ -47,7 +47,7 @@ _Note: This has been tested on x86-64. The build process also works on aarch64 a
 
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
-1. **Get Source Code** is here for Linux BLISP flasher. This code only works for Pinecil V2 and not the older V1 model which has different hardware.
+1. **Get Source Code** here for Linux BLISP flasher. This code only works for Pinecil V2 and not the older V1 model which has different hardware.
 **https://github.com/pine64/blisp**
 Click green Code button, then Download the Zip and extract it.
 
