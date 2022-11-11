@@ -67,7 +67,7 @@ cmake --build .
 
 4. Get eflash_loader_32m.bin, then `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
    
-   a. Download [eflash*.bin here](https://github.com/blisp/blob/master/eflash/eflash_loader_32m.bin).
+   a. Download [eflash*.bin here](https://github.com/blisp/tree/master/eflash).
    
    b. Unzip and move it to the bl70x folder.
 
