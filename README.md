@@ -71,9 +71,14 @@ cmake --build .
    
    b. Unzip and move it to the bl70x folder.
 
-5. **Get V2 beta firmware** from Github IronOS Actions like this [link below](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
-Scroll to the very bottom of this linked page: https://github.com/Ralim/IronOS/actions/runs/3409043548
-Get **Pinecilv2.zip** and extract it (English =  Pinecilv2_EN.bin file).
+5. **Get V2 firmware** from Github IronOS
+
+   a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS).
+   
+   b. Or for Beta firmware, go to IronOS Actions like this [link](https://github.com/Ralim/IronOS/actions/runs/3409043548) or select a newer dated Action.
+      Scroll to the very bottom of the actions page and download **Pinecilv2**: https://github.com/Ralim/IronOS/actions/runs/3409043548
+   
+   d. Extract **Pinecilv2.zip** and select a single language file (English = Pinecilv2_EN.bin).
 
 6.  Put Pinecilv2_EN.bin (or selected language) into `tools/blisp/data/bl70x/`
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
