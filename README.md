@@ -91,10 +91,12 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
       
       d. If this fails, see [troubleshooting below](https://github.com/blisp/blob/master/README.md#troubleshooting).
 
-8. Execute ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
-or whichever language Pinecilv2**.bin you extracted earlier.
+8. Flash the firmware onto Pinecil V2. If a different language was selected, replace `Pinecilv2_**.bin` below with the chosen file.
+` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
 
-9. Done. Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new firmware version.
+
+9. Done, Congradulations! Unplug from the PC and estart V2. Hold down the minus `(-)` button to see the new firmware version.
+   Before making menu changes, is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu). Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable.
 
 ## Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
