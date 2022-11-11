@@ -95,7 +95,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
 
 
-9. Done, Congradulations! Unplug from the PC and estart V2. Hold down the minus `(-)` button to see the new firmware version.
+9. Done, Congradulations! Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version.
 
 10. Before making menu changes, is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu). Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable.
 
