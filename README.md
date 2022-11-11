@@ -103,7 +103,7 @@ or whichever language Pinecilv2**.bin you extracted earlier.
 
     a. try different cable: usb-C to C is recommended over Usb-A, especially if you are having issues.
     
-    b. try different Usb port
+    b. try different Usb ports (usb-c recommended)
     
     c. try a different PC/laptop
     
