@@ -75,8 +75,8 @@ cmake --build .
 
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS).
    
-   b. Or for Beta firmware, go to IronOS Actions like this [link](https://github.com/Ralim/IronOS/actions/runs/3409043548) or select a newer dated Action.
-      Scroll to the very bottom of the actions page and download **Pinecilv2**: https://github.com/Ralim/IronOS/actions/runs/3409043548
+   b. Or download the Beta firmware, go to IronOS Actions like [here](https://github.com/Ralim/IronOS/actions/runs/3409043548) or select a newer dated Action.
+      Scroll to the very bottom of the actions page and download **Pinecilv2**. This is [beta 2.20](https://github.com/Ralim/IronOS/actions/runs/3409043548)
    
    d. Extract **Pinecilv2.zip** and select a single language file (English = Pinecilv2_EN.bin).
 
