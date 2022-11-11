@@ -49,7 +49,7 @@ _Note: This has been tested on x86-64. The build process also works on aarch64 a
 
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
-1. **Get Source Code** here for Linux BLISP flasher. This code only works for Pinecil V2 and not the older V1 model which has different hardware.
+1. **Get Source Code**: this code only works for Pinecil V2 and not the older V1 model which has different hardware.
 **https://github.com/pine64/blisp**
 Click green Code button, then Download the Zip and extract it.
 
@@ -61,7 +61,7 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
-   It will be in tools/blisp folder, so can later be run as  ` ./tools/blisp/blisp`
+   It will be in tools/blisp folder and can later be run as  ` ./tools/blisp/blisp`
 
 3. ` mkdir tools/blisp/data`
 
