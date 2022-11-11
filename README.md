@@ -107,9 +107,11 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
     a. try different cable: usb-C to C is recommended over Usb-A, especially if you are having issues.
     
-    b. try different Usb ports (usb-c recommended)
+    b. don't use a USB hub, directly connect to the USB port on the PC or laptop.
     
-    c. try a different PC/laptop
+    c. try different Usb ports (usb-c recommended). Sometimes the rear ports on a PC are better because they are directly connected to the motherboard.
+    
+    d. try a different PC/laptop
     
 2. It is important to hold down the `(-)` minus button _before_ plugging in the Usb-c cable, and do not release the button for another 15-20 seconds. Try to hold it a little longer before releasing if your computer is slow and it is not working. In rare circumstances on fussy USB ports, keep holding the `(-)` for the entire update.
 
