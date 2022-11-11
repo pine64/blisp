@@ -68,6 +68,7 @@ cmake --build .
 4. Get eflash_loader_32m.bin, then `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
    
    a. Download eflash*.bin here.
+   
    b. Unzip it and move it to the bl70x folder.
 
 5. **Get V2 beta firmware** from Github IronOS Actions like this [link below](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
@@ -78,9 +79,13 @@ Get **Pinecilv2.zip** and extract it (English =  Pinecilv2_EN.bin file).
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
 7. Putting Pinecil V2 into Flasing Mode:
+
       a. Hold the minus (-) button down first and Keep holding (-).
+      
       b. Then Plug in the USB-C cable. Wait another 15-20sec before releasing the minus `(-)` button.
+      
       c. If successful, the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
+      
       d. If this fails, see [troubleshooting below](https://github.com/blisp/blob/master/README.md#troubleshooting).
 
 8. Execute ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
