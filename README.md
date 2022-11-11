@@ -98,7 +98,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 9. Done, Congradulations! Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version.
 
 10. Before making menu changes, is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
-   Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. This avoids unexpected behavior if defaults are selected first.
+   Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. This avoids unexpected behavior if Default Settings are set first.
 
 ## Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
