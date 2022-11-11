@@ -66,6 +66,7 @@ cmake --build .
 3. ` mkdir tools/blisp/data`
 
 4. Get eflash_loader_32m.bin, then `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
+   
    a. Download eflash*.bin here.
    b. Unzip it and move it to the bl70x folder.
 
