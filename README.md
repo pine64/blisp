@@ -50,6 +50,7 @@ _Note: This has been tested on x86-64. The build process also works on aarch64 a
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
 1. **Get Source Code**: this code only works for Pinecil V2 and not the older V1 model which has different hardware.
+
  Click the [Green Code button here](https://github.com/pine64/blisp), then download the zip and extract it. 
 
 2. **Linux set-up**
