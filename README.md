@@ -103,7 +103,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 11. Congradulations, and [Stay Fluxey, my friends!](https://www.reddit.com/r/PINE64official/comments/xk9vxu/most_interesting_man_in_the_world_i_dont_always/?utm_source=share&utm_medium=web2x&context=3)
 
 ## Troubleshooting
-1. If the Pinecil V2 or device fails to connect to the PC:
+1. If the Pinecil V2 fails to connect to the PC:
 
     a. try different cable: usb-C to C is recommended over Usb-A, especially if you are having issues.
     
@@ -119,7 +119,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
 5. See [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil) for hardware information.
 
-6. See [Github Ralim's IronOS](https://ralim.github.io/IronOS/#getting-started) for firmware/software information. This is only the Flasher that loads the firmware; all firmware documents are in IronOS.
+6. See [Github Ralim's IronOS](https://ralim.github.io/IronOS/#getting-started) for firmware/software information. This is only the Flasher that loads the firmware; all Pinecil firmware documents and menu instructions are in IronOS.
 
 
 # To Do
