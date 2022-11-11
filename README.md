@@ -40,15 +40,18 @@ For BL60X, you need to specify also the serial port path:
 blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
-# How to build BLISP Linux flasher for updating Pinecil V2
-==
+# Updating Pinecil V2: How to build BLISP Flasher for Linux
+
 _Note: This has been tested on x86-64. The build process also works on aarch64 and armv7._
+### Steps
 
-(1) **Get Source Code** is here for Linux BLISP flasher. This is the one we are using because it's open source & gamiee wrote/supports it. This only works for  V2 pinecil and not the older V1 pinecil which has a different MCU.
+⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
+
+1. **Get Source Code** is here for Linux BLISP flasher. This open souce code only works for V2 pinecil and not the older V1 pinecil which has different hardware.
 **https://github.com/pine64/blisp**
-Click green Code button, then Download  Zip.
+Click green Code button, then Download the Zip and extract it.
 
-(2) **Linux set-up steps:**
+2. **Linux set-up**
 ```
 git clone --recursive https://github.com/pine64/blisp.git
 cd blisp
@@ -57,27 +60,29 @@ cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
 It will be in tools/blisp folder, so can be run as  ` ./tools/blisp/blisp` later
-(3)` mkdir tools/blisp/data`
-(4) `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
+
+3. ` mkdir tools/blisp/data`
+
+4. Get eflashloader32m, then `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
 eflash is not included in this blisp repo downloaded in step (1) and is attached below.
 Unzip it and put it into the bl70x folder.
 
-(5) **Get V2 beta firmware** from Github IronOS Actions like this [ link  below ](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
+5. **Get V2 beta firmware** from Github IronOS Actions like this [link below](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
 Scroll to the very bottom of this linked page: https://github.com/Ralim/IronOS/actions/runs/3409043548
-Get **Pinecilv2.zip** and unzip it.  English =  Pinecilv2_EN.bin file.
+Get **Pinecilv2.zip** and unzip it (English =  Pinecilv2_EN.bin file).
 
-(6)  Put the  Pinecilv2_EN.bin (or other language) into  `tools/blisp/data/bl70x/`
+6.  Put the  Pinecilv2_EN.bin (or other language) into  `tools/blisp/data/bl70x/`
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
-(7) Connect Pinecil V2 to the PC. Hold (-) button down first and Keep holding (-).
+7. Connect Pinecil V2 to the PC. Hold (-) button down first and Keep holding (-).
 Then Plug in the USB-C cable. Wait another 15-20sec before releasing the (-) button.
 If successful,  the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
 If this fails, then see troubleshooting below.
 
-(8) Execute    ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
-or a different language Pinecilv2*.bin you extracted earlier.
+8. Execute ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
+or whichever language Pinecilv2**.bin you extracted earlier.
 
-(9)  Done. Unplug from the PC, and restart V2. Hold down (-) button to see new firmware version number.
+9. Done. Unplug from the PC, and restart V2. Hold down the minus `(-)` button to see the new firmware version.
 
 
 # Troubleshooting
