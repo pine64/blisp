@@ -13,7 +13,7 @@ Tool and library for flashing their RISC-V MCUs.
 - [ ] `bl808` - BL808
 
 # Supported Devices
-- [X] Pinecil V2
+- [X] [Pinecil V2](https://wiki.pine64.org/wiki/Pinecil)
 
 # Building
 For building `blisp` command line tool, use following commands:
