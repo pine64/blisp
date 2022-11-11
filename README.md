@@ -95,10 +95,12 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
 
 
-9. Done, Congradulations! Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version.
+9. Done, unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version.
 
 10. Before making menu changes, is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
    Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. This avoids unexpected behavior if Default Settings are set first.
+   
+11. Congradulations, [Stay Fluxey, my friends!](https://www.reddit.com/r/PINE64official/comments/xk9vxu/most_interesting_man_in_the_world_i_dont_always/?utm_source=share&utm_medium=web2x&context=3)
 
 ## Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
