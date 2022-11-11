@@ -65,11 +65,11 @@ cmake --build .
 
 3. ` mkdir tools/blisp/data`
 
-4. Get eflash_loader_32m.bin, then `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
+4. Get eflash_loader_32m.bin
    
    a. Download [eflash*.bin here](https://github.com/blisp/tree/master/eflash).
    
-   b. Unzip and move it to the bl70x folder.
+   b. Unzip and move it to the bl70x folder  `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
 
 5. **Get V2 firmware** from Github IronOS
 
