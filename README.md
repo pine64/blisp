@@ -69,7 +69,7 @@ cmake --build .
    
    a. Download eflash*.bin here.
    
-   b. Unzip it and move it to the bl70x folder.
+   b. Unzip and move it to the bl70x folder.
 
 5. **Get V2 beta firmware** from Github IronOS Actions like this [link below](https://github.com/Ralim/IronOS/actions/runs/3409043548) or a newer dated Action.
 Scroll to the very bottom of this linked page: https://github.com/Ralim/IronOS/actions/runs/3409043548
