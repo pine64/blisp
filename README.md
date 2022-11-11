@@ -78,12 +78,12 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
       a. Hold the minus (-) button down first and Keep holding (-).
       b. Then Plug in the USB-C cable. Wait another 15-20sec before releasing the minus `(-)` button.
       c. If successful, the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
-      d. If this fails, see troubleshooting below.
+      d. If this fails, see [troubleshooting below](https://github.com/blisp/blob/master/README.md#troubleshooting).
 
 8. Execute ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
 or whichever language Pinecilv2**.bin you extracted earlier.
 
-9. Done. Unplug from the PC, and restart V2. Hold down the minus `(-)` button to see the new firmware version.
+9. Done. Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new firmware version.
 
 
 # Troubleshooting
