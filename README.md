@@ -98,7 +98,7 @@ or whichever language Pinecilv2**.bin you extracted earlier.
 
 9. Done. Unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new firmware version.
 
-# Troubleshooting
+### Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
 
     a. try different cable: usb-C to C is recommended over Usb-A, especially if you are having issues.
