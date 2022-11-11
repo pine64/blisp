@@ -61,7 +61,7 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
-     Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
+ Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
 
 3. ` mkdir tools/blisp/data`
 
