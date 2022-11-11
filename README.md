@@ -51,7 +51,7 @@ _Note: This has been tested on x86-64. The build process also works on aarch64 a
 
 1. **Get Source Code**: this code only works for Pinecil V2 and not the older V1 model which has different hardware.
 
- Click the [Green Code button here](https://github.com/pine64/blisp), then download the zip and extract it. 
+   Click the [Green Code button here](https://github.com/pine64/blisp), then download the zip and extract it. 
 
 2. **Linux set-up**
 ```
@@ -61,7 +61,7 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
- Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
+  Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
 
 3. ` mkdir tools/blisp/data`
 
