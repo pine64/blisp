@@ -96,9 +96,11 @@ or whichever language Pinecilv2**.bin you extracted earlier.
 # Troubleshooting
 1. If the Pinecil V2 or device fails to connect to the PC:
 
-    (a) try different cables (usb-C to C is recommended over Usb-A)
-    (b) try different Usb port
-    (c) try a different PC/laptop
+    a. try different cables (usb-C to C is recommended over Usb-A)
+    
+    b. try different Usb port
+    
+    c. try a different PC/laptop
     
 2. It is important to hold down the (-) minus button _before_ plugging in the Usb-c cable, and do not release the button for another 15-20 seconds. Try to hold it a longer before releasing if your computer is slow and it is not working. In rare circumstances on fussy USB ports, keep holding the (-) for the entire update.
 3. If all of this fails, then join one of the Community Live Chat channels linked in the Pinecil Wiki where volunteers might be able to help: https://wiki.pine64.org/wiki/Pinecil#Community_links
