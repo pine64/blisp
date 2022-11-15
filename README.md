@@ -81,7 +81,7 @@ cmake --build .
 6.  Put Pinecilv2_EN.bin (or selected language) into `tools/blisp/data/bl70x/`
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
-7. Putting Pinecil V2 into Flasing Mode:
+7. Put Pinecil V2 into Flashing Mode:
 
       a. Hold the minus `(-)` button down first and Keep holding `(-)`.
       
