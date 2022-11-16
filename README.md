@@ -65,7 +65,7 @@ cmake --build .
 
 4. Get eflash_loader_32m.bin
    
-   a. Download [eflash*.bin here](https://github.com/blisp/tree/master/eflash).
+   a. Download [eflash*.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
    b. Unzip and move it to the bl70x folder  `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
 
@@ -89,7 +89,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
       
       c. If successful, the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
       
-      d. If this fails, see [troubleshooting below](https://github.com/blisp/blob/master/README.md#troubleshooting).
+      d. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
 
 8. Flash the firmware onto Pinecil V2. If a different language was selected, replace `Pinecilv2_**.bin` below with the chosen file.
 ` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
