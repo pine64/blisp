@@ -106,7 +106,7 @@ int32_t blisp_receive_response(struct blisp_device* device, bool expect_payload)
     // TODO: Check checksum
     int ret;
     struct sp_port* serial_port = device->serial_port;
-    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 500);
+    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 1000);
     if (ret < 2) {
 #ifdef DEBUG
         fprintf(stderr, "Failed to receive response. (ret = %d)\n", ret);
