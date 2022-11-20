@@ -6,8 +6,8 @@ Tool and library for flashing their RISC-V MCUs.
 
 # Supported MCUs
 
-- [X] `bl60x` - BL602 / BL604
-- [X] `bl70x` - BL702 / BL704 / BL706 
+- [x] `bl60x` - BL602 / BL604
+- [x] `bl70x` - BL702 / BL704 / BL706
 - [ ] `bl606p` - BL606P
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
@@ -40,4 +40,3 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 
 - [ ] Another code style
 - [ ] Finalize API
-- [ ] SDIO and JTAG support
