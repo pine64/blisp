@@ -6,13 +6,24 @@ Tool and library for flashing their RISC-V MCUs.
 
 # Supported MCUs
 
-- [X] `bl60x` - BL602 / BL604
-- [X] `bl70x` - BL702 / BL704 / BL706 
+- [x] `bl60x` - BL602 / BL604
+- [x] `bl70x` - BL702 / BL704 / BL706
 - [ ] `bl606p` - BL606P
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
 
 # Building
+
+## Clone repository
+
+If you have not cloned this repository locally; check out the git repository locally by running
+
+```bash
+git clone --recursive https://github.com/pine64/blisp.git
+cd blisp
+```
+
+## Build the library and command line utility
 
 For building `blisp` command line tool, use following commands:
 
