@@ -14,6 +14,17 @@ Tool and library for flashing their RISC-V MCUs.
 
 # Building
 
+## Clone repository
+
+If you have not cloned this repository locally; check out the git repository locally by running
+
+```bash
+git clone --recursive https://github.com/pine64/blisp.git
+cd blisp
+```
+
+## Build the library and command line utility
+
 For building `blisp` command line tool, use following commands:
 
 ```bash
@@ -40,3 +51,4 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 
 - [ ] Another code style
 - [ ] Finalize API
+- [ ] SDIO and JTAG support
