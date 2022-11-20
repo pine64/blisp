@@ -252,11 +252,23 @@ void blisp_flash_firmware() {
     char exe_path[PATH_MAX];
     char eflash_loader_path[PATH_MAX];
     get_binary_folder(exe_path, PATH_MAX); // TODO: Error handling
-    snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin", exe_path, device.chip->type_str, device.chip->default_eflash_loader_xtal);
-
-    eflash_loader_file = fopen(eflash_loader_path, "rb"); // TODO: Error handling
-    uint8_t eflash_loader_header[176]; // TODO: Remap it to the boot header struct
-    fread(eflash_loader_header, 176, 1, eflash_loader_file); // TODO: Error handling
+    snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin",
+             exe_path, device.chip->type_str,
+             device.chip->default_eflash_loader_xtal);
+    printf("Loading the eflash loader file from disk\n");
+    eflash_loader_file
+        = fopen(eflash_loader_path, "rb"); // TODO: Error handling
+    if (eflash_loader_file == NULL) {
+        fprintf(stderr,
+                "Could not open the eflash loader file from disk.\n"
+                "Does \"%s\" exist?\n",
+                eflash_loader_path);
+        goto exit1;
+    }
+    uint8_t
+        eflash_loader_header[176]; // TODO: Remap it to the boot header struct
+    fread(eflash_loader_header, 176, 1,
+          eflash_loader_file); // TODO: Error handling
 
     printf("Loading eflash_loader...\n");
     ret = blisp_device_load_boot_header(&device, eflash_loader_header);
