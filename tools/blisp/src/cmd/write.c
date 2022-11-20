@@ -28,10 +28,14 @@ static void* cmd_write_argtable[6];
 ssize_t
 get_binary_folder(char* buffer, uint32_t buffer_size) {
 #ifdef __linux__
-    readlink("/proc/self/exe", buffer, buffer_size); // TODO: Error handling
+    if (readlink("/proc/self/exe", buffer, buffer_size) <= 0) {
+        return -1;
+    }
     char* pos = strrchr(buffer, '/');
 #else
-    GetModuleFileName(NULL, buffer, buffer_size);
+    if (GetModuleFileName(NULL, buffer, buffer_size) <= 0) {
+        return -1;
+    }
     char* pos = strrchr(buffer, '\\');
 #endif
     pos[0] = '\0';
@@ -251,7 +255,11 @@ void blisp_flash_firmware() {
 
     char exe_path[PATH_MAX];
     char eflash_loader_path[PATH_MAX];
-    get_binary_folder(exe_path, PATH_MAX); // TODO: Error handling
+    if (get_binary_folder(exe_path, PATH_MAX) <= 0) {
+        fprintf(stderr, "Failed to find executable path to search for the "
+                        "eflash loader\n");
+        goto exit1;
+    }
     snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin",
              exe_path, device.chip->type_str,
              device.chip->default_eflash_loader_xtal);
