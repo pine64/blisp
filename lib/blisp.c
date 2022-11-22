@@ -1,9 +1,14 @@
 #include <blisp.h>
+#include <blisp_util.h>
 #include <libserialport.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
-#include <blisp_util.h>
+
+#ifdef __linux__
+#include <linux/serial.h>
+#include <sys/ioctl.h>
+#endif
 
 #define DEBUG
 
@@ -69,6 +74,16 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
 //    } else {
         device->current_baud_rate = 500000;
 //    }
+
+#if 0
+    int fd;
+    sp_get_port_handle(serial_port, &fd);
+    struct serial_struct serial;
+    ioctl(fd, TIOCGSERIAL, &serial);
+//    serial.flags &= ~(ASYNC_LOW_LATENCY);
+    serial.flags |= ASYNC_LOW_LATENCY;
+    ioctl(fd, TIOCSSERIAL, &serial);
+#endif
     ret = sp_set_baudrate(serial_port, device->current_baud_rate);
     if (ret != SP_OK) {
         return -1; // TODO: Handle this
