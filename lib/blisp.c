@@ -155,8 +155,6 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
     if (bytes_count > 600) bytes_count = 600;
     memset(handshake_buffer, 'U', bytes_count);
 
-//    sp_flush(serial_port, SP_BUF_BOTH);
-
     for (uint8_t i = 0; i < 5; i++) {
         if (!in_ef_loader) {
             if (device->is_usb) {
@@ -169,12 +167,14 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         if (ret < 0) {
             return -1;
         }
-        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
+
+        sp_drain(serial_port); // Wait for write to send all data
+        sp_flush(serial_port, SP_BUF_INPUT); // Flush garbage out of RX
+
+        ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 50);
         if (ret >= 2) {
-            for (uint8_t j = 0; j < (ret - 1); j++) {
-                if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
-                    return 0;
-                }
+            if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
+                return 0;
             }
         }
     }
