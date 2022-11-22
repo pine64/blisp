@@ -149,6 +149,7 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         sp_set_dtr(serial_port, SP_DTR_OFF);
         sleep_ms(100);
         sp_set_rts(serial_port, SP_RTS_OFF);
+        sleep_ms(50); // Wait a bit so BootROM can init
     }
 
     uint32_t bytes_count = device->chip->handshake_byte_multiplier * (float)device->current_baud_rate / 10.0f;
