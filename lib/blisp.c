@@ -69,7 +69,10 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
 //    } else {
         device->current_baud_rate = 500000;
 //    }
-    sp_set_baudrate(serial_port, device->current_baud_rate);
+    ret = sp_set_baudrate(serial_port, device->current_baud_rate);
+    if (ret != SP_OK) {
+        return -1; // TODO: Handle this
+    }
     device->serial_port = serial_port;
 
     return 0;
