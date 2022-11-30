@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include "blisp.h"
 
 struct blisp_chip blisp_chip_bl70x = {

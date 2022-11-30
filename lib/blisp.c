@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include <blisp.h>
 #include <blisp_util.h>
 #include <libserialport.h>

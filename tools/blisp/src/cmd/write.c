@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include "../cmd.h"
 #include "argtable3.h"
 #include <blisp.h>
