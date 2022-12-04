@@ -62,6 +62,7 @@ cmake --build .
   Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
 
 3. ` mkdir tools/blisp/data`
+` mkdir -p tools/blisp/data/bl70x`
 
 4. Get eflash_loader_32m.bin
    
