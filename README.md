@@ -71,7 +71,10 @@ mkdir -p tools/blisp/data/bl70x
    
    a. Download [eflash*.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
-   b. Unzip and move it to the bl70x folder  `unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/`
+   b. Unzip and move it to the bl70x folder
+```
+unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
+```
 
 5. **Get V2 firmware** from Github IronOS
 
