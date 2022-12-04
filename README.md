@@ -47,11 +47,7 @@ _Note: This has been tested on x86-64. The build process also works on aarch64 a
 
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
-1. **Get Source Code**: this code only works for Pinecil V2 and not the older V1 model which has different hardware.
-
-   Click the [Green Code button here](https://github.com/pine64/blisp), then download the zip and extract it. 
-
-2. **Linux set-up**
+1. **Linux set-up**
 ```
 git clone --recursive https://github.com/pine64/blisp.git
 cd blisp
@@ -61,22 +57,22 @@ cmake --build .
 ```
   Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
 
-3. **Make new folders**
+2. **Make new folders**
 ```
 mkdir tools/blisp/data
 mkdir -p tools/blisp/data/bl70x
 ```
 
-4. Get eflash_loader_32m.bin
+3. Get eflash_loader_32m.bin
    
    a. Download [eflash*.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
-   b. Move it to the bl70x folder (unzip & move if it is a zip and not a bin file).
+   b. Move it to the tools/data/bl70x folder (unzip & move if it is a zip and not a bin file).
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
 
-5. **Get V2 firmware** from Github IronOS
+4. **Get V2 firmware** from Github IronOS
 
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS).
    
@@ -85,13 +81,13 @@ unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
    
    d. Extract **Pinecilv2.zip** and select a single language file (English = Pinecilv2_EN.bin).
 
-6.  Move the Pinecilv2_EN.bin (or selected language) into 
+5.  Move the Pinecilv2_EN.bin (or selected language) into 
 ```
-tools/blisp/data/bl70x/
+blisp/
 ```
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
-7. Put Pinecil V2 into Flashing Mode:
+6. Put Pinecil V2 into Flashing Mode:
 
       a. Hold the minus `(-)` button down first and Keep holding `(-)`.
       
