@@ -85,7 +85,10 @@ unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
    
    d. Extract **Pinecilv2.zip** and select a single language file (English = Pinecilv2_EN.bin).
 
-6.  Put Pinecilv2_EN.bin (or selected language) into `tools/blisp/data/bl70x/`
+6.  Move the Pinecilv2_EN.bin (or selected language) into 
+```
+tools/blisp/data/bl70x/
+```
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
 7. Put Pinecil V2 into Flashing Mode:
