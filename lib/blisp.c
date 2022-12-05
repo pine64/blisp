@@ -185,8 +185,10 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
             return -1;
         }
 
-        sp_drain(serial_port); // Wait for write to send all data
-        sp_flush(serial_port, SP_BUF_INPUT); // Flush garbage out of RX
+        if (!in_ef_loader && !device->is_usb) {
+            sp_drain(serial_port); // Wait for write to send all data
+            sp_flush(serial_port, SP_BUF_INPUT); // Flush garbage out of RX
+        }
 
         ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 50);
         if (ret >= 2) {
