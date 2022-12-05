@@ -54,20 +54,17 @@ cd blisp
 mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
-```
-  Note: it will be in tools/blisp folder and can later be run as with flags as ` ./tools/blisp/blisp`
-
-2. **Make new folders**
-```
 mkdir tools/blisp/data
 mkdir -p tools/blisp/data/bl70x
 ```
+  Note: the blisp command will be in build/tools/blisp/ folder and can later be run as with flags as ` ./tools/blisp/blisp`
 
-3. Get eflash_loader_32m.bin
+2. Get eflash_loader_32m.bin
    
-   a. Download [eflash*.bin here](https://github.com/River-b/blisp/tree/master/eflash).
+   a. Download [eflash*32m.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
-   b. Move it to the tools/data/bl70x folder (unzip & move if it is a zip and not a bin file).
+   b. Move eflash*32m.bin to the build/tools/data/bl70x folder 
+   c. unzip & move if it is a zip and not a bin file.
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
