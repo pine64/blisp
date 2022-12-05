@@ -63,7 +63,7 @@ mkdir -p tools/blisp/data/bl70x
    
    a. Download [eflash*32m.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
-   b. Move eflash*32m.bin to the build/tools/data/bl70x folder 
+   b. Move eflash*32m.bin to the folder  build/tools/data/bl70x 
    c. unzip & move if it is a zip and not a bin file.
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
