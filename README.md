@@ -31,7 +31,7 @@ cmake --build .
 For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port:
 
 ```bash
-blisp --chip bl70x --reset name_of_firmware.bin
+blisp write --chip bl70x --reset name_of_firmware.bin
 ```
 
 For BL60X, you need to specify also the serial port path:
@@ -57,56 +57,54 @@ cmake --build .
 mkdir tools/blisp/data
 mkdir -p tools/blisp/data/bl70x
 ```
-  Note: the blisp command will be in build/tools/blisp/ folder and can later be run as with flags as ` ./tools/blisp/blisp`
+  Note: the blisp command will now be in build/tools/blisp/ folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
-2. Get eflash_loader_32m.bin
-   
+2. Get and cp or mv eflash_loader_32m.bin  to  bl70x folder
+```
+/build/tools/blisp/data/bl70x/eflash_loader_32m.bin
+``` 
    a. Download [eflash*32m.bin here](https://github.com/River-b/blisp/tree/master/eflash).
    
    b. Move eflash*32m.bin to the folder  build/tools/data/bl70x 
-   c. unzip & move if it is a zip and not a bin file.
+   c. If it is a Zip, then unzip & move it.
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
 
-4. **Get V2 firmware** from Github IronOS
+3. **Get V2 firmware** from Github Ralim's IronOS
 
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS).
-   
-   b. Or download the Beta firmware, go to IronOS [here](https://github.com/Ralim/IronOS/actions/runs/3545583488)
-      Scroll to the very bottom of the actions page and download **Pinecilv2**. This link is to [beta that has BLE and also works for EPR chargers](https://github.com/Ralim/IronOS/actions/runs/3545583488)
-   
-   d. Extract **Pinecilv2.zip** and select a single language file (English = Pinecilv2_EN.bin).
 
-5.  Move the Pinecilv2_EN.bin (or selected language) into 
+   b. Or download the Beta firmware [IronOS here](https://github.com/Ralim/IronOS/actions/runs/3545583488)
+      Scroll to the very bottom of the page and download **Pinecilv2**. This link is to [beta that has BLE and also works for EPR chargers](https://github.com/Ralim/IronOS/actions/runs/3545583488)
+   
+   d. Extract **Pinecilv2.zip** and select a single language file (English = ```Pinecilv2_EN.bin```).
+   
+   e. Move the Pinecilv2_EN.bin (or selected language) into the same folder as the blisp command.
 ```
-blisp/
+build/tools/blisp/Pinecilv2_EN.bin
 ```
 can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
-6. Put Pinecil V2 into Flashing Mode:
+4. Connect Pinecil to PC/laptop: long hold [`-`]  , then connect cable. Can release the [-] after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. Pinecil connects as a serial COM port.
 
-      a. Hold the minus `(-)` button down first and Keep holding `(-)`.
-      
-      b. Then Plug in the USB-C cable. Wait another 15-20sec before releasing the minus `(-)` button.
-      
-      c. If successful, the screen will be black/blank which means you are are in flasher mode and ready to upload firmware.
-      
-      d. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
+5. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
 
-8. Flash the firmware onto Pinecil V2. If a different language was selected, replace `Pinecilv2_**.bin` below with the chosen file.
-` sudo ./tools/blisp/blisp write -c bl70x --reset Pinecilv2_EN.bin`
+6. If you are in  the folder  `blisp/build/tools/blisp/`   then execute 
+```
+sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin
+```
+Note: if a different language was selected, replace `Pinecilv2_**.bin` above with the chosen file name.
 
+7. Almost done: unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version number.
 
-9. Almost done: unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version number.
-
-10. Before making menu changes, it is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
+8. Before making menu changes, it is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
    Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. Setting  defaults first avoids unexpected behavior due to some changes in upgrades.
    
-11. Congradulations, and [Stay Fluxey, my friends!](https://www.reddit.com/r/PINE64official/comments/xk9vxu/most_interesting_man_in_the_world_i_dont_always/?utm_source=share&utm_medium=web2x&context=3)
+9. Congradulations, and [Stay Fluxey, my friends!](https://www.reddit.com/r/PINE64official/comments/xk9vxu/most_interesting_man_in_the_world_i_dont_always/?utm_source=share&utm_medium=web2x&context=3)
 
 ## Troubleshooting
-1. If the Pinecil V2 fails to connect to the PC:
+1. If the Pinecil V2 fails to connect to the PC, check the `dmesg` command output.
 
     a. try different cable: usb-C to C is recommended over Usb-A, especially if you are having issues.
     
@@ -120,7 +118,7 @@ can delete all the rest of the Pinecilv2**.zip as it is not needed.
 
 3. If all of this fails, then join one of the [Live Community Chat channels linked](https://wiki.pine64.org/wiki/Pinecil#Community_links) in the Pinecil Wiki as volunteers there might be able to help.
 
-4. Open a an new issue ticket in this Github/Blisp https://github.com/pine64/blisp/issues
+4. Open a an new issue ticket in this Github/Blisp flasher at https://github.com/pine64/blisp/issues
 
 5. See [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil) for hardware information.
 
