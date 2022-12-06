@@ -5,6 +5,8 @@
 #include <string.h>
 #include <inttypes.h>
 #include "blisp_struct.h"
+#include <assert.h>
+#include <stdlib.h>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -14,6 +16,8 @@
 typedef SSIZE_T ssize_t;
 #include <windows.h>
 #define PATH_MAX MAX_PATH
+#elif defined(__APPLE__)
+#include <sys/syslimits.h>
 #endif
 
 #define REG_EXTENDED 1
@@ -30,9 +34,6 @@ static void* cmd_write_argtable[6];
 // Ugh. This stuff is just so messy without C++17 or Qt...
 // These are not thread safe, but it doesn't place the responsibility
 // to free an allocated buffer on the caller.nn
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
 
 static void get_executable_path(char* buffer_out, uint32_t max_size) {
     assert (max_size >= PATH_MAX); // n.b. 1024 on MacOS. 4K on most Linux.

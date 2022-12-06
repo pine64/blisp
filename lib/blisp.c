@@ -2,7 +2,7 @@
 #include <blisp.h>
 #include <blisp_util.h>
 #include <libserialport.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 

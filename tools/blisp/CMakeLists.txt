@@ -12,4 +12,6 @@ target_link_libraries(blisp PRIVATE
 
 if(WIN32)
     target_link_libraries(blisp PRIVATE Setupapi.lib)
+elseif(APPLE)
+    target_link_libraries(blisp PRIVATE "-framework IOKit" "-framework CoreFoundation")
 endif()
