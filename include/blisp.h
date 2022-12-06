@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #ifndef _LIBBLISP_H
 #define _LIBBLISP_H
 
@@ -27,16 +28,24 @@ struct blisp_boot_info {
     uint8_t chip_id[8]; // TODO: BL60X only 6 bytes
 };
 
+// TODO: Refactor variable names, so all will follow same semantic, like image_run, image_check etc.
+
 int32_t blisp_device_init(struct blisp_device* device, struct blisp_chip* chip);
 int32_t blisp_device_open(struct blisp_device* device, const char* port_name);
-int32_t blisp_device_handshake(struct blisp_device* device);
+int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader);
 int32_t blisp_device_get_boot_info(struct blisp_device* device, struct blisp_boot_info* boot_info);
 int32_t blisp_device_load_boot_header(struct blisp_device* device, uint8_t* boot_header);
 int32_t blisp_device_load_segment_header(struct blisp_device* device, struct blisp_segment_header* segment_header);
 int32_t blisp_device_load_segment_data(struct blisp_device* device, uint8_t* segment_data, uint32_t segment_data_length);
-int32_t blisp_device_write_memory(struct blisp_device* device, uint32_t address, uint32_t value);
+int32_t blisp_device_write_memory(struct blisp_device* device,
+                                  uint32_t address, uint32_t value,
+                                  bool wait_for_res);
 int32_t blisp_device_check_image(struct blisp_device* device);
 int32_t blisp_device_run_image(struct blisp_device* device);
+int32_t blisp_device_flash_erase(struct blisp_device* device, uint32_t start_address, uint32_t end_address);
+int32_t blisp_device_flash_write(struct blisp_device* device, uint32_t start_address, uint8_t* payload, uint32_t payload_size);
+int32_t blisp_device_program_check(struct blisp_device* device);
+int32_t blisp_device_reset(struct blisp_device* device);
 void blisp_device_close(struct blisp_device* device);
 
 #endif

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include "argtable3.h"
 #include "cmd.h"
 #include <stdbool.h>

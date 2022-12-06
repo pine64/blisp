@@ -7,6 +7,7 @@ option(BLISP_BUILD_CLI "Build CLI Tool" OFF)
 
 add_library(libblisp_obj OBJECT
         lib/blisp.c
+        lib/chip/blisp_chip_bl60x.c
         lib/chip/blisp_chip_bl70x.c)
 
 target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/include/)
@@ -35,6 +36,8 @@ target_sources(libblisp_obj PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/serialport.c
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/timing.c)
 
+target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+
 if(WIN32)
     target_link_libraries(libblisp_obj PRIVATE Setupapi.lib)
     target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
@@ -46,9 +49,11 @@ elseif(UNIX AND NOT APPLE)
             ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux_termios.c)
     target_compile_definitions(libblisp_obj PRIVATE
             LIBSERIALPORT_ATBUILD
+            HAVE_TERMIOS2_SPEED
+            HAVE_STRUCT_TERMIOS2
+            HAVE_DECL_BOTHER
             "SP_API=__attribute__((visibility(\"default\")))"
             "SP_PRIV=__attribute__((visibility(\"hidden\")))")
-    target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
     write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
 elseif(APPLE)
     target_sources(libblisp_obj PRIVATE
