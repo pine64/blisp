@@ -49,6 +49,9 @@ elseif(UNIX AND NOT APPLE)
             ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux_termios.c)
     target_compile_definitions(libblisp_obj PRIVATE
             LIBSERIALPORT_ATBUILD
+            HAVE_TERMIOS2_SPEED
+            HAVE_STRUCT_TERMIOS2
+            HAVE_DECL_BOTHER
             "SP_API=__attribute__((visibility(\"default\")))"
             "SP_PRIV=__attribute__((visibility(\"hidden\")))")
     write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")

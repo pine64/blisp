@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #ifndef _BLISP_UTIL_H
 #define _BLISP_UTIL_H
 

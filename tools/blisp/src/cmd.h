@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #ifndef BLISP_CMD_H
 #define BLISP_CMD_H
 

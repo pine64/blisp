@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #ifndef _LIBBLISP_H
 #define _LIBBLISP_H
 

@@ -6,8 +6,8 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 
 # Supported MCUs
 
-- [X] `bl60x` - BL602 / BL604
-- [X] `bl70x` - BL702 / BL704 / BL706 
+- [x] `bl60x` - BL602 / BL604
+- [x] `bl70x` - BL702 / BL704 / BL706
 - [ ] `bl606p` - BL606P
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
@@ -16,6 +16,7 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 - [X] [Pinecil V2](https://wiki.pine64.org/wiki/Pinecil)
 
 # Building
+
 For building `blisp` command line tool, use following commands:
 
 ```bash

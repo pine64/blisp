@@ -1,9 +1,15 @@
+// SPDX-License-Identifier: MIT
 #include <blisp.h>
+#include <blisp_util.h>
 #include <libserialport.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
-#include <blisp_util.h>
+
+#ifdef __linux__
+#include <linux/serial.h>
+#include <sys/ioctl.h>
+#endif
 
 #define DEBUG
 
@@ -69,7 +75,20 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name)
 //    } else {
         device->current_baud_rate = 500000;
 //    }
-    sp_set_baudrate(serial_port, device->current_baud_rate);
+
+#if 0
+    int fd;
+    sp_get_port_handle(serial_port, &fd);
+    struct serial_struct serial;
+    ioctl(fd, TIOCGSERIAL, &serial);
+//    serial.flags &= ~(ASYNC_LOW_LATENCY);
+    serial.flags |= ASYNC_LOW_LATENCY;
+    ioctl(fd, TIOCSSERIAL, &serial);
+#endif
+    ret = sp_set_baudrate(serial_port, device->current_baud_rate);
+    if (ret != SP_OK) {
+        return -1; // TODO: Handle this
+    }
     device->serial_port = serial_port;
 
     return 0;
@@ -106,7 +125,7 @@ int32_t blisp_receive_response(struct blisp_device* device, bool expect_payload)
     // TODO: Check checksum
     int ret;
     struct sp_port* serial_port = device->serial_port;
-    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 500);
+    ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 1000);
     if (ret < 2) {
 #ifdef DEBUG
         fprintf(stderr, "Failed to receive response. (ret = %d)\n", ret);
@@ -146,13 +165,12 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         sp_set_dtr(serial_port, SP_DTR_OFF);
         sleep_ms(100);
         sp_set_rts(serial_port, SP_RTS_OFF);
+        sleep_ms(50); // Wait a bit so BootROM can init
     }
 
     uint32_t bytes_count = device->chip->handshake_byte_multiplier * (float)device->current_baud_rate / 10.0f;
     if (bytes_count > 600) bytes_count = 600;
     memset(handshake_buffer, 'U', bytes_count);
-
-//    sp_flush(serial_port, SP_BUF_BOTH);
 
     for (uint8_t i = 0; i < 5; i++) {
         if (!in_ef_loader) {
@@ -166,12 +184,16 @@ blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         if (ret < 0) {
             return -1;
         }
-        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 1000);
+
+        if (!in_ef_loader && !device->is_usb) {
+            sp_drain(serial_port); // Wait for write to send all data
+            sp_flush(serial_port, SP_BUF_INPUT); // Flush garbage out of RX
+        }
+
+        ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 50);
         if (ret >= 2) {
-            for (uint8_t j = 0; j < (ret - 1); j++) {
-                if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
-                    return 0;
-                }
+            if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
+                return 0;
             }
         }
     }
