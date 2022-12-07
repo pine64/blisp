@@ -68,7 +68,7 @@ cmake --build .
 mkdir tools/blisp/data
 mkdir -p tools/blisp/data/bl70x
 ```
-  Note: the blisp command will now be in build/tools/blisp/ folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
+  Note: the blisp command will now be in `build/tools/blisp/` folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
 2. Get and cp or mv eflash_loader_32m.bin  to  bl70x folder
 ```
