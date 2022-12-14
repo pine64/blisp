@@ -80,23 +80,18 @@ mkdir -p tools/blisp/data/bl70x
 ```
   Note: the blisp command will now be in `build/tools/blisp/` folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
-2. Get and cp or mv eflash_loader_32m.bin  to  bl70x folder
+2. Get and cp or mv `eflash_loader_32m.bin`  to  bl70x folder
 
-``` /build/tools/blisp/data/bl70x/eflash_loader_32m.bin ``` 
+`/build/tools/blisp/data/bl70x/eflash_loader_32m.bin` 
 
    a. Download [Bouffalo Lab Dev Cube here](https://dev.bouffalolab.com/download).
    
-   b. Extract and get the eflash_loader_32m.bin from the /bl702/eflash_loader folder, i.e., 
+   b. Extract and get the `eflash_loader_32m.bin` for bl70x chip from Dev Cube download, i.e. might be in this path, 
    
-```/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin```
+`/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin`
    
-   c. Move eflash_loader_32m.bin to your build/tools/data/bl70x folder. The rest of the  Dev Cube could be deleted.
+   c. Move `eflash_loader_32m.bin` to your `build/tools/data/bl70x`0 folder from step 1. The rest of the Dev Cube could be deleted.
    
-   d. If it is a Zip, then unzip & move it.
-```
-unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
-```
-
 ### Continue with the next steps if building code to update Pinecil V2.
 
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or it may destroy your PC and pinecil. ⛔
@@ -111,7 +106,7 @@ unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
 build/tools/blisp/Pinecilv2_EN.bin
 ```
-can delete all the rest of the Pinecilv2**.zip, it is not needed.
+Could delete the rest of Pinecilv2**.zip, it is not needed.
 
 4. Connect Pinecil to PC/laptop: long hold [`-`]  , then connect cable. Can release the [-] after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. Pinecil connects as a serial COM port.
 
