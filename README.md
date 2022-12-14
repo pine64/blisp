@@ -100,28 +100,28 @@ mkdir -p tools/blisp/data/bl70x
 
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS/releases) (or a beta firmware). Hint: go to Assets section below the comments and get the Pinecilv2.zip file.
    
-   d. If it's in Zip form, then Extract **Pinecilv2.zip** and select a language file (English = ```Pinecilv2_EN.bin```). 
+   d. If it's in Zip form, then extract **Pinecilv2.zip** and select a language file (English = `Pinecilv2_EN.bin`). 
    
-   e. Move the Pinecilv2_EN.bin (or selected language) into the same folder as the blisp command.
-```
-build/tools/blisp/Pinecilv2_EN.bin
-```
-Could delete the rest of Pinecilv2**.zip, it is not needed.
+   e. Move the `Pinecilv2_EN.bin` (or selected language) into the same folder as the blisp command.
+   
+`build/tools/blisp/Pinecilv2_EN.bin`
 
-4. Connect Pinecil to PC/laptop: long hold [`-`]  , then connect cable. Can release the [-] after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. Pinecil connects as a serial COM port.
+Could delete the rest of Pinecilv2.zip, it is not needed.
+
+4. Connect Pinecil to PC/laptop: long hold `[-]`, then connect cable. Can release the `[-]` after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. Pinecil connects as a serial COM port.
 
 5. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
 
-6. If you are in  the folder  `blisp/build/tools/blisp/`   then execute 
-```
-sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin
-```
-Note: if a different language was selected, replace `Pinecilv2_**.bin` above with the chosen file name.
+6. If you are in  the folder  `blisp/build/tools/blisp/`   then execute
 
-7. Almost done: unplug from the PC and restart V2. Hold down the minus `(-)` button to see the new version number.
+`sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin`
+
+Note: if a different language is selected, replace `Pinecilv2_EN.bin` above with the chosen file name.
+
+7. Almost done: unplug from the PC and restart V2. Hold down the minus `[-]` button to see the new version number.
 
 8. Before making menu changes, it is recommended to first [Restore Settings to Default](https://github.com/Ralim/IronOS/blob/dev/Documentation/GettingStarted.md#settings-menu).
-   Simply go to Advanced settings > Restore default settings, confirm using the `(+)` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. Setting  defaults first avoids unexpected behavior due to some changes in upgrades.
+   Simply go to Advanced settings > Restore default settings, confirm using the `[+]` button. This sets all menu items to defaults, keeps the same firmware version, and does not affect any Boot-up logo art if applicable. Setting  defaults first avoids unexpected behavior due to some changes in upgrades.
    
 9. Congradulations, and [Stay Fluxey, my friends!](https://www.reddit.com/r/PINE64official/comments/xk9vxu/most_interesting_man_in_the_world_i_dont_always/?utm_source=share&utm_medium=web2x&context=3)
 
@@ -136,7 +136,7 @@ Note: if a different language was selected, replace `Pinecilv2_**.bin` above wit
     
     d. try a different PC/laptop
     
-2. It is important to hold down the `(-)` minus button _before_ plugging in the Usb-c cable, and do not release the button for another 15-20 seconds. Try to hold it a little longer before releasing if your computer is slow and it is not working. In rare circumstances on fussy USB ports, keep holding the `(-)` for the entire update.
+2. It is important to hold down the `[-]` minus button _before_ plugging in the Usb-c cable, and do not release the button for another 15-20 seconds. Try to hold it a little longer before releasing if your computer is slow and it is not working. In rare circumstances on fussy USB ports, keep holding the `[-]` for the entire update.
 
 3. If all of this fails, then join one of the [Live Community Chat channels linked](https://wiki.pine64.org/wiki/Pinecil#Community_links) in the Pinecil Wiki as volunteers there might be able to help.
 
