@@ -117,8 +117,9 @@ Could delete the rest of Pinecilv2.zip, it is not needed.
 5. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
 
 6. If you are in  the folder  `blisp/build/tools/blisp/`   then execute
-
-`sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin`
+```
+sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin
+```
 
 Note: if a different language is selected, replace `Pinecilv2_EN.bin` above with the chosen file name.
 
