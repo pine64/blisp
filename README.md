@@ -90,7 +90,7 @@ mkdir -p tools/blisp/data/bl70x
    
 `/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin`
    
-   c. Move `eflash_loader_32m.bin` to your `build/tools/data/bl70x`0 folder from step 1. The rest of the Dev Cube could be deleted.
+   c. Move `eflash_loader_32m.bin` to your `build/tools/data/bl70x` folder from step 1. The rest of the Dev Cube could be deleted.
    
 ### Continue with the next steps if building code to update Pinecil V2.
 
