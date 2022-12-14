@@ -80,17 +80,17 @@ mkdir -p tools/blisp/data/bl70x
 ```
   Note: the blisp command will now be in `build/tools/blisp/` folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
-2. Get and cp or mv `eflash_loader_32m.bin`  to  bl70x folder
+2. Get and copy or move the `eflash_loader_32m.bin`  to  bl70x folder
 
 `/build/tools/blisp/data/bl70x/eflash_loader_32m.bin` 
 
    a. Download [Bouffalo Lab Dev Cube here](https://dev.bouffalolab.com/download).
    
-   b. Extract and get the `eflash_loader_32m.bin` for bl70x chip from Dev Cube download, i.e. might be in this path, 
+   b. Extract the DevCube download and get the `eflash_loader_32m.bin` for the bl70x chip (the MCU in Pinecil V2). Check this path for the file:
    
 `/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin`
    
-   c. Move `eflash_loader_32m.bin` to your `build/tools/data/bl70x` folder from step 1. The rest of the Dev Cube could be deleted.
+   c. cp or mv the `eflash_loader_32m.bin` to your `build/tools/data/bl70x` folder from step 1. The rest of the Dev Cube could be deleted.
    
 ### Continue with the next steps if building code to update Pinecil V2.
 
