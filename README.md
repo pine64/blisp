@@ -51,7 +51,7 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
 # Update Pinecil V2
-1. Use the easy pre-made blisp executable for Windows or Linux
+1. Windows or Linux: use the easy pre-made blisp executable. 
 2. Instructions on [Pinecil Wiki firmware](https://wiki.pine64.org/wiki/Pinecil#Update_Pinecil_V2)
 3. For Troubleshooting, [see down below](https://github.com/pine64/blisp#troubleshooting) or [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil#Troubleshooting_V2_Flashing)
 
