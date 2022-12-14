@@ -50,13 +50,17 @@ For BL60X, you need to specify also the serial port path:
 blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
-# Updating Pinecil V2: How to build BLISP Flasher
+# Update Pinecil V2
+1. Windows or Linux: use the easy pre-made blisp executable. 
+2. Instructions on [Pinecil Wiki firmware](https://wiki.pine64.org/wiki/Pinecil#Update_Pinecil_V2)
+3. For Troubleshooting, [see down below](https://github.com/pine64/blisp#troubleshooting) or [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil#Troubleshooting_V2_Flashing)
 
-_Note: This has been tested on x86-64. The build process also works on aarch64 and armv7._
+
+# Build BLISP Flasher from code for BL70x
+
+_Note: This has been tested on x86-64. The build process also works on aarch64 and armv7, and Pinebook Pro ARM._
 
 ## Linux Steps
-
-⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
 1. **Linux set-up**
 ```
@@ -68,19 +72,26 @@ cmake --build .
 mkdir tools/blisp/data
 mkdir -p tools/blisp/data/bl70x
 ```
-  Note: the blisp command will now be in build/tools/blisp/ folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
+  Note: the blisp command will now be in `build/tools/blisp/` folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
 2. Get and cp or mv eflash_loader_32m.bin  to  bl70x folder
-```
-/build/tools/blisp/data/bl70x/eflash_loader_32m.bin
-``` 
+
+``` /build/tools/blisp/data/bl70x/eflash_loader_32m.bin ``` 
+
    a. Download [eflash*32m.bin here](https://github.com/River-b/blisp/tree/master/eflash).
+   
    b. Move eflash*32m.bin to the build/tools/data/bl70x folder 
-   b. Move eflash*32m.bin to the folder  build/tools/data/bl70x 
-   c. If it is a Zip, then unzip & move it.
+   
+   c. Move eflash*32m.bin to the folder  build/tools/data/bl70x 
+   
+   d. If it is a Zip, then unzip & move it.
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
+
+### Continue with steps if building code to update Pinecil V2.
+
+⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
 
 3. **Get V2 firmware** from Github Ralim's IronOS
 
