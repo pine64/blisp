@@ -110,9 +110,9 @@ Could delete the rest of Pinecilv2.zip, it is not needed.
 
 4. Connect Pinecil to PC/laptop: long hold `[-]`, then connect cable. Can release the `[-]` after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. 
 
-  a. Pinecil connects as a serial port (Linux = ttyACM, Windows = COM).
+   a. Pinecil connects as a serial port (Linux = ttyACM, Windows = COM).
   
-  b. use `dmesg -w` if you would like to watch the connection, Pinecil BL706 will connect as Manufacturer: BLIOT, ttyACM device.
+   b. use `dmesg -w` if you would like to watch the connection, Pinecil BL706 will connect as Manufacturer: BLIOT, ttyACM device.
 
 5. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
 
