@@ -15,11 +15,16 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 # Supported Devices
 - [X] [Pinecil V2](https://wiki.pine64.org/wiki/Pinecil)
 
+# Supported OS
+- [x] Windows
+- [x] Linux
+- [ ] Apple (WIP: work-in-progress)
+
 # Building
 
 ## Clone repository
 
-If you have not cloned this repository locally; check out the git repository locally by running
+If you have not cloned this repository locally; copy the git repository locally by running
 
 ```bash
 git clone --recursive https://github.com/pine64/blisp.git
@@ -53,10 +58,11 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 # Update Pinecil V2
 1. Windows or Linux: use the easy pre-made blisp executable. 
 2. Instructions on [Pinecil Wiki firmware](https://wiki.pine64.org/wiki/Pinecil#Update_Pinecil_V2)
-3. For Troubleshooting, [see down below](https://github.com/pine64/blisp#troubleshooting) or [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil#Troubleshooting_V2_Flashing)
+3. For Troubleshooting the pre-made Blisp, [see down below](https://github.com/pine64/blisp#troubleshooting) or [Pinecil Wiki](https://wiki.pine64.org/wiki/Pinecil#Troubleshooting_V2_Flashing)
+4. If you prefer to build the Blisp Flasher from Code, or have an ARM archietecture (i.e., Pinebook Pro laptop), see below.
 
 
-# Build BLISP Flasher from code for BL70x
+# Build BLISP Flasher from code
 
 _Note: This has been tested on x86-64. The build process also works on aarch64 and armv7, and Pinebook Pro ARM._
 
@@ -78,35 +84,34 @@ mkdir -p tools/blisp/data/bl70x
 
 ``` /build/tools/blisp/data/bl70x/eflash_loader_32m.bin ``` 
 
-   a. Download [eflash*32m.bin here](https://github.com/River-b/blisp/tree/master/eflash).
+   a. Download [Bouffalo Lab Dev Cube here](https://dev.bouffalolab.com/download).
    
-   b. Move eflash*32m.bin to the build/tools/data/bl70x folder 
+   b. Extract and get the eflash_loader_32m.bin from the /bl702/eflash_loader folder, i.e., 
    
-   c. Move eflash*32m.bin to the folder  build/tools/data/bl70x 
+```/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin```
+   
+   c. Move eflash_loader_32m.bin to your build/tools/data/bl70x folder. The rest of the  Dev Cube could be deleted.
    
    d. If it is a Zip, then unzip & move it.
 ```
 unzip eflash_loader_32m.zip -d tools/blisp/data/bl70x/
 ```
 
-### Continue with steps if building code to update Pinecil V2.
+### Continue with the next steps if building code to update Pinecil V2.
 
-⛔ Do not use the Pinecil DC barrel jack while updating firmware or you may destroy your PC. ⛔
+⛔ Do not use the Pinecil DC barrel jack while updating firmware or it may destroy your PC and pinecil. ⛔
 
 3. **Get V2 firmware** from Github Ralim's IronOS
 
-   a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS).
-
-   b. Or download the Beta firmware [IronOS here](https://github.com/Ralim/IronOS/actions/runs/3545583488)
-      Scroll to the very bottom of the page and download **Pinecilv2**. This link is to [beta that has BLE and also works for EPR chargers](https://github.com/Ralim/IronOS/actions/runs/3545583488)
+   a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS/releases) (or a beta firmware). Hint: go to Assets section below the comments and get the Pinecilv2.zip file.
    
-   d. Extract **Pinecilv2.zip** and select a single language file (English = ```Pinecilv2_EN.bin```).
+   d. If it's in Zip form, then Extract **Pinecilv2.zip** and select a language file (English = ```Pinecilv2_EN.bin```). 
    
    e. Move the Pinecilv2_EN.bin (or selected language) into the same folder as the blisp command.
 ```
 build/tools/blisp/Pinecilv2_EN.bin
 ```
-can delete all the rest of the Pinecilv2**.zip as it is not needed.
+can delete all the rest of the Pinecilv2**.zip, it is not needed.
 
 4. Connect Pinecil to PC/laptop: long hold [`-`]  , then connect cable. Can release the [-] after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. Pinecil connects as a serial COM port.
 
@@ -152,3 +157,4 @@ Note: if a different language was selected, replace `Pinecilv2_**.bin` above wit
 - [ ] Another code style
 - [ ] Finalize API
 - [ ] SDIO and JTAG support
+- [ ] Add Apple support
