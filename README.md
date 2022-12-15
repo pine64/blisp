@@ -80,32 +80,31 @@ mkdir -p tools/blisp/data/bl70x
 ```
   Note: the blisp command will now be in `build/tools/blisp/` folder and could later be run with flags as ` ./tools/blisp/blisp` unless you cd into that folder.
 
-2. Get and copy or move the `eflash_loader_32m.bin`  to  bl70x folder
-
-`/build/tools/blisp/data/bl70x/eflash_loader_32m.bin` 
+2. Get the Bouffalo `eflash_loader_32m.bin`
 
    a. Download [Bouffalo Lab Dev Cube here](https://dev.bouffalolab.com/download).
    
-   b. Extract the DevCube download and get the `eflash_loader_32m.bin` for the bl70x chip (the MCU in Pinecil V2). Check this path for the file:
-   
-`/BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin`
+   b. Extract the DevCube download and get the `eflash_loader_32m.bin` needed for the bl70x chip (the MCU in Pinecil V2). Check this path for the file:
+   ``` /BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin ```
    
    c. cp or mv the `eflash_loader_32m.bin` to your `build/tools/data/bl70x` folder from step 1. The rest of the Dev Cube could be deleted.
+    
+    `/build/tools/blisp/data/bl70x/eflash_loader_32m.bin`
    
 ### Continue with the next steps if building code to update Pinecil V2.
 
 ⛔ Do not use the Pinecil DC barrel jack while updating firmware or it may destroy your PC and pinecil. ⛔
 
 3. **Get V2 firmware** from Github Ralim's IronOS
-
+   
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS/releases) (or a beta firmware). Hint: go to Assets section below the comments and get the Pinecilv2.zip file.
    
-   b. If it's in Zip form, then extract **Pinecilv2.zip** and select a language file (English = `Pinecilv2_EN.bin`). 
+   b. If it's in Zip form, then extract **Pinecilv2.zip** and select a language file (English = `Pinecilv2_EN.bin`).
    
    c. Move the `Pinecilv2_EN.bin` (or selected language) into the same folder as the blisp command.
    
-  `build/tools/blisp/Pinecilv2_EN.bin`
-
+   `build/tools/blisp/Pinecilv2_EN.bin`
+   
    d. Could delete the rest of Pinecilv2.zip, it is not needed.
 
 4. Connect Pinecil to PC/laptop: long hold `[-]`, then connect cable. Can release the `[-]` after about 15-20second.
