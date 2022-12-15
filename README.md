@@ -62,7 +62,7 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 4. If you prefer to build the Blisp Flasher from Code, or have an ARM archietecture (i.e., Pinebook Pro laptop), see below.
 
 
-# Build BLISP Flasher from code
+# Build BLISP Flasher from code for BL70x
 
 _Note: This has been tested on x86-64. The build process also works on aarch64 and armv7, and Pinebook Pro ARM._
 
@@ -100,25 +100,27 @@ mkdir -p tools/blisp/data/bl70x
 
    a. Download the newest stable [firmware release here](https://github.com/Ralim/IronOS/releases) (or a beta firmware). Hint: go to Assets section below the comments and get the Pinecilv2.zip file.
    
-   d. If it's in Zip form, then extract **Pinecilv2.zip** and select a language file (English = `Pinecilv2_EN.bin`). 
+   b. If it's in Zip form, then extract **Pinecilv2.zip** and select a language file (English = `Pinecilv2_EN.bin`). 
    
-   e. Move the `Pinecilv2_EN.bin` (or selected language) into the same folder as the blisp command.
+   c. Move the `Pinecilv2_EN.bin` (or selected language) into the same folder as the blisp command.
    
-`build/tools/blisp/Pinecilv2_EN.bin`
+  `build/tools/blisp/Pinecilv2_EN.bin`
 
-Could delete the rest of Pinecilv2.zip, it is not needed.
+   d. Could delete the rest of Pinecilv2.zip, it is not needed.
 
-4. Connect Pinecil to PC/laptop: long hold `[-]`, then connect cable. Can release the `[-]` after about 15-20second. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. 
+4. Connect Pinecil to PC/laptop: long hold `[-]`, then connect cable. Can release the `[-]` after about 15-20second.
+   
+   a. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. 
 
-   a. Pinecil connects as a serial port (Linux = ttyACM, Windows = COM).
+   b. Pinecil connects as a serial port (Linux = ttyACM, Windows = COM).
   
-   b. use `dmesg -w` if you would like to watch the connection, Pinecil BL706 will connect as Manufacturer: BLIOT, ttyACM device.
+   c. use `dmesg -w` if you would like to watch the connection, Pinecil BL706 will connect as Manufacturer: BLIOT, ttyACM device.
 
-5. If this fails, see [troubleshooting below](https://github.com/River-b/blisp/blob/master/README.md#troubleshooting).
+5. If this fails, see [troubleshooting below](https://github.com/pine64/blisp#troubleshooting).
 
 6. If you are in  the folder  `blisp/build/tools/blisp/`   then execute
 ```
-sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin
+   sudo ./blisp write -c bl70x --reset Pinecilv2_EN.bin
 ```
 
 Note: if a different language is selected, replace `Pinecilv2_EN.bin` above with the chosen file name.
