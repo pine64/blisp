@@ -84,7 +84,9 @@ mkdir -p tools/blisp/data/bl70x
 
    a. Download [Bouffalo Lab Dev Cube here](https://dev.bouffalolab.com/download).
    
-   b. Extract the DevCube download and get the `eflash_loader_32m.bin` needed for the bl70x chip (the MCU in Pinecil V2). Check this path for the file:
+   b. Extract the DevCube download and get the `eflash_loader_32m.bin` needed for the bl70x chip (the MCU in Pinecil V2). 
+   
+   Check this path for the file:
    ``` /BouffaloLabDevCube-v1.8.1/chips/bl702/eflash_loader/eflash_loader_32m.bin ```
    
    c. cp or mv the `eflash_loader_32m.bin` to your `build/tools/data/bl70x` folder from step 1. The rest of the Dev Cube could be deleted.
