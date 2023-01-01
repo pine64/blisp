@@ -113,7 +113,7 @@ mkdir -p tools/blisp/data/bl70x
    
    a. V2 screen should be Empty/black,  if not, then repeat connection, or find another cable/port. 
 
-   b. Pinecil connects as a serial port (Linux = ttyACM, Windows = COM).
+   b. Pinecil connects as a serial port (Linux = /dev/ttyACM_x_, Windows = COM_x_).
   
    c. use `dmesg -w` if you would like to watch the connection, Pinecil BL706 will connect as Manufacturer: BLIOT, ttyACM device.
 
