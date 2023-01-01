@@ -24,7 +24,7 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 
 ## Clone repository
 
-If you have not cloned this repository locally; copy the git repository locally by running
+If you have not cloned this repository locally; clone the git repository locally by running
 
 ```bash
 git clone --recursive https://github.com/pine64/blisp.git
