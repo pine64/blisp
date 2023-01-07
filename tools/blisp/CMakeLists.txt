@@ -10,8 +10,8 @@ target_link_libraries(blisp PRIVATE
         argtable3
         libblisp_static)
 
-if(WIN32)
+if (WIN32)
     target_link_libraries(blisp PRIVATE Setupapi.lib)
-elseif(APPLE)
+elseif (APPLE)
     target_link_libraries(blisp PRIVATE "-framework IOKit" "-framework CoreFoundation")
-endif()
+endif ()
