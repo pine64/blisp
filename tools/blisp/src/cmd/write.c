@@ -286,7 +286,7 @@ void blisp_flash_firmware() {
   }
   snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin",
            exe_path, device.chip->type_str,
-           device.chip->default_eflash_loader_xtal);
+           device.chip->default_xtal);
   printf("Loading the eflash loader file from disk\n");
   eflash_loader_file = fopen(eflash_loader_path, "rb");  // TODO: Error handling
   if (eflash_loader_file == NULL) {
