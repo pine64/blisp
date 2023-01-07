@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-#include <assert.h>
 #include <blisp.h>
 #include <inttypes.h>
 #include <stdlib.h>
@@ -7,17 +6,10 @@
 #include "../cmd.h"
 #include "argtable3.h"
 #include "blisp_struct.h"
+#include "../util.h"
 
 #ifdef __linux__
 #include <linux/limits.h>
-#include <unistd.h>
-#elif defined(_MSC_VER)
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#include <windows.h>
-#define PATH_MAX MAX_PATH
-#elif defined(__APPLE__)
-#include <sys/syslimits.h>
 #endif
 
 #define REG_EXTENDED 1
@@ -29,45 +21,6 @@ static struct arg_str *port_name, *chip_type;
 static struct arg_lit* reset;
 static struct arg_end* end;
 static void* cmd_write_argtable[6];
-
-#ifdef __APPLE__
-// Ugh. This stuff is just so messy without C++17 or Qt...
-// These are not thread safe, but it doesn't place the responsibility
-// to free an allocated buffer on the caller.nn
-
-static void get_executable_path(char* buffer_out, uint32_t max_size) {
-  assert(max_size >= PATH_MAX);  // n.b. 1024 on MacOS. 4K on most Linux.
-
-  char raw_path_name[PATH_MAX];   // $HOME/../../var/tmp/x
-  char real_path_name[PATH_MAX];  // /var/tmp/x
-  uint32_t raw_path_size = sizeof(raw_path_name);
-
-  if (!_NSGetExecutablePath(raw_path_name, &raw_path_size)) {
-    realpath(raw_path_name, real_path_name);
-  }
-  // *real_path_name  is appropriately sized and null terminated.
-  strcpy(buffer_out, real_path_name);
-}
-#endif
-
-ssize_t get_binary_folder(char* buffer, uint32_t buffer_size) {
-#ifdef __linux__
-  if (readlink("/proc/self/exe", buffer, buffer_size) <= 0) {
-    return -1;
-  }
-  char* pos = strrchr(buffer, '/');
-#elif defined(__APPLE__)
-  get_executable_path(buffer, buffer_size);
-  char* pos = strrchr(buffer, '/');
-#else
-  if (GetModuleFileName(NULL, buffer, buffer_size) <= 0) {
-    return -1;
-  }
-  char* pos = strrchr(buffer, '\\');
-#endif
-  pos[0] = '\0';
-  return pos - buffer;
-}
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   memcpy(boot_header->magiccode, "BFNP", 4);
@@ -278,7 +231,7 @@ void blisp_flash_firmware() {
 
   char exe_path[PATH_MAX];
   char eflash_loader_path[PATH_MAX];
-  if (get_binary_folder(exe_path, PATH_MAX) <= 0) {
+  if (util_get_binary_folder(exe_path, PATH_MAX) <= 0) {
     fprintf(stderr,
             "Failed to find executable path to search for the "
             "eflash loader\n");
