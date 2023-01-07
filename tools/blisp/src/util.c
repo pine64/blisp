@@ -4,18 +4,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifdef __linux__
-#include <unistd.h>
-#elif defined(_MSC_VER)
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
-#include <windows.h>
-#define PATH_MAX MAX_PATH
-#elif defined(__APPLE__)
-#include <sys/syslimits.h>
-#include <assert.h>
-#endif
-
 #ifdef __APPLE__
 // Ugh. This stuff is just so messy without C++17 or Qt...
 // These are not thread safe, but it doesn't place the responsibility
