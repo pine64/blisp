@@ -1,6 +1,6 @@
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/argtable3 ${CMAKE_CURRENT_BINARY_DIR}/argtable3)
 
-add_executable(blisp src/main.c src/cmd/write.c src/util.c src/common.c src/common.h)
+add_executable(blisp src/main.c src/cmd/write.c src/util.c src/common.c src/cmd/iot.c)
 
 target_include_directories(blisp PRIVATE
         "${CMAKE_SOURCE_DIR}/include"

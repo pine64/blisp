@@ -211,7 +211,7 @@ int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
       }
     }
   }
-  blisp_dlog("Received no response from chip");
+  blisp_dlog("Received no response from chip.");
   return BLISP_ERR_NO_RESPONSE;
 }
 

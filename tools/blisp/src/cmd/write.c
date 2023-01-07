@@ -6,8 +6,9 @@
 #include "../cmd.h"
 #include "../common.h"
 #include "../util.h"
-#include "argtable3.h"
-#include "blisp_struct.h"
+#include <argtable3.h>
+#include <blisp_easy.h>
+#include <blisp_struct.h>
 
 #define REG_EXTENDED 1
 #define REG_ICASE (REG_EXTENDED << 1)
@@ -164,37 +165,14 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
 }
 
 void blisp_flash_firmware() {
-  if (chip_type->count == 0) {
-    fprintf(stderr, "Chip type is invalid.\n");
-    return;
-  }
-
-  struct blisp_chip* chip = NULL;
-
-  if (strcmp(chip_type->sval[0], "bl70x") == 0) {
-    chip = &blisp_chip_bl70x;
-  } else if (strcmp(chip_type->sval[0], "bl60x") == 0) {
-    chip = &blisp_chip_bl60x;
-  } else {
-    fprintf(stderr, "Chip type is invalid.\n");
-    return;
-  }
-
   struct blisp_device device;
   int32_t ret;
-  ret = blisp_device_init(&device, chip);
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to init device.\n");
-    return;
-  }
-  ret = blisp_device_open(&device,
-                          port_name->count == 1 ? port_name->sval[0] : NULL);
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to open device.\n");
+
+  if (blisp_common_init_device(&device, port_name, chip_type) != 0) {
     return;
   }
 
-  if (blisp_prepare_flash(&device) != 0) {
+  if (blisp_common_prepare_flash(&device) != 0) {
     // TODO: Error handling
     goto exit1;
   }
@@ -213,61 +191,47 @@ void blisp_flash_firmware() {
   fill_up_boot_header(&boot_header);
 
   const uint32_t firmware_base_address = 0x2000;
-  printf("Erasing flash, this might take a while...");
+  printf("Erasing flash, this might take a while...\n");
   ret =
       blisp_device_flash_erase(&device, firmware_base_address,
                                firmware_base_address + firmware_file_size + 1);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "\nFailed to erase flash.\n");
+    fprintf(stderr, "Failed to erase flash.\n");
     goto exit2;
   }
   ret =
       blisp_device_flash_erase(&device, 0x0000, sizeof(struct bfl_boot_header));
   if (ret != BLISP_OK) {
-    fprintf(stderr, "\nFailed to erase flash.\n");
+    fprintf(stderr, "Failed to erase flash.\n");
     goto exit2;
   }
 
-  printf(" OK!\nFlashing boot header...");
+  printf("Flashing boot header...\n");
   ret = blisp_device_flash_write(&device, 0x0000, (uint8_t*)&boot_header,
                                  sizeof(struct bfl_boot_header));
   if (ret != BLISP_OK) {
-    fprintf(stderr, "\nFailed to write boot header.\n");
+    fprintf(stderr, "Failed to write boot header.\n");
     goto exit2;
   }
-  printf(" OK!\nFlashing the firmware...\n");
-  {
-    uint32_t sent_data = 0;
-    uint32_t buffer_size = 0;
-    uint8_t buffer[8184];
-    printf("0b / %ldb (0.00%%)\n", firmware_file_size);
+  printf("Flashing the firmware...\n");
+  struct blisp_easy_transport data_transport =
+      blisp_easy_transport_new_from_file(firmware_file);
 
-    while (sent_data < firmware_file_size) {
-      buffer_size = firmware_file_size - sent_data;
-      if (buffer_size > 2052) {
-        buffer_size = 2052;
-      }
-      fread(buffer, buffer_size, 1, firmware_file);
-      ret = blisp_device_flash_write(&device, firmware_base_address + sent_data,
-                                     buffer,
-                                     buffer_size);  // TODO: Error handling
-      if (ret < BLISP_OK) {
-        fprintf(stderr, "Failed to write firmware! (ret: %d)\n", ret);
-        goto exit2;
-      }
-      sent_data += buffer_size;
-      printf("%" PRIu32 "b / %ldb (%.2f%%)\n", sent_data, firmware_file_size,
-             (((float)sent_data / (float)firmware_file_size) * 100.0f));
-    }
+  ret = blisp_easy_flash_write(&device, &data_transport, firmware_base_address,
+                               firmware_file_size,
+                               blisp_common_progress_callback);
+  if (ret < BLISP_OK) {
+    fprintf(stderr, "Failed to write app to flash.\n");
+    goto exit2;
   }
 
-  printf("Checking program...");
+  printf("Checking program...\n");
   ret = blisp_device_program_check(&device);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "\nFailed to check program.\n");
+    fprintf(stderr, "Failed to check program.\n");
     goto exit2;
   }
-  printf("OK\n");
+  printf("Program OK!\n");
 
   if (reset->count > 0) {
     blisp_device_reset(&device);
@@ -288,7 +252,7 @@ int8_t cmd_write_args_init() {
   cmd_write_argtable[0] = cmd =
       arg_rex1(NULL, NULL, "write", NULL, REG_ICASE, NULL);
   cmd_write_argtable[1] = chip_type =
-      arg_str1("c", "chip", "<chip_type>", "Chip Type (bl70x)");
+      arg_str1("c", "chip", "<chip_type>", "Chip Type");
   cmd_write_argtable[2] = port_name =
       arg_str0("p", "port", "<port_name>",
                "Name/Path to the Serial Port (empty for search)");
