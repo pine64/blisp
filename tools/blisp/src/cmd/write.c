@@ -71,7 +71,7 @@ ssize_t get_binary_folder(char* buffer, uint32_t buffer_size) {
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   memcpy(boot_header->magiccode, "BFNP", 4);
-  ;
+
   boot_header->revison = 0x01;
   memcpy(boot_header->flashCfg.magiccode, "FCFG", 4);
   boot_header->flashCfg.cfg.ioMode = 0x11;
@@ -235,26 +235,26 @@ void blisp_flash_firmware() {
   struct blisp_device device;
   int32_t ret;
   ret = blisp_device_init(&device, chip);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to init device.\n");
     return;
   }
   ret = blisp_device_open(&device,
                           port_name->count == 1 ? port_name->sval[0] : NULL);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to open device.\n");
     return;
   }
   printf("Sending a handshake...");
   ret = blisp_device_handshake(&device, false);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to handshake with device.\n");
     goto exit1;
   }
   printf(" OK\nGetting chip info...");
   struct blisp_boot_info boot_info;
   ret = blisp_device_get_boot_info(&device, &boot_info);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to get boot info.\n");
     goto exit1;
   }
@@ -303,7 +303,7 @@ void blisp_flash_firmware() {
 
   printf("Loading eflash_loader...\n");
   ret = blisp_device_load_boot_header(&device, eflash_loader_header);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to load boot header.\n");
     goto exit1;
   }
@@ -335,7 +335,7 @@ void blisp_flash_firmware() {
         fread(buffer, buffer_size, 1, eflash_loader_file);
         ret = blisp_device_load_segment_data(
             &device, buffer, buffer_size);  // TODO: Error handling
-        if (ret < 0) {
+        if (ret < BLISP_OK) {
           fprintf(stderr, "Failed to load segment data. (ret %d)\n", ret);
           goto exit1;
         }
@@ -348,20 +348,20 @@ void blisp_flash_firmware() {
   }
 
   ret = blisp_device_check_image(&device);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to check image.\n");
     goto exit1;
   }
 
   ret = blisp_device_run_image(&device);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to run image.\n");
     goto exit1;
   }
 
   printf("Sending a handshake...");
   ret = blisp_device_handshake(&device, true);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to handshake with device.\n");
     goto exit1;
   }
@@ -386,13 +386,13 @@ eflash_loader:;
   ret =
       blisp_device_flash_erase(&device, firmware_base_address,
                                firmware_base_address + firmware_file_size + 1);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to erase flash.\n");
     goto exit2;
   }
   ret =
       blisp_device_flash_erase(&device, 0x0000, sizeof(struct bfl_boot_header));
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to erase flash.\n");
     goto exit2;
   }
@@ -400,7 +400,7 @@ eflash_loader:;
   printf(" OK!\nFlashing boot header...");
   ret = blisp_device_flash_write(&device, 0x0000, (uint8_t*)&boot_header,
                                  sizeof(struct bfl_boot_header));
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to write boot header.\n");
     goto exit2;
   }
@@ -420,7 +420,7 @@ eflash_loader:;
       ret = blisp_device_flash_write(&device, firmware_base_address + sent_data,
                                      buffer,
                                      buffer_size);  // TODO: Error handling
-      if (ret < 0) {
+      if (ret < BLISP_OK) {
         fprintf(stderr, "Failed to write firmware! (ret: %d)\n", ret);
         goto exit2;
       }
@@ -432,7 +432,7 @@ eflash_loader:;
 
   printf("Checking program...");
   ret = blisp_device_program_check(&device);
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "\nFailed to check program.\n");
     goto exit2;
   }

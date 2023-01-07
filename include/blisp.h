@@ -6,6 +6,18 @@
 
 #include "blisp_chip.h"
 
+enum blisp_return {
+  BLISP_OK = 0,
+  BLISP_ERR_UNKNOWN = -1,
+  BLISP_ERR_NO_RESPONSE = -2,
+  BLISP_ERR_DEVICE_NOT_FOUND = -3,
+  BLISP_ERR_CANT_OPEN_DEVICE = -4,
+  // Can't auto-find device due it doesn't have native USB
+  BLISP_ERR_NO_AUTO_FIND_AVAILABLE = -5,
+  BLISP_ERR_PENDING = -6,
+  BLISP_ERR_CHIP_ERR = -7
+};
+
 struct blisp_segment_header {
   uint32_t dest_addr;
   uint32_t length;
