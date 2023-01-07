@@ -12,9 +12,6 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
 
-# Supported Devices
-- [X] [Pinecil V2](https://wiki.pine64.org/wiki/Pinecil)
-
 # Supported OS
 - [x] Windows
 - [x] Linux
@@ -58,10 +55,3 @@ blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 # How to flash Pinecil V2
 
 Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
-
-# To Do
-
-- [ ] Another code style
-- [ ] Finalize API
-- [ ] SDIO and JTAG support
-- [ ] Add Apple support
