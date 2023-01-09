@@ -11,7 +11,7 @@ static int64_t blisp_easy_transport_read(struct blisp_easy_transport* transport,
                                          uint32_t size) {
   if (transport->type == 0) {
     // TODO: Implement reading more than available
-    memcpy(buffer, transport->data.memory.data_location + transport->data.memory.current_position, size);
+    memcpy(buffer, (uint8_t*)transport->data.memory.data_location + transport->data.memory.current_position, size);
     transport->data.memory.current_position += size;
     return size;
   } else {

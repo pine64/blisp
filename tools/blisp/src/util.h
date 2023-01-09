@@ -2,7 +2,6 @@
 #ifndef BLISP_UTIL_H
 #define BLISP_UTIL_H
 
-#include <unistd.h>
 #include <stdint.h>
 
 #ifdef __linux__
