@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 #include "common.h"
-#include <blisp.h>
 #include <argtable3.h>
-#include <string.h>
+#include <blisp.h>
 #include <inttypes.h>
+#include <malloc.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include "blisp_easy.h"
 #include "util.h"
 
@@ -54,7 +55,6 @@ int32_t blisp_common_init_device(struct blisp_device* device, struct arg_str* po
  */
 int32_t blisp_common_prepare_flash(struct blisp_device* device) {
   int32_t ret = 0;
-  FILE* eflash_loader_file = NULL;
 
   printf("Sending a handshake...\n");
   ret = blisp_device_handshake(device, false);
@@ -79,7 +79,7 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
       boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
       boot_info.chip_id[6], boot_info.chip_id[7]);
 
-  if (!device->chip->needs_eflash_loader) {
+  if (device->chip->load_eflash_loader == NULL) {
     return 0;
   }
 
@@ -91,34 +91,27 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
     return 0;
   }
 
-  char exe_path[PATH_MAX];
-  char eflash_loader_path[PATH_MAX];
-  if (util_get_binary_folder(exe_path, PATH_MAX) <= 0) {
-    fprintf(stderr,
-            "Failed to find executable path to search for the "
-            "eflash loader\n");
-    return -1;
-  }
-  snprintf(eflash_loader_path, PATH_MAX, "%s/data/%s/eflash_loader_%s.bin",
-           exe_path, device->chip->type_str,
-           device->chip->default_xtal);  // TODO: Let user pick
-  printf("Loading the eflash loader file from disk\n");
-  eflash_loader_file = fopen(eflash_loader_path, "rb");
-  if (eflash_loader_file == NULL) {
-    fprintf(stderr,
-            "Could not open the eflash loader file from disk.\n"
-            "Does \"%s\" exist?\n",
-            eflash_loader_path);
+  uint8_t* eflash_loader_buffer = NULL;
+  // TODO: Error check
+  int64_t eflash_loader_buffer_length = device->chip->load_eflash_loader(0, &eflash_loader_buffer);
+
+  struct blisp_easy_transport eflash_loader_transport =
+      blisp_easy_transport_new_from_memory(eflash_loader_buffer, eflash_loader_buffer_length);
+
+  ret = blisp_easy_load_ram_app(device, &eflash_loader_transport, blisp_common_progress_callback);
+
+  if (ret != BLISP_OK) {
+    fprintf(stderr, "Failed to load eflash_loader, ret: %d\n", ret);
     ret = -1;
     goto exit1;
   }
 
-  struct blisp_easy_transport eflash_loader_transport =
-      blisp_easy_transport_new_from_file(eflash_loader_file);
-  ret = blisp_easy_load_ram_image(device, &eflash_loader_transport,
-                                  blisp_common_progress_callback);
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to load eflash_loader, ret: %d\n", ret);
+  free(eflash_loader_buffer);
+  eflash_loader_buffer = NULL;
+
+  ret = blisp_device_check_image(device);
+  if (ret != 0) {
+    fprintf(stderr, "Failed to check image.\n");
     ret = -1;
     goto exit1;
   }
@@ -139,7 +132,7 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
   }
   printf("Handshake with eflash_loader successful.\n");
 exit1:
-  if (eflash_loader_file != NULL)
-    fclose(eflash_loader_file);
+  if (eflash_loader_buffer != NULL)
+    free(eflash_loader_buffer);
   return ret;
 }

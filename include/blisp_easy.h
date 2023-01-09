@@ -26,6 +26,9 @@ typedef void (*blisp_easy_progress_callback)(uint32_t current_value,
                                              uint32_t max_value);
 
 struct blisp_easy_transport blisp_easy_transport_new_from_file(FILE* file);
+struct blisp_easy_transport blisp_easy_transport_new_from_memory(
+    void* data_location,
+    uint32_t data_size);
 
 int32_t blisp_easy_load_segment_data(
     struct blisp_device* device,
@@ -37,6 +40,10 @@ int32_t blisp_easy_load_ram_image(
     struct blisp_device* device,
     struct blisp_easy_transport* image_transport,
     blisp_easy_progress_callback progress_callback);
+
+int32_t blisp_easy_load_ram_app(struct blisp_device* device,
+                                struct blisp_easy_transport* app_transport,
+                                blisp_easy_progress_callback progress_callback);
 
 int32_t blisp_easy_flash_write(struct blisp_device* device,
                                struct blisp_easy_transport* data_transport,

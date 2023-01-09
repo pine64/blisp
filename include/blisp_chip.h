@@ -19,7 +19,8 @@ struct blisp_chip {  // TODO: Move elsewhere?
   bool usb_isp_available;
   float handshake_byte_multiplier;
   const char* default_xtal;  // TODO: Make this selectable
-  bool needs_eflash_loader;
+  int64_t (*load_eflash_loader)(uint8_t clk_type, uint8_t** firmware_buf_ptr);
+  uint32_t tcm_address;
 };
 
 extern struct blisp_chip blisp_chip_bl60x;

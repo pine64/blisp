@@ -7,5 +7,5 @@ struct blisp_chip blisp_chip_bl61x = {
     .usb_isp_available = true,
     .default_xtal = "-", // ?
     .handshake_byte_multiplier = 0.003f,
-    .needs_eflash_loader = false
+    .get_eflash_loader = NULL
 };
