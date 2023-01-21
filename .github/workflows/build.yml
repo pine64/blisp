@@ -1,0 +1,66 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  build-windows:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v2
+      - uses: lukka/get-cmake@latest
+      - name: Build blisp tool
+        run: |
+          git submodule update --init --recursive
+          mkdir build
+          cd build
+          cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: blisp Windows x64 build
+          path: |
+            build/tools/blisp/blisp.exe
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: lukka/get-cmake@latest
+      - name: Build blisp tool
+        run: |
+          git submodule update --init --recursive
+          mkdir build
+          cd build
+          cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: blisp macOS x64 build
+          path: |
+            build/tools/blisp/blisp
+          if-no-files-found: error
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: lukka/get-cmake@latest
+      - name: Build blisp tool
+        run: |
+          git submodule update --init --recursive
+          mkdir build
+          cd build
+          cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: blisp Linux x64 build
+          path: |
+            build/tools/blisp/blisp
+          if-no-files-found: error 
