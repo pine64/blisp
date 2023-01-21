@@ -15,7 +15,7 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 # Supported OS
 - [x] Windows
 - [x] Linux
-- [ ] Apple (WIP: work-in-progress)
+- [x] Apple
 
 # Building
 
