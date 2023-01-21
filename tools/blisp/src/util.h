@@ -14,10 +14,7 @@ typedef SSIZE_T ssize_t;
 #elif defined(__APPLE__)
 #include <sys/syslimits.h>
 #include <assert.h>
-#endif
-
-#ifdef __linux__
-#include <linux/limits.h>
+#include <sys/types.h>
 #endif
 
 ssize_t util_get_binary_folder(char* buffer, uint32_t buffer_size);

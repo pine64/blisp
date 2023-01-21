@@ -9,6 +9,8 @@
 // These are not thread safe, but it doesn't place the responsibility
 // to free an allocated buffer on the caller.nn
 
+#include <stdlib.h>
+
 static void util_get_executable_path(char* buffer_out, uint32_t max_size) {
   assert(max_size >= PATH_MAX);  // n.b. 1024 on MacOS. 4K on most Linux.
 

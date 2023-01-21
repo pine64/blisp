@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include "../../data/bl70x_eflash_loader.h"
 #include "blisp.h"

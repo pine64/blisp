@@ -3,7 +3,7 @@
 #include <argtable3.h>
 #include <blisp.h>
 #include <inttypes.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
