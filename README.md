@@ -8,6 +8,7 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 
 - [x] `bl60x` - BL602 / BL604
 - [x] `bl70x` - BL702 / BL704 / BL706
+- [ ] `bl70xl` - BL702L / BL704L
 - [ ] `bl606p` - BL606P
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
