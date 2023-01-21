@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build-windows:
-    runs-on: windows-2019
+    runs-on: windows-2022
     defaults:
       run:
         shell: cmd
@@ -22,7 +22,7 @@ jobs:
         with:
           name: blisp Windows x64 build
           path: |
-            build/tools/blisp/blisp.exe
+            build/tools/blisp/Release/blisp.exe
           if-no-files-found: error
 
   build-macos:

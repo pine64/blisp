@@ -66,7 +66,11 @@ int32_t blisp_easy_load_segment_data(
 
   uint32_t sent_data = 0;
   uint32_t buffer_size = 0;
+#ifdef _WIN32
+  uint8_t buffer[4092];
+#else
   uint8_t buffer[buffer_max_size];
+#endif
 
   blisp_easy_report_progress(progress_callback, 0, segment_size);
 
@@ -333,7 +337,11 @@ int32_t blisp_easy_flash_write(struct blisp_device* device,
 
   uint32_t sent_data = 0;
   uint32_t buffer_size = 0;
+#ifdef _WIN32
+  uint8_t buffer[2052];
+#else
   uint8_t buffer[buffer_max_size];
+#endif
   blisp_easy_report_progress(progress_callback, 0, data_size);
 
   while (sent_data < data_size) {

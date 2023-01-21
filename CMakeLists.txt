@@ -39,7 +39,8 @@ target_sources(libblisp_obj PRIVATE
 target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
 
 if(WIN32)
-    target_link_libraries(libblisp_obj PRIVATE Setupapi.lib)
+    target_link_libraries(libblisp PRIVATE Setupapi.lib)
+    target_link_libraries(libblisp_static PRIVATE Setupapi.lib)
     target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
     target_sources(libblisp_obj PRIVATE
             ${CMAKE_SOURCE_DIR}/vendor/libserialport/windows.c)
