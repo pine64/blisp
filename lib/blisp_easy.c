@@ -57,17 +57,23 @@ int32_t blisp_easy_load_segment_data(
     struct blisp_easy_transport* segment_transport,
     blisp_easy_progress_callback progress_callback) {
   int32_t ret;
+#ifdef __APPLE__
+  const uint16_t buffer_max_size = 252 * 16;
+#else
+  const uint16_t buffer_max_size = 4092;
+#endif
+
 
   uint32_t sent_data = 0;
   uint32_t buffer_size = 0;
-  uint8_t buffer[4092];
+  uint8_t buffer[buffer_max_size];
 
   blisp_easy_report_progress(progress_callback, 0, segment_size);
 
   while (sent_data < segment_size) {
     buffer_size = segment_size - sent_data;
-    if (buffer_size > 4092) {
-      buffer_size = 4092;
+    if (buffer_size > buffer_max_size) {
+      buffer_size = buffer_max_size;
     }
     blisp_easy_transport_read(segment_transport, buffer,
                               buffer_size);  // TODO: Error Handling
@@ -319,15 +325,21 @@ int32_t blisp_easy_flash_write(struct blisp_device* device,
                                uint32_t data_size,
                                blisp_easy_progress_callback progress_callback) {
   int32_t ret;
+#ifdef __APPLE__
+  const uint16_t buffer_max_size = 372 * 1;
+#else
+  const uint16_t buffer_max_size = 2052;
+#endif
+
   uint32_t sent_data = 0;
   uint32_t buffer_size = 0;
-  uint8_t buffer[8184];
+  uint8_t buffer[buffer_max_size];
   blisp_easy_report_progress(progress_callback, 0, data_size);
 
   while (sent_data < data_size) {
     buffer_size = data_size - sent_data;
-    if (buffer_size > 2052) {
-      buffer_size = 2052;
+    if (buffer_size > buffer_max_size) {
+      buffer_size = buffer_max_size;
     }
     blisp_easy_transport_read(data_transport, buffer,
                               buffer_size);  // TODO: Error Handling

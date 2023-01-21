@@ -130,6 +130,10 @@ int32_t blisp_send_command(struct blisp_device* device,
     blisp_dlog("Received error or not written all data: %d", ret);
     return BLISP_ERR_UNKNOWN;
   }
+#ifdef __APPLE__
+  sp_drain(serial_port);
+#endif
+
   return BLISP_OK;
 }
 
@@ -191,6 +195,9 @@ int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
     if (!in_ef_loader) {
       if (device->is_usb) {
         sp_blocking_write(serial_port, "BOUFFALOLAB5555RESET\0\0", 22, 100);
+#ifdef __APPLE__
+        sp_drain(serial_port);
+#endif
       }
     }
     ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count, 500);
@@ -210,6 +217,7 @@ int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader) {
         return BLISP_OK;
       }
     }
+
   }
   blisp_dlog("Received no response from chip.");
   return BLISP_ERR_NO_RESPONSE;
