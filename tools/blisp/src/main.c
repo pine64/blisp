@@ -45,7 +45,7 @@ int8_t args_parse_exec(int argc, char** argv) {
       print_help();
       return 1;
     } else if (version->count) {
-      printf("blisp v0.0.2\n");
+      printf("blisp v0.0.3\n");
       printf("Copyright (C) 2023 Marek Kraus and PINE64 Community\n");
       return 1;
     }

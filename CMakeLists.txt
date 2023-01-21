@@ -20,14 +20,14 @@ add_library(libblisp_static STATIC $<TARGET_OBJECTS:libblisp_obj>)
 
 set_target_properties(libblisp PROPERTIES
         PUBLIC_HEADER "include/blisp.h"
-        VERSION 0.0.2
+        VERSION 0.0.3
         SOVERSION 1
         LIBRARY_OUTPUT_DIRECTORY "shared"
         OUTPUT_NAME "blisp")
 
 set_target_properties(libblisp_static PROPERTIES
         PUBLIC_HEADER "include/blisp.h"
-        VERSION 0.0.2
+        VERSION 0.0.3
         SOVERSION 1
         ARCHIVE_OUTPUT_DIRECTORY "static"
         OUTPUT_NAME "blisp")
