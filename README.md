@@ -50,7 +50,7 @@ blisp write --chip bl70x --reset name_of_firmware.bin
 For BL60X, you need to specify also the serial port path:
 
 ```bash
-blisp --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
+blisp write --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
 # How to flash Pinecil V2
