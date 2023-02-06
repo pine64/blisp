@@ -331,7 +331,7 @@ int32_t blisp_easy_flash_write(struct blisp_device* device,
                                uint32_t data_size,
                                blisp_easy_progress_callback progress_callback) {
   int32_t ret;
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined (__FreeBSD__)
   const uint16_t buffer_max_size = 372 * 1;
 #else
   const uint16_t buffer_max_size = 2052;
