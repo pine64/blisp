@@ -79,7 +79,7 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name) {
   //  if (device->is_usb) {
   //    device->current_baud_rate = 2000000;
   //  } else {
-  device->current_baud_rate = 500000;
+  device->current_baud_rate = 460800;
   //  }
 
 #if 0
