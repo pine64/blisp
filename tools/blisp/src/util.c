@@ -35,6 +35,11 @@ ssize_t util_get_binary_folder(char* buffer, uint32_t buffer_size) {
 #elif defined(__APPLE__)
   util_get_executable_path(buffer, buffer_size);
   char* pos = strrchr(buffer, '/');
+#elif __FreeBSD__
+  if (readlink("/proc/curproc/file", buffer, buffer_size) <= 0) {
+    return -1;
+  }
+  char* pos = strrchr(buffer, '/');
 #else
   if (GetModuleFileName(NULL, buffer, buffer_size) <= 0) {
     return -1;
