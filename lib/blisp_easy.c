@@ -24,6 +24,8 @@ static int64_t blisp_easy_transport_size(struct blisp_easy_transport* transport)
     return transport->data.memory.data_size;
   } else {
     // TODO: Implement
+	  printf("%s() Warning: calling non-implemented function\n", __func__);
+	  return -1;
   }
 }
 

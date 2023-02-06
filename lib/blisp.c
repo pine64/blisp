@@ -73,7 +73,7 @@ int32_t blisp_device_open(struct blisp_device* device, const char* port_name) {
   sp_set_stopbits(serial_port, 1);
   sp_set_flowcontrol(serial_port, SP_FLOWCONTROL_NONE);
 
-  uint32_t vid, pid;
+  int vid, pid;
   sp_get_port_usb_vid_pid(serial_port, &vid, &pid);
   device->is_usb = pid == 0xFFFF;
   //  if (device->is_usb) {
