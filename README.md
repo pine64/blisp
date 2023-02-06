@@ -27,6 +27,7 @@ If you have not cloned this repository locally; clone the git repository locally
 ```bash
 git clone --recursive https://github.com/pine64/blisp.git
 cd blisp
+git submodule update --init --recursive
 ```
 
 ## Build the library and command line utility
