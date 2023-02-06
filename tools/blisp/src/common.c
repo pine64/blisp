@@ -11,7 +11,7 @@
 #include "util.h"
 
 void blisp_common_progress_callback(uint32_t current_value, uint32_t max_value) {
-  printf("%" PRIu32 "b / %ldb (%.2f%%)\n", current_value, max_value,
+  printf("%" PRIu32 "b / %u (%.2f%%)\n", current_value, max_value,
          (((float)current_value / (float)max_value) * 100.0f));
 }
 
