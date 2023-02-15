@@ -46,7 +46,9 @@ cmake --build .
 For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port:
 
 ```bash
-blisp write --chip bl70x --reset name_of_firmware.bin
+.\blisp.exe write --chip=bl70x --reset .\name_of_firmware.bin
+or
+.\blisp.exe write -c bl70x --reset .\name_of_firmware.bin
 ```
 
 For BL60X, you need to specify also the serial port path:
