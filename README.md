@@ -1,3 +1,7 @@
+![GitHub all](https://img.shields.io/github/downloads/pine64/blisp/total?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?style=plastic)
+
+
 # Bouffalo Labs ISP tool & library
 
 Open source tool and library for flashing Bouffalo RISC-V MCUs.
@@ -16,7 +20,7 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 # Supported OS
 - [x] Windows
 - [x] Linux
-- [x] Apple
+- [x] MacOS
 - [x] FreeBSD
 
 # Building
