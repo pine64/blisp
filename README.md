@@ -1,5 +1,6 @@
-![GitHub all](https://img.shields.io/github/downloads/pine64/blisp/total?style=plastic)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?style=plastic)
+![Custom badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2Fpine64%2Fblisp.json)
+![GitHub all](https://img.shields.io/github/downloads/pine64/blisp/total?style=flat)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?style=flat)
 
 
 # Bouffalo Labs ISP tool & library
