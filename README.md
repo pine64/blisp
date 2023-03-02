@@ -1,6 +1,7 @@
 ![Custom badge](https://img.shields.io/endpoint?style=social&url=https%3A%2F%2Fhits.dwyl.com%2Fpine64%2Fblisp.json)
-![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?style=social)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?style=flat)
+![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?logoColor=gray&style=social)
+![Discord](https://img.shields.io/discord/463237927984693259?logo=discord&logoColor=gray&style=social)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?logoColor=gray&style=social)
 
 
 # Bouffalo Labs ISP tool & library
