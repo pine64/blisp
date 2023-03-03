@@ -2,7 +2,7 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?logoColor=gray&style=social)
 ![Discord](https://img.shields.io/discord/463237927984693259?logo=discord&logoColor=gray&style=social)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?logoColor=gray&style=social)
-
+![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?style=social)
 
 # Bouffalo Labs ISP tool & library
 
