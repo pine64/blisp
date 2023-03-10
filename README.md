@@ -50,6 +50,7 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
+#### Need more build details? [See here](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2#build-blisp-flasher-from-code).
 
 # Usage
 
