@@ -25,7 +25,7 @@ This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
 - [x] MacOS
 - [x] FreeBSD
 
-# How to flash Pinecil V2
+# How to update Pinecil V2
 
 Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
 
