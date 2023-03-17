@@ -4,9 +4,9 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?logoColor=gray&style=social)
 
 
-# Bouffalo Labs ISP tool & library
+# BLISP (Bouffalo Labs ISP tool & library)
 
-Open source tool and library for flashing Bouffalo RISC-V MCUs.
+This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
 
@@ -25,9 +25,13 @@ Open source tool and library for flashing Bouffalo RISC-V MCUs.
 - [x] MacOS
 - [x] FreeBSD
 
-# Building
+# How to update Pinecil V2
 
-## Clone repository
+Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
+
+# Building from code
+
+### Clone repository
 
 If you have not cloned this repository locally; clone the git repository locally by running
 
@@ -37,7 +41,7 @@ cd blisp
 git submodule update --init --recursive
 ```
 
-## Build the library and command line utility
+### Build the library and command line utility
 
 For building `blisp` command line tool, use following commands:
 
@@ -46,6 +50,7 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
+#### Need more build details? [See here](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2#build-blisp-flasher-from-code).
 
 # Usage
 
@@ -63,6 +68,3 @@ For BL60X, you need to specify also the serial port path:
 blisp write --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
-# How to flash Pinecil V2
-
-Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
