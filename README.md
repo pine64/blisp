@@ -3,11 +3,10 @@
 [![Discord](https://img.shields.io/discord/463237927984693259?color=5791ac&logo=discord&logoColor=white)](https://discord.com/invite/pine64)
 [![GitHub release](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)](https://github.com/pine64/blisp/releases/tag/v0.0.3)
 
-<img src="https://user-images.githubusercontent.com/97197236/225784120-09c7e266-69d8-436c-9cf0-78b3745444e7.png" align="left" width="50" > <br clear="right" />
+<img src="./img/Gradient-white-blue-03.png" align="left" width="60" > <br clear="right" />
 ## BLISP 
-Bouffalo Labs ISP tool & library
 
-This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
+Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
 
