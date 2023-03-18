@@ -19,8 +19,8 @@ Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V M
 ## Supported Devices 
  | System  | <img width="15" src="https://cdn.simpleicons.org/Windows11/000000" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/000000" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/000000" /> FreeBSD |
  | :-----: | :-----: | :--: | :--: | :-----: |
- | Pinecil V2  |:heavy_check_mark:|:heavy_check_mark:| :heavy_check_mark:|:heavy_check_mark:   |
- | Pinecone  |:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:   |
+ | Pinecil V2  |<img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
+ | Pinecone  |<img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="25" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
  <br>
  
 ## How to update Pinecil V2
