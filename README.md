@@ -1,7 +1,7 @@
-![HIT count](https://img.shields.io/endpoint?style=social&url=https%3A%2F%2Fhits.dwyl.com%2Fpine64%2Fblisp.json)
-![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?style=social)
-![Discord](https://img.shields.io/discord/463237927984693259?logo=discord&logoColor=gray&style=social)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?logoColor=gray&style=social)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fpine64%2Fblisp&count_bg=%235791AC&title_bg=%23555555&icon=circleci.svg&icon_color=%23D2D9DD&title=hits&edge_flat=false)](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2)
+![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?color=5791ac)
+![Discord](https://img.shields.io/discord/463237927984693259?color=5791ac&logo=discord&logoColor=white)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)
 
 
 # BLISP (Bouffalo Labs ISP tool & library)
