@@ -3,14 +3,15 @@
 [![Discord](https://img.shields.io/discord/463237927984693259?color=5791ac&logo=discord&logoColor=white)](https://discord.com/invite/pine64)
 [![GitHub release](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)](https://github.com/pine64/blisp/releases/tag/v0.0.3)
 
-
-# BLISP (Bouffalo Labs ISP tool & library)
+<img src="https://user-images.githubusercontent.com/97197236/225784120-09c7e266-69d8-436c-9cf0-78b3745444e7.png" align="left" width="50" > <br clear="right" />
+## BLISP 
+Bouffalo Labs ISP tool & library
 
 This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
 
-# Supported MCUs
+## Supported MCUs
 
 - [x] `bl60x` - BL602 / BL604 / TG7100C / LF686 / LF688
 - [x] `bl70x` - BL702 / BL704 / BL706
@@ -19,7 +20,7 @@ This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
 - [ ] `bl61x` - BL616 / BL618
 - [ ] `bl808` - BL808
 
-# Supported OS
+## Supported OS
 - [x] Windows
 - [x] Linux
 - [x] MacOS
@@ -52,7 +53,7 @@ cmake --build .
 ```
 #### Need more build details? [See here](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2#build-blisp-flasher-from-code).
 
-# Usage
+## Usage
 
 For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port:
 
