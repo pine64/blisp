@@ -1,35 +1,34 @@
-![Custom badge](https://img.shields.io/endpoint?style=social&url=https%3A%2F%2Fhits.dwyl.com%2Fpine64%2Fblisp.json)
-![GitHub all releases](https://img.shields.io/github/downloads/pine64/blisp/total?logoColor=gray&style=social)
-![Discord](https://img.shields.io/discord/463237927984693259?logo=discord&logoColor=gray&style=social)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/pine64/blisp?logoColor=gray&style=social)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fpine64%2Fblisp&count_bg=%235791AC&title_bg=%23555555&icon=airplayaudio.svg&icon_color=%23D2D9DD&title=hits&edge_flat=false)](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2)
+[![GitHub all downloads](https://img.shields.io/github/downloads/pine64/blisp/total?color=5791ac&logo=docusign&logoColor=white)](https://github.com/pine64/blisp/releases/tag/v0.0.3)
+[![Discord](https://img.shields.io/discord/463237927984693259?color=5791ac&logo=discord&logoColor=white)](https://discord.com/invite/pine64)
+[![GitHub release](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)](https://github.com/pine64/blisp/releases/tag/v0.0.3)
 
+<img src="./img/Gradient-white-blue-03.png" align="left" width="60" > <br clear="left" />
+# BLISP 
 
-# BLISP (Bouffalo Labs ISP tool & library)
-
-This is an open source tool and library for flashing Bouffalo RISC-V MCUs.
+Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
+<br>
 
-# Supported MCUs
-
+## Supported MCUs
 - [x] `bl60x` - BL602 / BL604 / TG7100C / LF686 / LF688
 - [x] `bl70x` - BL702 / BL704 / BL706
-- [ ] `bl70xl` - BL702L / BL704L
-- [ ] `bl606p` - BL606P
-- [ ] `bl61x` - BL616 / BL618
-- [ ] `bl808` - BL808
+<br>
 
-# Supported OS
-- [x] Windows
-- [x] Linux
-- [x] MacOS
-- [x] FreeBSD
-
-# How to update Pinecil V2
+## Supported Devices 
+ | System  | <img width="15" src="https://cdn.simpleicons.org/Windows11/000000" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/000000" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/000000" /> FreeBSD |
+ | :-----: | :-----: | :--: | :--: | :-----: |
+ | Pinecil V2  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
+ | Pinecone  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
+ <br>
+ 
+## How to update Pinecil V2
 
 Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
+<br><br>
 
-# Building from code
+## Building from code
 
 ### Clone repository
 
@@ -52,7 +51,7 @@ cmake --build .
 ```
 #### Need more build details? [See here](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2#build-blisp-flasher-from-code).
 
-# Usage
+## Usage
 
 For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port:
 
