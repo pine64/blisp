@@ -9,15 +9,12 @@
 Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
+<br>
 
 ## Supported MCUs
-
 - [x] `bl60x` - BL602 / BL604 / TG7100C / LF686 / LF688
 - [x] `bl70x` - BL702 / BL704 / BL706
-- [ ] `bl70xl` - BL702L / BL704L
-- [ ] `bl606p` - BL606P
-- [ ] `bl61x` - BL616 / BL618
-- [ ] `bl808` - BL808
+<br>
 
 ## Supported Devices 
  | System  | <img width="15" src="https://cdn.simpleicons.org/Windows11/000000" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/000000" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/000000" /> FreeBSD |
