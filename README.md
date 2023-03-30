@@ -6,7 +6,7 @@
 <img src="./img/Gradient-white-blue-03.png" align="left" width="60" > <br clear="left" />
 # BLISP 
 
-Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V MCUs.
+Bouffalo Labs ISP (in-system-programming) tool & library: an open source tool to flash Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
 <br>
@@ -18,7 +18,7 @@ Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V M
 
 ## Supported Devices 
  | System  | <img width="15" src="https://cdn.simpleicons.org/Windows11/000000" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/000000" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/000000" /> FreeBSD |
- | :-----: | :-----: | :--: | :--: | :-----: |
+ | :-----: | :------: | :------: | :------: | :------: |
  | Pinecil V2  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
  | Pinecone  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
  <br>
