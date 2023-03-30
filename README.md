@@ -40,6 +40,9 @@ cd blisp
 git submodule update --init --recursive
 ```
 
+If vendor/argtable3 and vendor/libserialport/ are empty, this last step has
+failed and should be investigated.
+
 ### Build the library and command line utility
 
 For building `blisp` command line tool, use following commands:
@@ -53,7 +56,7 @@ cmake --build .
 
 ## Usage
 
-For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port:
+For BL70X, BL61X, BL808 and BL606P, connected via USB, you can use following command, which will auto-detect serial port on Windows:
 
 ```bash
 .\blisp.exe write --chip=bl70x --reset .\name_of_firmware.bin
@@ -67,3 +70,15 @@ For BL60X, you need to specify also the serial port path:
 blisp write --chip bl60x --reset -p /dev/ttyUSB0 name_of_firmware.bin
 ```
 
+If you wish to see additional debugging, set the environmental
+variable LIBSERIALPORT_DEBUG before running. You can either export this
+in your shell or change it for a single run via
+
+```bash
+  LIBSERIALPORT_DEBUG=y ./a.out write -c bl70x -p /dev/tty.usbmodem0000000200001
+```
+
+Because this is done at the lowest level of serial communication, the
+displays aren't packet-aware or know about the chip's command set or such.
+This is really only useful for debugging systems-level issues withing
+the device or blisp itself.
