@@ -6,7 +6,7 @@
 <img src="./img/Gradient-white-blue-03.png" align="left" width="60" > <br clear="left" />
 # BLISP 
 
-Bouffalo Labs ISP tool & library: an open source tool flashing Bouffalo RISC-V MCUs.
+Bouffalo Labs ISP (in-system-programming) tool & library: an open source tool to flash Bouffalo RISC-V MCUs.
 
 **NOTE:** Library API and `blisp` tool cli arguments are not stable yet.
 <br>
