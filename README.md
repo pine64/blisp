@@ -54,7 +54,7 @@ cmake --build .
 ```
 
 For building against preinstalled system libraries of the used vendor
-libraries (system maintainers), additionally define
+libraries (e.g. for use by system maintainers), additionally define
 `BLISP_USE_SYSTEM_LIBRARIES`, e.g. using following commands:
 ```bash
 mkdir build && cd build
