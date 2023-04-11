@@ -25,7 +25,9 @@ Bouffalo Labs ISP (in-system-programming) tool & library: an open source tool to
  
 ## How to update Pinecil V2
 
-Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2).
+Download the newest release of [Blisp updater here](https://github.com/pine64/blisp/releases/).
+
+Check out the [wiki page](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2) for install instructions.
 <br><br>
 
 ## Building from code
