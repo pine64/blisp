@@ -25,3 +25,5 @@ if (WIN32)
 elseif (APPLE)
     target_link_libraries(blisp PRIVATE "-framework IOKit" "-framework CoreFoundation")
 endif ()
+
+install(TARGETS blisp DESTINATION bin)

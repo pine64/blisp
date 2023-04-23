@@ -18,16 +18,22 @@ set_property(TARGET libblisp_obj PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_library(libblisp SHARED $<TARGET_OBJECTS:libblisp_obj>)
 add_library(libblisp_static STATIC $<TARGET_OBJECTS:libblisp_obj>)
 
+set(BLISP_PUBLIC_HEADERS
+    include/blisp.h
+    include/blisp_easy.h
+    include/blisp_chip.h
+    include/blisp_struct.h
+    include/blisp_util.h)
 
 set_target_properties(libblisp PROPERTIES
-        PUBLIC_HEADER "include/blisp.h"
+        PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
         VERSION 0.0.3
         SOVERSION 1
         LIBRARY_OUTPUT_DIRECTORY "shared"
         OUTPUT_NAME "blisp")
 
 set_target_properties(libblisp_static PROPERTIES
-        PUBLIC_HEADER "include/blisp.h"
+        PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
         VERSION 0.0.3
         SOVERSION 1
         ARCHIVE_OUTPUT_DIRECTORY "static"
@@ -82,6 +88,8 @@ else()
         write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
     endif()
 endif()
+
+install(TARGETS libblisp libblisp_static DESTINATION lib)
 
 if(BLISP_BUILD_CLI)
     add_subdirectory(tools/blisp)
