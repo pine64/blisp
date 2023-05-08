@@ -58,21 +58,21 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
  * Prepares chip to access flash
  * this means performing handshake, and loading eflash_loader if needed.
  */
-int32_t blisp_common_prepare_flash(struct blisp_device* device) {
-  int32_t ret = 0;
+blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
+  blisp_return_t ret = 0;
 
   printf("Sending a handshake...\n");
   ret = blisp_device_handshake(device, false);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to handshake with device.\n");
-    return -1;
+    return ret;
   }
   printf("Handshake successful!\nGetting chip info...\n");
   struct blisp_boot_info boot_info;
   ret = blisp_device_get_boot_info(device, &boot_info);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to get boot info.\n");
-    return -1;
+    return ret;
   }
 
   printf(
@@ -85,7 +85,7 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
       boot_info.chip_id[6], boot_info.chip_id[7]);
 
   if (device->chip->load_eflash_loader == NULL) {
-    return 0;
+    return BLISP_OK;
   }
 
   if (boot_info.boot_rom_version[0] == 255 &&
@@ -93,7 +93,7 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
       boot_info.boot_rom_version[2] == 255 &&
       boot_info.boot_rom_version[3] == 255) {
     printf("Device already in eflash_loader.\n");
-    return 0;
+    return BLISP_OK;
   }
 
   uint8_t* eflash_loader_buffer = NULL;
@@ -110,7 +110,7 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
 
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to load eflash_loader, ret: %d\n", ret);
-    ret = -1;
+
     goto exit1;
   }
 
@@ -120,14 +120,12 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
   ret = blisp_device_check_image(device);
   if (ret != 0) {
     fprintf(stderr, "Failed to check image.\n");
-    ret = -1;
     goto exit1;
   }
 
   ret = blisp_device_run_image(device);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to run image.\n");
-    ret = -1;
     goto exit1;
   }
 
@@ -135,12 +133,12 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
   ret = blisp_device_handshake(device, true);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to handshake with device.\n");
-    ret = -1;
     goto exit1;
   }
   printf("Handshake with eflash_loader successful.\n");
 exit1:
   if (eflash_loader_buffer != NULL)
     free(eflash_loader_buffer);
+
   return ret;
 }
