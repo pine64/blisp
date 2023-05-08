@@ -45,7 +45,7 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
     ret = sp_list_ports(&port_list);
     if (ret != SP_OK) {
       blisp_dlog("Couldn't list ports, err: %d", ret);
-      return BLISP_ERR_UNKNOWN;
+      return BLISP_ERR_DEVICE_NOT_FOUND;
     }
     for (int i = 0; port_list[i] != NULL; i++) {
       struct sp_port* port = port_list[i];
@@ -99,8 +99,8 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
 #endif
   ret = sp_set_baudrate(serial_port, device->current_baud_rate);
   if (ret != SP_OK) {
-    blisp_dlog("Set baud rate failed: %d... Also hello macOS user :)", ret);
-    return BLISP_ERR_UNKNOWN;
+    blisp_dlog("Set baud rate failed: %d... Also hello MacOS user :)", ret);
+    return BLISP_ERR_API_ERROR;
   }
   device->serial_port = serial_port;
 
@@ -134,7 +134,7 @@ blisp_return_t blisp_send_command(struct blisp_device* device,
       sp_blocking_write(serial_port, device->tx_buffer, 4 + payload_size, 1000);
   if (ret != (4 + payload_size)) {
     blisp_dlog("Received error or not written all data: %d", ret);
-    return BLISP_ERR_UNKNOWN;
+    return BLISP_ERR_API_ERROR;
   }
   drain(serial_port);
 
@@ -149,7 +149,7 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
   ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 1000);
   if (ret < 2) {
     blisp_dlog("Failed to receive response, ret: %d", ret);
-    return BLISP_ERR_UNKNOWN;  // TODO: Terrible
+    return BLISP_ERR_NO_RESPONSE;
   } else if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
     if (expect_payload) {
       sp_blocking_read(serial_port, &device->rx_buffer[2], 2,
@@ -171,7 +171,7 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
   }
   blisp_dlog("Failed to receive any response (err: %d, %d - %d)", ret,
              device->rx_buffer[0], device->rx_buffer[1]);
-  return BLISP_ERR_UNKNOWN;
+  return BLISP_ERR_NO_RESPONSE;
 }
 
 blisp_return_t blisp_device_handshake(struct blisp_device* device,
@@ -208,7 +208,7 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
     drain(serial_port);
     if (ret < 0) {
       blisp_dlog("Handshake write failed, ret %d", ret);
-      return BLISP_ERR_UNKNOWN;
+      return BLISP_ERR_API_ERROR;
     }
 
     if (!in_ef_loader && !device->is_usb) {
