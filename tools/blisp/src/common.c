@@ -3,23 +3,26 @@
 #include <argtable3.h>
 #include <blisp.h>
 #include <inttypes.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "blisp_easy.h"
+#include "error_codes.h"
 #include "util.h"
 
-void blisp_common_progress_callback(uint32_t current_value, uint32_t max_value) {
+void blisp_common_progress_callback(uint32_t current_value,
+                                    uint32_t max_value) {
   printf("%" PRIu32 "b / %u (%.2f%%)\n", current_value, max_value,
          (((float)current_value / (float)max_value) * 100.0f));
 }
 
-int32_t blisp_common_init_device(struct blisp_device* device, struct arg_str* port_name, struct arg_str* chip_type)
-{
+blisp_return_t blisp_common_init_device(struct blisp_device* device,
+                                        struct arg_str* port_name,
+                                        struct arg_str* chip_type) {
   if (chip_type->count == 0) {
     fprintf(stderr, "Chip type is invalid.\n");
-    return -1;
+    return BLISP_ERR_INVALID_CHIP_TYPE;
   }
 
   struct blisp_chip* chip = NULL;
@@ -30,23 +33,25 @@ int32_t blisp_common_init_device(struct blisp_device* device, struct arg_str* po
     chip = &blisp_chip_bl60x;
   } else {
     fprintf(stderr, "Chip type is invalid.\n");
-    return -1;
+    return BLISP_ERR_INVALID_CHIP_TYPE;
   }
 
-  int32_t ret;
+  blisp_return_t ret;
   ret = blisp_device_init(device, chip);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to init device.\n");
-    return -1;
+    return ret;
   }
   ret = blisp_device_open(device,
                           port_name->count == 1 ? port_name->sval[0] : NULL);
   if (ret != BLISP_OK) {
-    fprintf(stderr, ret == BLISP_ERR_DEVICE_NOT_FOUND ? "Device not found\n" : "Failed to open device.\n");
-    return -1;
+    fprintf(stderr, ret == BLISP_ERR_DEVICE_NOT_FOUND
+                        ? "Device not found\n"
+                        : "Failed to open device.\n");
+    return ret;
   }
 
-  return 0;
+  return BLISP_OK;
 }
 
 /**
@@ -93,12 +98,15 @@ int32_t blisp_common_prepare_flash(struct blisp_device* device) {
 
   uint8_t* eflash_loader_buffer = NULL;
   // TODO: Error check
-  int64_t eflash_loader_buffer_length = device->chip->load_eflash_loader(0, &eflash_loader_buffer);
+  int64_t eflash_loader_buffer_length =
+      device->chip->load_eflash_loader(0, &eflash_loader_buffer);
 
   struct blisp_easy_transport eflash_loader_transport =
-      blisp_easy_transport_new_from_memory(eflash_loader_buffer, eflash_loader_buffer_length);
+      blisp_easy_transport_new_from_memory(eflash_loader_buffer,
+                                           eflash_loader_buffer_length);
 
-  ret = blisp_easy_load_ram_app(device, &eflash_loader_transport, blisp_common_progress_callback);
+  ret = blisp_easy_load_ram_app(device, &eflash_loader_transport,
+                                blisp_common_progress_callback);
 
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to load eflash_loader, ret: %d\n", ret);

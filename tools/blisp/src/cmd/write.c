@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
+#include <argtable3.h>
 #include <blisp.h>
+#include <blisp_easy.h>
+#include <blisp_struct.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../cmd.h"
 #include "../common.h"
 #include "../util.h"
-#include <argtable3.h>
-#include <blisp_easy.h>
-#include <blisp_struct.h>
 
 #define REG_EXTENDED 1
 #define REG_ICASE (REG_EXTENDED << 1)
@@ -164,12 +164,13 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   boot_header->crc32 = 0xDEADBEEF;
 }
 
-void blisp_flash_firmware() {
+blisp_return_t blisp_flash_firmware() {
   struct blisp_device device;
-  int32_t ret;
+  blisp_return_t ret;
+  ret = blisp_common_init_device(&device, port_name, chip_type);
 
-  if (blisp_common_init_device(&device, port_name, chip_type) != 0) {
-    return;
+  if (ret != 0) {
+    return ret;
   }
 
   if (blisp_common_prepare_flash(&device) != 0) {
