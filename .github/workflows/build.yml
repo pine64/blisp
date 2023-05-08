@@ -8,11 +8,12 @@ jobs:
       run:
         shell: cmd
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
@@ -28,11 +29,12 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
@@ -48,11 +50,12 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
@@ -81,6 +84,8 @@ jobs:
             distro: ubuntu_latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: uraimo/run-on-arch-action@v2
         name: Build artifact
         id: build
@@ -119,7 +124,7 @@ jobs:
 
           # Produce a binary artifact and place it in the mounted volume
           run: |
-            git submodule update --init --recursive
+            git config --global --add safe.directory /home/runner/work/blisp/blisp
             mkdir build
             cd build
             cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
