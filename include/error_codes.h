@@ -19,6 +19,7 @@ typedef enum {
   BLISP_ERR_OUT_OF_MEMORY = -9,
   BLISP_ERR_INVALID_COMMAND = -10,
   BLISP_ERR_CANT_OPEN_FILE=-11,
+  BLISP_ERR_NOT_IMPLEMENTED=-12,
 
 } blisp_return_t;
 #endif

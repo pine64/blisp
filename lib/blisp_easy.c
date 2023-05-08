@@ -6,12 +6,16 @@
 #include <inttypes.h>
 #include <string.h>
 
-static int64_t blisp_easy_transport_read(struct blisp_easy_transport* transport,
-                                         void* buffer,
-                                         uint32_t size) {
+static blisp_return_t blisp_easy_transport_read(
+    struct blisp_easy_transport* transport,
+    void* buffer,
+    uint32_t size) {
   if (transport->type == 0) {
     // TODO: Implement reading more than available
-    memcpy(buffer, (uint8_t*)transport->data.memory.data_location + transport->data.memory.current_position, size);
+    memcpy(buffer,
+           (uint8_t*)transport->data.memory.data_location +
+               transport->data.memory.current_position,
+           size);
     transport->data.memory.current_position += size;
     return size;
   } else {
@@ -19,13 +23,14 @@ static int64_t blisp_easy_transport_read(struct blisp_easy_transport* transport,
   }
 }
 
-static int64_t blisp_easy_transport_size(struct blisp_easy_transport* transport) {
+static blisp_return_t blisp_easy_transport_size(
+    struct blisp_easy_transport* transport) {
   if (transport->type == 0) {
     return transport->data.memory.data_size;
   } else {
     // TODO: Implement
-	  printf("%s() Warning: calling non-implemented function\n", __func__);
-	  return -1;
+    printf("%s() Warning: calling non-implemented function\n", __func__);
+    return BLISP_ERR_NOT_IMPLEMENTED;
   }
 }
 
@@ -65,7 +70,6 @@ int32_t blisp_easy_load_segment_data(
   const uint16_t buffer_max_size = 4092;
 #endif
 
-
   uint32_t sent_data = 0;
   uint32_t buffer_size = 0;
 #ifdef _WIN32
@@ -92,7 +96,7 @@ int32_t blisp_easy_load_segment_data(
     sent_data += buffer_size;
     blisp_easy_report_progress(progress_callback, sent_data, segment_size);
   }
-  return 0;
+  return BLISP_OK;
 }
 
 int32_t blisp_easy_load_ram_image(
@@ -143,10 +147,10 @@ int32_t blisp_easy_load_ram_image(
   return BLISP_OK;
 }
 
-int32_t blisp_easy_load_ram_app(struct blisp_device* device,
-                                struct blisp_easy_transport* app_transport,
-                                blisp_easy_progress_callback progress_callback)
-{
+int32_t blisp_easy_load_ram_app(
+    struct blisp_device* device,
+    struct blisp_easy_transport* app_transport,
+    blisp_easy_progress_callback progress_callback) {
   int32_t ret;
   // TODO: Rework
   // region boot header fill
@@ -293,7 +297,6 @@ int32_t blisp_easy_load_ram_app(struct blisp_device* device,
   boot_header.crc32 = 0xDEADBEEF;
   // endregion
 
-
   ret = blisp_device_load_boot_header(device, (uint8_t*)&boot_header);
   if (ret != BLISP_OK) {
     blisp_dlog("Failed to load boot header, ret: %d.", ret);
@@ -304,9 +307,9 @@ int32_t blisp_easy_load_ram_app(struct blisp_device* device,
       .dest_addr = device->chip->tcm_address,
       .length = blisp_easy_transport_size(app_transport),
       .reserved = 0,
-      .crc32 = 0
-  };
-  segment_header.crc32 = crc32_calculate(&segment_header, 3 * sizeof(uint32_t)); // TODO: Make function
+      .crc32 = 0};
+  segment_header.crc32 = crc32_calculate(
+      &segment_header, 3 * sizeof(uint32_t));  // TODO: Make function
 
   ret = blisp_device_load_segment_header(device, &segment_header);
   if (ret != 0) {
@@ -314,13 +317,13 @@ int32_t blisp_easy_load_ram_app(struct blisp_device* device,
     return ret;
   }
 
-  ret = blisp_easy_load_segment_data(device, blisp_easy_transport_size(app_transport),
+  ret = blisp_easy_load_segment_data(device,
+                                     blisp_easy_transport_size(app_transport),
                                      app_transport, progress_callback);
   if (ret != 0) {
     // TODO: Error printing
     return ret;
   }
-
 
   return BLISP_OK;
 }
@@ -331,7 +334,7 @@ int32_t blisp_easy_flash_write(struct blisp_device* device,
                                uint32_t data_size,
                                blisp_easy_progress_callback progress_callback) {
   int32_t ret;
-#if defined (__APPLE__) || defined (__FreeBSD__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
   const uint16_t buffer_max_size = 372 * 1;
 #else
   const uint16_t buffer_max_size = 2052;
