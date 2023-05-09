@@ -103,7 +103,7 @@ jobs:
 
           # Pass some environment variables to the container
           env: | # YAML, but pipe character is necessary
-            artifact_name: blisp-${{ matrix.distro }}_${{ matrix.arch }}
+            artifact_name: blisp-linux-${{ matrix.arch }}
 
           # The shell to run commands with in the container
           shell: /bin/sh
@@ -128,20 +128,14 @@ jobs:
             mkdir build
             cd build
             cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
-            cmake --build .
-            ls -lah build/tools/blisp/
-            cp build/tools/blisp/blisp "/artifacts/${artifact_name}"
+            cmake --build . -j2
+            cp ./tools/blisp/blisp "/artifacts/${artifact_name}"
             echo "Produced artifact at /artifacts/${artifact_name}"
-
-      - name: Show the artifact
-        # Items placed in /artifacts in the container will be in
-        # ${PWD}/artifacts on the host.
-        run: |
-          ls -al "${PWD}/artifacts"
 
       - name: Upload results
         uses: actions/upload-artifact@v2
         with:
+          name: blisp-linux-${{ matrix.arch }}
           path: |
-            build/tools/blisp/*
+            artifacts/blisp-*
           if-no-files-found: error 
