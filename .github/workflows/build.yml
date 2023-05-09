@@ -19,7 +19,7 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: blisp Windows x64 build
           path: |
@@ -40,7 +40,7 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: blisp macOS x64 build
           path: |
@@ -61,7 +61,7 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: blisp Linux x64 build
           path: |
@@ -133,7 +133,7 @@ jobs:
             echo "Produced artifact at /artifacts/${artifact_name}"
 
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: blisp-linux-${{ matrix.arch }}
           path: |
