@@ -8,19 +8,20 @@ jobs:
       run:
         shell: cmd
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: blisp Windows x64 build
+          name: blips-windows-x86_64.zip
           path: |
             build/tools/blisp/Release/blisp.exe
           if-no-files-found: error
@@ -28,19 +29,20 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: blisp macOS x64 build
+          name: blips-apple-x86_64.zip
           path: |
             build/tools/blisp/blisp
           if-no-files-found: error
@@ -48,19 +50,92 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
-          git submodule update --init --recursive
           mkdir build
           cd build
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: blisp Linux x64 build
+          name: blips-linux-x86_64.zip
           path: |
             build/tools/blisp/blisp
+          if-no-files-found: error 
+
+  build-linux-alternative-arch:
+    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+
+    # Run steps on a matrix of 4 arch/distro combinations
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: ubuntu_latest
+          - arch: armv7
+            distro: ubuntu_latest
+          - arch: riscv64
+            distro: ubuntu_latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - uses: uraimo/run-on-arch-action@v2
+        name: Build artifact
+        id: build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+
+          # Create an artifacts directory
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+
+          # Mount the artifacts directory as /artifacts in the container
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+
+          # Pass some environment variables to the container
+          env: | # YAML, but pipe character is necessary
+            artifact_name: blisp-linux-${{ matrix.arch }}
+
+          # The shell to run commands with in the container
+          shell: /bin/sh
+
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+            case "${{ matrix.distro }}" in
+              ubuntu*|jessie|stretch|buster|bullseye)
+                apt-get update -q -y
+                apt-get install -q -y git cmake build-essential
+                ;;
+            esac
+
+          # Produce a binary artifact and place it in the mounted volume
+          run: |
+            git config --global --add safe.directory /home/runner/work/blisp/blisp
+            mkdir build
+            cd build
+            cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
+            cmake --build . -j2
+            cp ./tools/blisp/blisp "/artifacts/${artifact_name}"
+            echo "Produced artifact at /artifacts/${artifact_name}"
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: blisp-linux-${{ matrix.arch }}.zip
+          path: |
+            artifacts/blisp-*
           if-no-files-found: error 
