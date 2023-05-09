@@ -21,7 +21,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
-          name: blisp Windows x64 build
+          name: blips-windows-x86_64.zip
           path: |
             build/tools/blisp/Release/blisp.exe
           if-no-files-found: error
@@ -42,7 +42,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
-          name: blisp macOS x64 build
+          name: blips-apple-x86_64.zip
           path: |
             build/tools/blisp/blisp
           if-no-files-found: error
@@ -63,7 +63,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
-          name: blisp Linux x64 build
+          name: blips-linux-x86_64.zip
           path: |
             build/tools/blisp/blisp
           if-no-files-found: error 
@@ -135,7 +135,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
-          name: blisp-linux-${{ matrix.arch }}
+          name: blisp-linux-${{ matrix.arch }}.zip
           path: |
             artifacts/blisp-*
           if-no-files-found: error 
