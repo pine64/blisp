@@ -54,6 +54,16 @@ mkdir build && cd build
 cmake -DBLISP_BUILD_CLI=ON ..
 cmake --build .
 ```
+
+For building against preinstalled system libraries of the used vendor
+libraries (e.g. for use by system maintainers), additionally define
+`BLISP_USE_SYSTEM_LIBRARIES`, e.g. using following commands:
+```bash
+mkdir build && cd build
+cmake -DBLISP_USE_SYSTEM_LIBRARIES=ON -DBLISP_BUILD_CLI=ON ..
+cmake --build .
+```
+
 #### Need more build details? [See here](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2#build-blisp-flasher-from-code).
 
 ## Usage
