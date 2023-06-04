@@ -4,6 +4,7 @@ project(blisp C)
 set(CMAKE_C_STANDARD 23)
 
 option(BLISP_BUILD_CLI "Build CLI Tool" OFF)
+option(BLISP_USE_SYSTEM_LIBRARIES "Use system-installed libraries" "${CMAKE_USE_SYSTEM_LIBRARIES}")
 
 add_library(libblisp_obj OBJECT
         lib/blisp.c
@@ -38,46 +39,54 @@ set_target_properties(libblisp_static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "static"
         OUTPUT_NAME "blisp")
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-target_sources(libblisp_obj PRIVATE
+if(BLISP_USE_SYSTEM_LIBRARIES)
+    find_package(PkgConfig)
+    pkg_search_module(LIBSERIALPORT REQUIRED libserialport)
+    target_link_libraries(libblisp PUBLIC ${LIBSERIALPORT_LIBRARIES})
+    target_link_libraries(libblisp_static PUBLIC ${LIBSERIALPORT_LIBRARIES})
+    target_include_directories(libblisp_obj PUBLIC ${LIBSERIALPORT_INCLUDE_DIRS})
+else()
+	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+	target_sources(libblisp_obj PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/serialport.c
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/timing.c)
 
-target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
-endif()
+	target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+	endif()
 
-if(WIN32)
-    target_link_libraries(libblisp PRIVATE Setupapi.lib)
-    target_link_libraries(libblisp_static PRIVATE Setupapi.lib)
-    target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
-    target_sources(libblisp_obj PRIVATE
-            ${CMAKE_SOURCE_DIR}/vendor/libserialport/windows.c)
-elseif(UNIX AND NOT APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-    target_sources(libblisp_obj PRIVATE
-            ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux.c
-            ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux_termios.c)
-    target_compile_definitions(libblisp_obj PRIVATE
-            LIBSERIALPORT_ATBUILD
-            HAVE_TERMIOS2_SPEED
-            HAVE_STRUCT_TERMIOS2
-            HAVE_DECL_BOTHER
-            "SP_API=__attribute__((visibility(\"default\")))"
-            "SP_PRIV=__attribute__((visibility(\"hidden\")))")
-    write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
-elseif(UNIX AND ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-    target_include_directories(libblisp_obj PRIVATE /usr/local/include/)
-    target_link_libraries(libblisp PRIVATE -L/usr/local/lib usb serialport)
-    target_link_libraries(libblisp_static PRIVATE -L/usr/local/lib usb serialport)
-elseif(APPLE)
-    target_sources(libblisp_obj PRIVATE
-            ${CMAKE_SOURCE_DIR}/vendor/libserialport/macosx.c)
-    target_link_libraries(libblisp PRIVATE "-framework IOKit" "-framework CoreFoundation")
-    target_compile_definitions(libblisp_obj PRIVATE
-            LIBSERIALPORT_ATBUILD
-            "SP_PRIV=__attribute__((visibility(\"hidden\")))"
-            "SP_API=__attribute__((visibility(\"default\")))")
-    target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
-    write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
+    if(WIN32)
+        target_link_libraries(libblisp PRIVATE Setupapi.lib)
+        target_link_libraries(libblisp_static PRIVATE Setupapi.lib)
+        target_compile_definitions(libblisp_obj PRIVATE LIBSERIALPORT_MSBUILD)
+        target_sources(libblisp_obj PRIVATE
+                ${CMAKE_SOURCE_DIR}/vendor/libserialport/windows.c)
+    elseif(UNIX AND NOT APPLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+        target_sources(libblisp_obj PRIVATE
+                ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux.c
+                ${CMAKE_SOURCE_DIR}/vendor/libserialport/linux_termios.c)
+        target_compile_definitions(libblisp_obj PRIVATE
+                LIBSERIALPORT_ATBUILD
+                HAVE_TERMIOS2_SPEED
+                HAVE_STRUCT_TERMIOS2
+                HAVE_DECL_BOTHER
+                "SP_API=__attribute__((visibility(\"default\")))"
+                "SP_PRIV=__attribute__((visibility(\"hidden\")))")
+        write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
+    elseif(UNIX AND ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+        target_include_directories(libblisp_obj PRIVATE /usr/local/include/)
+        target_link_libraries(libblisp PRIVATE -L/usr/local/lib usb serialport)
+        target_link_libraries(libblisp_static PRIVATE -L/usr/local/lib usb serialport)
+    elseif(APPLE)
+        target_sources(libblisp_obj PRIVATE
+                ${CMAKE_SOURCE_DIR}/vendor/libserialport/macosx.c)
+        target_link_libraries(libblisp PRIVATE "-framework IOKit" "-framework CoreFoundation")
+        target_compile_definitions(libblisp_obj PRIVATE
+                LIBSERIALPORT_ATBUILD
+                "SP_PRIV=__attribute__((visibility(\"hidden\")))"
+                "SP_API=__attribute__((visibility(\"default\")))")
+        target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+        write_file(${CMAKE_SOURCE_DIR}/vendor/libserialport/config.h "// bypass errors.")
+    endif()
 endif()
 
 install(TARGETS libblisp libblisp_static DESTINATION lib)
