@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
+#include <argtable3.h>
 #include <blisp.h>
+#include <blisp_easy.h>
+#include <blisp_struct.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../cmd.h"
 #include "../common.h"
 #include "../util.h"
-#include <argtable3.h>
-#include <blisp_easy.h>
-#include <blisp_struct.h>
 
 #define REG_EXTENDED 1
 #define REG_ICASE (REG_EXTENDED << 1)
@@ -164,12 +164,13 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   boot_header->crc32 = 0xDEADBEEF;
 }
 
-void blisp_flash_firmware() {
+blisp_return_t blisp_flash_firmware() {
   struct blisp_device device;
-  int32_t ret;
+  blisp_return_t ret;
+  ret = blisp_common_init_device(&device, port_name, chip_type);
 
-  if (blisp_common_init_device(&device, port_name, chip_type) != 0) {
-    return;
+  if (ret != 0) {
+    return ret;
   }
 
   if (blisp_common_prepare_flash(&device) != 0) {
@@ -248,7 +249,7 @@ exit1:
   blisp_device_close(&device);
 }
 
-int8_t cmd_write_args_init() {
+blisp_return_t cmd_write_args_init() {
   cmd_write_argtable[0] = cmd =
       arg_rex1(NULL, NULL, "write", NULL, REG_ICASE, NULL);
   cmd_write_argtable[1] = chip_type =
@@ -264,9 +265,9 @@ int8_t cmd_write_args_init() {
 
   if (arg_nullcheck(cmd_write_argtable) != 0) {
     fprintf(stderr, "insufficient memory\n");
-    return -1;
+    return BLISP_ERR_OUT_OF_MEMORY;
   }
-  return 0;
+  return BLISP_OK;
 }
 
 void cmd_write_args_print_glossary() {
@@ -276,16 +277,16 @@ void cmd_write_args_print_glossary() {
   arg_print_glossary(stdout, cmd_write_argtable, "  %-25s %s\n");
 }
 
-uint8_t cmd_write_parse_exec(int argc, char** argv) {
+blisp_return_t cmd_write_parse_exec(int argc, char** argv) {
   int errors = arg_parse(argc, argv, cmd_write_argtable);
   if (errors == 0) {
-    blisp_flash_firmware();  // TODO: Error code?
-    return 1;
+    return blisp_flash_firmware();  // TODO: Error code?
+
   } else if (cmd->count == 1) {
     cmd_write_args_print_glossary();
-    return 1;
+    return BLISP_OK;
   }
-  return 0;
+  return BLISP_ERR_INVALID_COMMAND;
 }
 
 void cmd_write_args_print_syntax() {
