@@ -1,7 +1,5 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.16)
 project(blisp C)
-
-set(CMAKE_C_STANDARD 23)
 
 option(BLISP_BUILD_CLI "Build CLI Tool" OFF)
 option(BLISP_USE_SYSTEM_LIBRARIES "Use system-installed libraries" "${CMAKE_USE_SYSTEM_LIBRARIES}")
