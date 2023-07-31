@@ -1,8 +1,9 @@
 #pragma once
 #include "parsed_firmware_file.h"
 
-#define PARSED_ERROR_TOO_BIG = -0x1000 /* Input expands to be too big */
-#define PARSED_ERROR_BAD_DFU = -0x1001 /* DFU file provided but not valid */
+#define PARSED_ERROR_INVALID_FILETYPE -0x1000
+#define PARSED_ERROR_TOO_BIG -0x1001 /* Input expands to be too big */
+#define PARSED_ERROR_BAD_DFU -0x1002 /* DFU file provided but not valid */
 
 // This attempts to parse the given file, and returns the parsed version of that
 // file. This will handle any repacking required to create one contigious file
