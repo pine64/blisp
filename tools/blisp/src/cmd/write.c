@@ -178,6 +178,16 @@ blisp_return_t blisp_flash_firmware() {
     goto exit1;
   }
 
+  // Open the file to be flashed; to determine the size of the section of flash
+  // to erase
+  int64_t firmware_file_size = 0;
+  const uint32_t firmware_base_address_offset =
+      0x2000;  // Firmware files start 0x2000 offset into flash to skip the boot
+               // header
+  int64_t firmware_file_start_address = 0;
+
+
+
   FILE* firmware_file = fopen(binary_to_write->filename[0], "rb");
   if (firmware_file == NULL) {
     fprintf(stderr, "Failed to open firmware file \"%s\".\n",
@@ -185,9 +195,10 @@ blisp_return_t blisp_flash_firmware() {
     goto exit1;
   }
   fseek(firmware_file, 0, SEEK_END);
-  int64_t firmware_file_size = ftell(firmware_file);
+  firmware_file_size = ftell(firmware_file);
   rewind(firmware_file);
 
+  // Create a default boot header section in ram to be written out
   struct bfl_boot_header boot_header;
   fill_up_boot_header(&boot_header);
 

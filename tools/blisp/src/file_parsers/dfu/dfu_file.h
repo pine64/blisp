@@ -13,9 +13,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-int dfu_file_parse(const char* file_path_on_disk, uint8_t** payload,
-                   size_t* payload_length, size_t* payload_address);
+// Parse the dfu file and returns 0 if ok, or -ve on error parsing
+int dfu_file_parse(const char* file_path_on_disk,
+                   uint8_t** payload,
+                   size_t* payload_length,
+                   size_t* payload_address);
 // Internal
 
 uint32_t crc32_byte(uint32_t accum, uint8_t delta);
@@ -23,4 +25,4 @@ uint32_t crc32_byte(uint32_t accum, uint8_t delta);
 };
 #endif
 
-#endif // BLISP_DFU_FILE_H
+#endif  // BLISP_DFU_FILE_H
