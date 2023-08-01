@@ -16,8 +16,7 @@ ssize_t get_file_contents(const char* file_path_on_disk,
 
   f = fopen(file_path_on_disk, "rb");
   if (f <= 0) {
-    fprintf(stderr, "Could not open file %s for reading\r\n",
-            file_path_on_disk);
+    fprintf(stderr, "Could not open file %s for reading\n", file_path_on_disk);
     return -1;
   }
 

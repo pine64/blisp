@@ -16,13 +16,13 @@ int parse_firmware_file(const char* file_path_on_disk,
   const char* ext = get_filename_ext(file_path_on_disk);
   int res = PARSED_ERROR_INVALID_FILETYPE;
   if (strncmp(ext, "dfu", 3) == 0 || strncmp(ext, "DFU", 3) == 0) {
-    printf("Input file identified as a .dfu file\r\n");
+    printf("Input file identified as a .dfu file\n");
     // Handle as a .dfu file
     res = dfu_file_parse(file_path_on_disk, &parsed_results->payload,
                          &parsed_results->payload_length,
                          &parsed_results->payload_address);
   } else if (strncmp(ext, "bin", 3) == 0 || strncmp(ext, "BIN", 3) == 0) {
-    printf("Input file identified as a .bin file\r\n");
+    printf("Input file identified as a .bin file\n");
     // Raw binary file
     res = bin_file_parse(file_path_on_disk, &parsed_results->payload,
                          &parsed_results->payload_length,

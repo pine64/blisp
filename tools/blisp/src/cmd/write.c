@@ -192,7 +192,7 @@ blisp_return_t blisp_flash_firmware() {
     // Create a default boot header section in ram to be written out
     struct bfl_boot_header boot_header;
     fill_up_boot_header(&boot_header);
-    printf("Erasing flash to flash boot header\r\n");
+    printf("Erasing flash to flash boot header\n");
     ret = blisp_device_flash_erase(&device, 0x0000,
                                    sizeof(struct bfl_boot_header));
     if (ret != BLISP_OK) {
@@ -226,7 +226,7 @@ blisp_return_t blisp_flash_firmware() {
     goto exit2;
   }
 
-  printf("Flashing the firmware...\n");
+  printf("Flashing the firmware @ 0x%08X...\n", parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
       blisp_easy_transport_new_from_memory(parsed_file.payload,
                                            parsed_file.payload_length);
