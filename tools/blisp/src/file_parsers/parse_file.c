@@ -9,7 +9,7 @@ const char* get_filename_ext(const char* filename) {
     return "";
   return dot + 1;
 }
-
+#define FLASH_MAP_ADDR 0x08000000
 int parse_firmware_file(const char* file_path_on_disk,
                         parsed_firmware_file_t* parsed_results) {
   // Switchcase on the extension of the file
@@ -30,7 +30,13 @@ int parse_firmware_file(const char* file_path_on_disk,
   }
   // If we wanted to support hex files, here would be where
 
+  // Normalise address, some builds will base the firmware at 0x08000000 but for
+  // the flasher we use 0 base (i.e. offsets into flash)
+  if (parsed_results->payload_address >= FLASH_MAP_ADDR) {
+    parsed_results->payload_address -= FLASH_MAP_ADDR;
+  }
   // If the firmware starts at "0" we need to pre-pend a boot sector later on
+
   parsed_results->needs_boot_struct = parsed_results->payload_address == 0;
 
   return res;
