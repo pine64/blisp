@@ -1,7 +1,9 @@
 #pragma once
+#include <stdio.h>
 #include "parsed_firmware_file.h"
 
 #define PARSED_ERROR_INVALID_FILETYPE -0x1000
+#define PARSED_ERROR_CANT_OPEN_FILE -0x1001
 #define PARSED_ERROR_TOO_BIG -0x1001 /* Input expands to be too big */
 #define PARSED_ERROR_BAD_DFU -0x1002 /* DFU file provided but not valid */
 
@@ -12,3 +14,7 @@
 
 int parse_firmware_file(const char* file_path_on_disk,
                         parsed_firmware_file_t* parsed_results);
+
+// Internal util
+ssize_t get_file_contents(const char* file_path_on_disk,
+                          uint8_t** file_contents);
