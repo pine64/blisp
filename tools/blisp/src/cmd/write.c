@@ -195,6 +195,7 @@ blisp_return_t blisp_flash_firmware() {
     printf("Erasing flash to flash boot header\n");
     ret = blisp_device_flash_erase(&device, 0x0000,
                                    sizeof(struct bfl_boot_header));
+
     if (ret != BLISP_OK) {
       fprintf(stderr, "Failed to erase flash.\n");
       goto exit2;
@@ -217,7 +218,8 @@ blisp_return_t blisp_flash_firmware() {
   printf("Erasing flash for firmware, this might take a while...\n");
   ret = blisp_device_flash_erase(
       &device, parsed_file.payload_address,
-      parsed_file.payload_address + parsed_file.payload_length + 1);
+      parsed_file.payload_address + parsed_file.payload_length);
+
   if (ret != BLISP_OK) {
     fprintf(stderr,
             "Failed to erase flash. Tried to erase from 0x%08X to 0x%08X\n",
@@ -226,7 +228,8 @@ blisp_return_t blisp_flash_firmware() {
     goto exit2;
   }
 
-  printf("Flashing the firmware @ 0x%08X...\n", parsed_file.payload_address);
+  printf("Flashing the firmware %d bytes @ 0x%08X...\n",
+         parsed_file.payload_length, parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
       blisp_easy_transport_new_from_memory(parsed_file.payload,
                                            parsed_file.payload_length);
