@@ -5,7 +5,6 @@
 #ifndef BLISP_DFU_FILE_H
 #define BLISP_DFU_FILE_H
 
-#include <malloc.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <stdlib.h>
 #include "parsed_firmware_file.h"
 
 #define PARSED_ERROR_INVALID_FILETYPE -0x1000

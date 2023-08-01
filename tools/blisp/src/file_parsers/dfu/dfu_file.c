@@ -2,6 +2,7 @@
 // Created by ralim on 25/09/22.
 //
 #include "dfu_file.h"
+#include <stdlib.h>
 
 #define DFU_SUFFIX_LENGTH 16
 #define LMDFU_PREFIX_LENGTH 8
@@ -125,7 +126,7 @@ ssize_t parse_target(const uint8_t* data,
   }
 
   *out_ealt = data[6];
-  uint8_t* tdata = data + 6 + 1 + 4 + 255;
+  uint8_t* tdata = (uint8_t*)data + 6 + 1 + 4 + 255;
   uint32_t len_tdata = *((uint32_t*)tdata);
   tdata += 4;
   uint32_t num_images = *((uint32_t*)tdata);
@@ -243,7 +244,7 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   output.bcdDevice = (dfu_suffix[1] << 8) + dfu_suffix[0];
 
 checked:
-  const int res = probe_prefix(&output);
+  int res = probe_prefix(&output);
 
   if (output.size.prefix) {
     const uint8_t* data = file_contents;
