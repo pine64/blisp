@@ -2,6 +2,10 @@
 #define PARSE_FILE_H_
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
 #include "parsed_firmware_file.h"
 
 #define PARSED_ERROR_INVALID_FILETYPE -0x1000

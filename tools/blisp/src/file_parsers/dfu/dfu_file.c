@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include "parse_file.h"
 
+#if defined(_MSC_VER)
+#include <sys\types.h>
+#endif
+
 #define DFU_SUFFIX_LENGTH 16
 #define LMDFU_PREFIX_LENGTH 8
 #define LPCDFU_PREFIX_LENGTH 16
