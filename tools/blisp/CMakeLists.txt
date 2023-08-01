@@ -4,6 +4,9 @@ set(ARGTABLE3_ENABLE_EXAMPLES OFF CACHE BOOL "Enable examples")
 
 add_executable(blisp src/main.c src/cmd/write.c src/util.c src/common.c src/cmd/iot.c)
 
+add_subdirectory(src/file_parsers)
+
+
 if(BLISP_USE_SYSTEM_LIBRARIES)
     find_package(Argtable3 REQUIRED)
 else()
@@ -18,7 +21,7 @@ target_include_directories(blisp PRIVATE
 
 target_link_libraries(blisp PRIVATE
         argtable3
-        libblisp_static)
+        libblisp_static file_parsers)
 
 if (WIN32)
     target_link_libraries(blisp PRIVATE Setupapi.lib)

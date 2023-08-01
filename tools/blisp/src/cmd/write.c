@@ -9,6 +9,7 @@
 #include "../cmd.h"
 #include "../common.h"
 #include "../util.h"
+#include "parse_file.h"
 
 #define REG_EXTENDED 1
 #define REG_ICASE (REG_EXTENDED << 1)
@@ -177,50 +178,66 @@ blisp_return_t blisp_flash_firmware() {
     // TODO: Error handling
     goto exit1;
   }
+  parsed_firmware_file_t parsed_file;
+  memset(&parsed_file, 0, sizeof(parsed_file));
+  int parsed_result =
+      parse_firmware_file(binary_to_write->filename[0], &parsed_file);
 
-  FILE* firmware_file = fopen(binary_to_write->filename[0], "rb");
-  if (firmware_file == NULL) {
-    fprintf(stderr, "Failed to open firmware file \"%s\".\n",
-            binary_to_write->filename[0]);
-    goto exit1;
+  // If we are injecting a bootloader section, make it, erase flash, and flash
+  // it. Then when we do firmware later on; it will be located afterwards
+  // the header filles up to a flash erase boundry so this stack should be safe
+  // __should__
+
+  if (parsed_file.needs_boot_struct) {
+    // Create a default boot header section in ram to be written out
+    struct bfl_boot_header boot_header;
+    fill_up_boot_header(&boot_header);
+    printf("Erasing flash to flash boot header\n");
+    ret = blisp_device_flash_erase(&device, 0x0000,
+                                   sizeof(struct bfl_boot_header));
+
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to erase flash.\n");
+      goto exit2;
+    }
+    // Now burn the header
+
+    printf("Flashing boot header...\n");
+    ret = blisp_device_flash_write(&device, 0x0000, (uint8_t*)&boot_header,
+                                   sizeof(struct bfl_boot_header));
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to write boot header.\n");
+      goto exit2;
+    }
+    // Move the firmware to-be-flashed beyond the boot header area
+    parsed_file.payload_address += 0x2000;
   }
-  fseek(firmware_file, 0, SEEK_END);
-  int64_t firmware_file_size = ftell(firmware_file);
-  rewind(firmware_file);
+  // Now that optional boot header is done, we clear out the flash for the new
+  // firmware; and flash it in.
 
-  struct bfl_boot_header boot_header;
-  fill_up_boot_header(&boot_header);
+  printf("Erasing flash for firmware, this might take a while...\n");
+  ret = blisp_device_flash_erase(
+      &device, parsed_file.payload_address,
+      parsed_file.payload_address + parsed_file.payload_length);
 
-  const uint32_t firmware_base_address = 0x2000;
-  printf("Erasing flash, this might take a while...\n");
-  ret =
-      blisp_device_flash_erase(&device, firmware_base_address,
-                               firmware_base_address + firmware_file_size + 1);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to erase flash.\n");
+    fprintf(stderr,
+            "Failed to erase flash. Tried to erase from 0x%08X to 0x%08X\n",
+            parsed_file.payload_address,
+            parsed_file.payload_address + parsed_file.payload_length + 1);
     goto exit2;
   }
-  ret =
-      blisp_device_flash_erase(&device, 0x0000, sizeof(struct bfl_boot_header));
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to erase flash.\n");
-    goto exit2;
-  }
 
-  printf("Flashing boot header...\n");
-  ret = blisp_device_flash_write(&device, 0x0000, (uint8_t*)&boot_header,
-                                 sizeof(struct bfl_boot_header));
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to write boot header.\n");
-    goto exit2;
-  }
-  printf("Flashing the firmware...\n");
+  printf("Flashing the firmware %d bytes @ 0x%08X...\n",
+         parsed_file.payload_length, parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
-      blisp_easy_transport_new_from_file(firmware_file);
+      blisp_easy_transport_new_from_memory(parsed_file.payload,
+                                           parsed_file.payload_length);
 
-  ret = blisp_easy_flash_write(&device, &data_transport, firmware_base_address,
-                               firmware_file_size,
-                               blisp_common_progress_callback);
+  ret = blisp_easy_flash_write(
+      &device, &data_transport, parsed_file.payload_address,
+      parsed_file.payload_length, blisp_common_progress_callback);
+
   if (ret < BLISP_OK) {
     fprintf(stderr, "Failed to write app to flash.\n");
     goto exit2;
@@ -243,8 +260,8 @@ blisp_return_t blisp_flash_firmware() {
   printf("Flash complete!\n");
 
 exit2:
-  if (firmware_file != NULL)
-    fclose(firmware_file);
+  if (parsed_file.payload != NULL)
+    free(parsed_file.payload);
 exit1:
   blisp_device_close(&device);
 }
