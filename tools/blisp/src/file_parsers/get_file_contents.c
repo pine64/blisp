@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "parse_file.h"
 // Returns file size _or_ negative on error
 ssize_t get_file_contents(const char* file_path_on_disk,
@@ -15,7 +16,8 @@ ssize_t get_file_contents(const char* file_path_on_disk,
 
   f = fopen(file_path_on_disk, "rb");
   if (f <= 0) {
-    fprintf(stderr, "Could not open file %s for reading", file_path_on_disk);
+    fprintf(stderr, "Could not open file %s for reading\r\n",
+            file_path_on_disk);
     return -1;
   }
 
