@@ -200,7 +200,7 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (file_contents_length < DFU_SUFFIX_LENGTH) {
     reason = "File too short for DFU suffix";
     missing_suffix = 1;
-    goto checked;
+    goto file_checked;
   }
 
   dfu_suffix = file_contents + file_contents_length - DFU_SUFFIX_LENGTH;
@@ -208,7 +208,7 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (dfu_suffix[10] != 'D' || dfu_suffix[9] != 'F' || dfu_suffix[8] != 'U') {
     reason = "Invalid DFU suffix signature";
     missing_suffix = 1;
-    goto checked;
+    goto file_checked;
   }
   // Calculate contents CRC32
   for (int i = 0; i < file_contents_length - 4; i++) {
@@ -221,7 +221,7 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (output.dwCRC != crc) {
     reason = "DFU suffix CRC does not match";
     missing_suffix = 1;
-    goto checked;
+    goto file_checked;
   }
 
   /* At this point we believe we have a DFU suffix
@@ -243,8 +243,9 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   output.idProduct = (dfu_suffix[3] << 8) + dfu_suffix[2];
   output.bcdDevice = (dfu_suffix[1] << 8) + dfu_suffix[0];
 
-checked:
-  int res = probe_prefix(&output);
+file_checked:
+
+  const int res = probe_prefix(&output);
 
   if (output.size.prefix) {
     const uint8_t* data = file_contents;
