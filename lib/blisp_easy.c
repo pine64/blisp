@@ -354,13 +354,16 @@ int32_t blisp_easy_flash_write(struct blisp_device* device,
     if (buffer_size > buffer_max_size) {
       buffer_size = buffer_max_size;
     }
-    blisp_easy_transport_read(data_transport, buffer,
-                              buffer_size);  // TODO: Error Handling
+    ret = blisp_easy_transport_read(data_transport, buffer, buffer_size);
+    if (ret < BLISP_OK) {
+      fprintf(stderr, "Failed to read firmware chunk! (ret:%d)\n ", ret);
+      return ret;
+    }
+
     ret = blisp_device_flash_write(device, flash_location + sent_data, buffer,
                                    buffer_size);
     if (ret < BLISP_OK) {
-      // TODO: Error logigng:  fprintf(stderr, "Failed to write firmware! (ret:
-      // %d)\n", ret);
+      fprintf(stderr, "Failed to write firmware! (ret:%d)\n ", ret);
       return ret;
     }
     sent_data += buffer_size;
