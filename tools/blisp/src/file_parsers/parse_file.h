@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PARSE_FILE_H_
+#define PARSE_FILE_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include "parsed_firmware_file.h"
@@ -19,3 +20,5 @@ int parse_firmware_file(const char* file_path_on_disk,
 // Internal util
 ssize_t get_file_contents(const char* file_path_on_disk,
                           uint8_t** file_contents);
+
+#endif  // PARSE_FILE_H_

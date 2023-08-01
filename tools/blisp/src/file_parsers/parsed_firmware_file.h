@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PARSED_FIRMWARE_H_
+#define PARSED_FIRMWARE_H_
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -13,3 +14,4 @@ typedef struct {
   size_t payload_length;   // Size of the payload
   size_t payload_address;  // Start address of the payload
 } parsed_firmware_file_t;
+#endif  // PARSED_FIRMWARE_H_
