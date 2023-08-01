@@ -3,6 +3,7 @@
 //
 #include "dfu_file.h"
 #include <stdlib.h>
+#include "parse_file.h"
 
 #define DFU_SUFFIX_LENGTH 16
 #define LMDFU_PREFIX_LENGTH 8
@@ -73,11 +74,17 @@ int dfu_file_parse(const char* file_path_on_disk,
                    size_t* payload_address) {
   uint8_t* dfu_file_contents = NULL;
   ssize_t file_size = get_file_contents(file_path_on_disk, &dfu_file_contents);
-  if (file_size <= 0 || dfu_file_contents == NULL) {
-    return -1;
+  if (file_size < 0) {
+    return file_size;
+  }
+  if (file_size == 0 || dfu_file_contents == NULL) {
+    return PARSED_ERROR_CANT_OPEN_FILE;
   }
   // Parse DFU data
   struct dfu_file dfu_info = parse_dfu_suffix(dfu_file_contents, file_size);
+  if (dfu_info.size.firmware == 0) {
+    return PARSED_ERROR_BAD_DFU;
+  }
   // Check if its for a BL* chip
   //    if (dfu_info.idVendor != 0x28E9) {
   //        free(dfu_file_contents);
@@ -200,7 +207,8 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (file_contents_length < DFU_SUFFIX_LENGTH) {
     reason = "File too short for DFU suffix";
     missing_suffix = 1;
-    goto file_checked;
+    output.size.firmware = 0;
+    return output;
   }
 
   dfu_suffix = file_contents + file_contents_length - DFU_SUFFIX_LENGTH;
@@ -208,7 +216,8 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (dfu_suffix[10] != 'D' || dfu_suffix[9] != 'F' || dfu_suffix[8] != 'U') {
     reason = "Invalid DFU suffix signature";
     missing_suffix = 1;
-    goto file_checked;
+    output.size.firmware = 0;
+    return output;
   }
   // Calculate contents CRC32
   for (int i = 0; i < file_contents_length - 4; i++) {
@@ -221,7 +230,9 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
   if (output.dwCRC != crc) {
     reason = "DFU suffix CRC does not match";
     missing_suffix = 1;
-    goto file_checked;
+
+    output.size.firmware = 0;
+    return output;
   }
 
   /* At this point we believe we have a DFU suffix
@@ -233,17 +244,19 @@ struct dfu_file parse_dfu_suffix(const uint8_t* file_contents,
 
   if (output.size.suffix < DFU_SUFFIX_LENGTH) {
     fprintf(stderr, "Unsupported DFU suffix length %d", output.size.suffix);
+    output.size.firmware = 0;
+    return output;
   }
 
   if (output.size.suffix > file_contents_length) {
     fprintf(stderr, "Invalid DFU suffix length %d", output.size.suffix);
+    output.size.firmware = 0;
+    return output;
   }
 
   output.idVendor = (dfu_suffix[5] << 8) + dfu_suffix[4];
   output.idProduct = (dfu_suffix[3] << 8) + dfu_suffix[2];
   output.bcdDevice = (dfu_suffix[1] << 8) + dfu_suffix[0];
-
-file_checked:
 
   const int res = probe_prefix(&output);
 
