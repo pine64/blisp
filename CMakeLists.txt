@@ -28,14 +28,14 @@ set(BLISP_PUBLIC_HEADERS
 
 set_target_properties(libblisp PROPERTIES
         PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
-        VERSION 0.0.3
+        VERSION 0.0.4
         SOVERSION 1
         LIBRARY_OUTPUT_DIRECTORY "shared"
         OUTPUT_NAME "blisp")
 
 set_target_properties(libblisp_static PROPERTIES
         PUBLIC_HEADER "${BLISP_PUBLIC_HEADERS}"
-        VERSION 0.0.3
+        VERSION 0.0.4
         SOVERSION 1
         ARCHIVE_OUTPUT_DIRECTORY "static"
         OUTPUT_NAME "blisp")
