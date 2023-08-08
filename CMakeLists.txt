@@ -90,7 +90,11 @@ else()
     endif()
 endif()
 
-install(TARGETS libblisp libblisp_static DESTINATION lib)
+install(TARGETS libblisp libblisp_static 
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
 if(BLISP_BUILD_CLI)
     add_subdirectory(tools/blisp)
