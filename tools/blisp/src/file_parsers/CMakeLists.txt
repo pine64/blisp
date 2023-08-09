@@ -8,7 +8,7 @@ file(GLOB_RECURSE sources
 )
 list(APPEND ADD_SRCS  ${sources})
 
-add_library(file_parsers 
+add_library(file_parsers STATIC
 "${CMAKE_CURRENT_SOURCE_DIR}/bin/bin_file.c"
 "${CMAKE_CURRENT_SOURCE_DIR}/dfu/dfu_file.c"
 "${CMAKE_CURRENT_SOURCE_DIR}/dfu/dfu_crc.c"
