@@ -42,7 +42,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
-          name: blips-apple-x86_64.zip
+          name: blips-apple-universal.zip
           path: |
             build/tools/blisp/blisp
           if-no-files-found: error

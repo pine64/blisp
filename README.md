@@ -94,3 +94,20 @@ Because this is done at the lowest level of serial communication, the
 displays aren't packet-aware or know about the chip's command set or such.
 This is really only useful for debugging systems-level issues withing
 the device or blisp itself.
+
+## Troubleshooting
+
+### macOS
+
+Depending on your current system security settings, modern versions of macOS requires all software to be notarised before you are able to execute it. This is specially true for software that is downloaded directly from the internet.
+
+If that is the case, you will get an error that looks like the following:
+> **“blisp” cannot be opened because the developer cannot be verified.**
+>
+> macOS cannot verify that this app is free from malware.
+
+In that case, you will need to remove the *quarantine* flag that macOS adds to the executable. After that you should be able to run **blisp** as normal.
+
+```bash
+xattr -d com.apple.quarantine blisp
+```
