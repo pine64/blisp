@@ -31,6 +31,8 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
     chip = &blisp_chip_bl70x;
   } else if (strcmp(chip_type->sval[0], "bl60x") == 0) {
     chip = &blisp_chip_bl60x;
+  } else if (strcmp(chip_type->sval[0], "bl808") == 0) {
+    chip = &blisp_chip_bl808;
   } else {
     fprintf(stderr, "Chip type is invalid.\n");
     return BLISP_ERR_INVALID_CHIP_TYPE;
