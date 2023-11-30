@@ -216,36 +216,21 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
       sp_flush(serial_port, SP_BUF_INPUT);  // Flush garbage out of RX
     }
 
-    uint32_t bytes_count = device->chip->handshake_byte_multiplier * (float)device->current_baud_rate / 10.0f;
-    if (bytes_count > 600) bytes_count = 600;
-    memset(handshake_buffer, 'U', bytes_count);
-
-//    sp_flush(serial_port, SP_BUF_BOTH);
-
-    for (uint8_t i = 0; i < 5; i++) {
-        if (!in_ef_loader) {
-            if (device->is_usb) {
-                sp_blocking_write(serial_port, "BOUFFALOLAB5555RESET\0\0", 22,
-                                  100); // TODO: Error handling
-            }
-        }
-        ret = sp_blocking_write(serial_port, handshake_buffer, bytes_count,
-                                500);
+    if (device->chip->type == BLISP_CHIP_BL808) {
+        sleep_ms(300);
+        const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+        ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
         if (ret < 0) {
-            return -1;
+          blisp_dlog("Second handshake write failed, ret %d", ret);
+          return BLISP_ERR_API_ERROR;
         }
+    }
 
-        if (device->chip->type == BLISP_CHIP_BL808) {
-            sleep_ms(300);
-            const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
-            sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300); // TODO: Error handling
-        }
-        ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
-        if (ret >= 2) {
-            for (uint8_t j = 0; j < (ret - 1); j++) {
-                if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
-                    return BLISP_OK;
-                }
+    ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
+    if (ret >= 2) {
+        for (uint8_t j = 0; j < (ret - 1); j++) {
+            if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
+                return BLISP_OK;
             }
         }
     }
