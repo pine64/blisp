@@ -11,6 +11,8 @@
 #include <sys/ioctl.h>
 #endif
 
+#include "../data/bl808_clock_para.h"
+
 #define DEBUG
 
 static void drain(struct sp_port* port) {
@@ -177,6 +179,7 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
 blisp_return_t blisp_device_handshake(struct blisp_device* device,
                                       bool in_ef_loader) {
   int ret;
+  bool ok = false;
   uint8_t handshake_buffer[600];
   struct sp_port* serial_port = device->serial_port;
 
@@ -217,26 +220,30 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
     }
 
     if (device->chip->type == BLISP_CHIP_BL808) {
-        sleep_ms(300);
-        const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
-        ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
-        if (ret < 0) {
-          blisp_dlog("Second handshake write failed, ret %d", ret);
-          return BLISP_ERR_API_ERROR;
-        }
+      sleep_ms(300);
+      const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+      ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
+      if (ret < 0) {
+        blisp_dlog("Second handshake write failed, ret %d", ret);
+        return BLISP_ERR_API_ERROR;
+      }
     }
 
     ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
     if (ret >= 2) {
-        for (uint8_t j = 0; j < (ret - 1); j++) {
-            if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
-                return BLISP_OK;
-            }
+      for (uint8_t j = 0; j < (ret - 1); j++) {
+        if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
+          ok = true;
         }
+      }
     }
+    if (!ok) {
+      blisp_dlog("Received no response from chip.");
+      return BLISP_ERR_NO_RESPONSE;
+    }
+
+    return BLISP_OK;
   }
-  blisp_dlog("Received no response from chip.");
-  return BLISP_ERR_NO_RESPONSE;
 }
 
 blisp_return_t blisp_device_get_boot_info(struct blisp_device* device,
@@ -425,4 +432,27 @@ blisp_return_t blisp_device_reset(struct blisp_device* device) {
 void blisp_device_close(struct blisp_device* device) {
   struct sp_port* serial_port = device->serial_port;
   sp_close(serial_port);
+}
+
+blisp_return_t bl808_load_clock_para(struct blisp_device* device,
+                                     bool irq_en, uint32_t baudrate) {
+  // XXX: this may be a good place to increase the baudrate for subsequent comms
+  // XXX: for the write command, we may wish to use this data to update the boot header
+  const uint32_t clock_para_size = sizeof(bl808_clock_para_bin);
+  const uint32_t payload_size = 8 + clock_para_size;
+  uint8_t payload[payload_size] = {};
+
+  uint32_t irq_enable = irq_en ? 1 : 0;
+  memcpy(&payload[0], &irq_enable, 4);
+  memcpy(&payload[4], &baudrate, 4);
+  memcpy(&payload[8], bl808_clock_para_bin, clock_para_size);
+
+  blisp_return_t ret = blisp_send_command(device, 0x22, payload, payload_size, true);
+  if (ret < 0)
+    return ret;
+  ret = blisp_receive_response(device, false);
+  if (ret < 0)
+    return ret;
+
+  return BLISP_OK;
 }

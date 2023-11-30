@@ -86,6 +86,15 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
       boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
       boot_info.chip_id[6], boot_info.chip_id[7]);
 
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    printf("Setting clock parameters ...\n");
+    ret = bl808_load_clock_para(device, true, device->current_baud_rate);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to set clock parameters.\n");
+      return ret;
+    }
+  }
+
   if (device->chip->load_eflash_loader == NULL) {
     return BLISP_OK;
   }
