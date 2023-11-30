@@ -11,7 +11,7 @@
 #include <sys/ioctl.h>
 #endif
 
-#include "../data/bl808_clock_para.h"
+#include <blisp_struct.h>
 
 #define DEBUG
 
@@ -25,6 +25,7 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
                                  struct blisp_chip* chip) {
   device->chip = chip;
   device->is_usb = false;
+  fill_crcs(&bl808_header);
   return BLISP_OK;
 }
 
@@ -87,7 +88,11 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
   //  if (device->is_usb) {
   //    device->current_baud_rate = 2000000;
   //  } else {
-  device->current_baud_rate = 460800;
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    device->current_baud_rate = 2000000;
+  } else {
+    device->current_baud_rate = 460800;
+  }
   //  }
 
 #if 0
@@ -147,8 +152,16 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
                                       bool expect_payload) {
   // TODO: Check checksum
   int ret;
+  uint32_t read_timeout = 1000;
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    // TODO: For some reason the BL808 does not send pending ('PD') responses
+    //       during long (i.e. erase) operations, so we must disable response
+    //       timeouts. Further investigation is necessary.
+    read_timeout = 0;  
+  }
+
   struct sp_port* serial_port = device->serial_port;
-  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 1000);
+  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, read_timeout);
   if (ret < 2) {
     blisp_dlog("Failed to receive response, ret: %d", ret);
     return BLISP_ERR_NO_RESPONSE;
@@ -378,13 +391,13 @@ blisp_return_t blisp_device_flash_erase(struct blisp_device* device,
   *(uint32_t*)(payload + 4) = end_address;
 
   blisp_return_t ret = blisp_send_command(device, 0x30, payload, 8, true);
-  if (ret < 0)
+  if (ret != BLISP_OK)
     return ret;
   do {
     ret = blisp_receive_response(device, false);
   } while (ret == BLISP_ERR_PENDING);
 
-  return 0;
+  return ret;
 }
 
 blisp_return_t blisp_device_flash_write(struct blisp_device* device,
@@ -437,17 +450,124 @@ void blisp_device_close(struct blisp_device* device) {
 blisp_return_t bl808_load_clock_para(struct blisp_device* device,
                                      bool irq_en, uint32_t baudrate) {
   // XXX: this may be a good place to increase the baudrate for subsequent comms
-  // XXX: for the write command, we may wish to use this data to update the boot header
-  const uint32_t clock_para_size = sizeof(bl808_clock_para_bin);
+  const uint32_t clock_para_size = sizeof(struct bl808_boot_clk_cfg_t);
   const uint32_t payload_size = 8 + clock_para_size;
   uint8_t payload[payload_size] = {};
 
   uint32_t irq_enable = irq_en ? 1 : 0;
   memcpy(&payload[0], &irq_enable, 4);
   memcpy(&payload[4], &baudrate, 4);
-  memcpy(&payload[8], bl808_clock_para_bin, clock_para_size);
+  memcpy(&payload[8], &bl808_header.clk_cfg, clock_para_size);
 
   blisp_return_t ret = blisp_send_command(device, 0x22, payload, payload_size, true);
+  if (ret < 0)
+    return ret;
+  ret = blisp_receive_response(device, false);
+  if (ret < 0)
+    return ret;
+
+  return BLISP_OK;
+}
+
+blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
+  // TODO: I don't understand why these parameters are the way they are,
+  //       but at least they are labeled. Also, flash_io_mode and flash_clk_delay
+  //       seem to be duplicated in the main spi_flash_cfg_t struct?
+  uint8_t flash_pin = 0x4;
+  uint8_t flash_clk_cfg = 0x41;
+  uint8_t flash_io_mode = 0x01;
+  uint8_t flash_clk_delay = 0;
+  
+  // Yes, these values are (slightly) different to the ones in blisp_chip_bl808.c
+  struct bl808_spi_flash_cfg_t cfg = {0};
+  cfg.ioMode = 0x04;
+  cfg.cReadSupport = 0x01;
+  cfg.clkDelay = 0;
+  cfg.clkInvert = 0;
+  cfg.resetEnCmd = 0x66;
+  cfg.resetCmd = 0x99;
+  cfg.resetCreadCmd = 0xff;
+  cfg.resetCreadCmdSize = 0x03;
+  cfg.jedecIdCmd = 0x9f;
+  cfg.jedecIdCmdDmyClk = 0;
+  cfg.enter32BitsAddrCmd = 0xb7;
+  cfg.exit32BitsAddrCmd = 0xe9;
+  cfg.sectorSize = 0x04;
+  cfg.mid = 0xef;
+  cfg.pageSize = 0x100;
+  cfg.chipEraseCmd = 0xc7;
+  cfg.sectorEraseCmd = 0x20;
+  cfg.blk32EraseCmd = 0x52;
+  cfg.blk64EraseCmd = 0xd8;
+  cfg.writeEnableCmd = 0x06;
+  cfg.pageProgramCmd = 0x02;
+  cfg.qpageProgramCmd = 0x32;
+  cfg.qppAddrMode = 0;
+  cfg.fastReadCmd = 0x0b;
+  cfg.frDmyClk = 0x01;
+  cfg.qpiFastReadCmd = 0x0b;
+  cfg.qpiFrDmyClk = 0x01;
+  cfg.fastReadDoCmd = 0x3b;
+  cfg.frDoDmyClk = 0x01;
+  cfg.fastReadDioCmd = 0xbb;
+  cfg.frDioDmyClk = 0;
+  cfg.fastReadQoCmd = 0x6b;
+  cfg.frQoDmyClk = 0x01;
+  cfg.fastReadQioCmd = 0xeb;
+  cfg.frQioDmyClk = 0x02;
+  cfg.qpiFastReadQioCmd = 0xeb;
+  cfg.qpiFrQioDmyClk = 0x02;
+  cfg.qpiPageProgramCmd = 0x02;
+  cfg.writeVregEnableCmd = 0x50;
+  cfg.wrEnableIndex = 0;
+  cfg.qeIndex = 0x01;
+  cfg.busyIndex = 0;
+  cfg.wrEnableBit = 0x01;
+  cfg.qeBit = 0x01;
+  cfg.busyBit = 0;
+  cfg.wrEnableWriteRegLen = 0x02;
+  cfg.wrEnableReadRegLen = 0x01;
+  cfg.qeWriteRegLen = 0x01;
+  cfg.qeReadRegLen = 0x01;
+  cfg.releasePowerDown = 0xab;
+  cfg.busyReadRegLen = 0x01;
+  cfg.readRegCmd[0] = 0x05;
+  cfg.readRegCmd[1] = 0x35;
+  cfg.readRegCmd[2] = 0;
+  cfg.readRegCmd[3] = 0;
+  cfg.writeRegCmd[0] = 0x01;
+  cfg.writeRegCmd[1] = 0x31;
+  cfg.writeRegCmd[2] = 0;
+  cfg.writeRegCmd[3] = 0;
+  cfg.enterQpi = 0x38;
+  cfg.exitQpi = 0xff;
+  cfg.cReadMode = 0xa0;
+  cfg.cRExit = 0xff;
+  cfg.burstWrapCmd = 0x77;
+  cfg.burstWrapCmdDmyClk = 0x03;
+  cfg.burstWrapDataMode = 0x02;
+  cfg.burstWrapData = 0x40;
+  cfg.deBurstWrapCmd = 0x77;
+  cfg.deBurstWrapCmdDmyClk = 0x03;
+  cfg.deBurstWrapDataMode = 0x02;
+  cfg.deBurstWrapData = 0xf0;
+  cfg.timeEsector = 0x12c;
+  cfg.timeE32k = 0x4b0;
+  cfg.timeE64k = 0x4b0;
+  cfg.timePagePgm = 0x05;
+  cfg.timeCe = 0x80e8;
+  cfg.pdDelay = 0x03;
+  cfg.qeData = 0;
+  
+  const uint32_t payload_size = 4 + sizeof(struct bl808_spi_flash_cfg_t);
+  uint8_t payload[payload_size] = {};
+  payload[0] = flash_pin;
+  payload[1] = flash_clk_cfg;
+  payload[2] = flash_io_mode;
+  payload[3] = flash_clk_delay;
+  memcpy(&payload[4], &cfg, sizeof(struct bl808_spi_flash_cfg_t));
+
+  blisp_return_t ret = blisp_send_command(device, 0x3b, payload, payload_size, true);
   if (ret < 0)
     return ret;
   ret = blisp_receive_response(device, false);

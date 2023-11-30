@@ -61,4 +61,8 @@ int32_t blisp_device_program_check(struct blisp_device* device);
 int32_t blisp_device_reset(struct blisp_device* device);
 void blisp_device_close(struct blisp_device* device);
 
+blisp_return_t bl808_load_clock_para(struct blisp_device* device,
+                                     bool irq_en, uint32_t baudrate);
+blisp_return_t bl808_load_flash_para(struct blisp_device* device);
+
 #endif

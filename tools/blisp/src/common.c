@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "blisp_easy.h"
+#include "blisp_util.h"
 #include "error_codes.h"
 #include "util.h"
 
@@ -91,6 +92,12 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
     ret = bl808_load_clock_para(device, true, device->current_baud_rate);
     if (ret != BLISP_OK) {
       fprintf(stderr, "Failed to set clock parameters.\n");
+      return ret;
+    }
+    printf("Setting flash parameters...\n");
+    ret = bl808_load_flash_para(device);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to set flash parameters.\n");
       return ret;
     }
   }

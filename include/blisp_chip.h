@@ -28,4 +28,7 @@ extern struct blisp_chip blisp_chip_bl70x;
 extern struct blisp_chip blisp_chip_bl808;
 extern struct blisp_chip blisp_chip_bl61x;
 
+extern struct bl808_bootheader_t bl808_header;
+void fill_crcs(struct bl808_bootheader_t *bh);
+
 #endif
