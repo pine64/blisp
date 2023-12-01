@@ -279,13 +279,16 @@ blisp_return_t blisp_device_get_boot_info(struct blisp_device* device,
   if (ret < 0)
     return ret;
 
-    memcpy(boot_info->boot_rom_version, &device->rx_buffer[0],
-         4);  // TODO: Endianess; this may break on big endian machines
-    if (device->chip->type == BLISP_CHIP_BL70X || device->chip->type == BLISP_CHIP_BL808) { // TODO: This is only 70X related
-        memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
-    }
-    // TODO: BL60X, BL808
-    return BLISP_OK;
+  // TODO: Endianess; this may break on big endian machines
+  memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4);
+
+  if (device->chip->type == BLISP_CHIP_BL70X) {
+    memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
+  } else {
+    memcpy(boot_info->chip_id, &device->rx_buffer[12], 6);
+  }
+
+  return BLISP_OK;
 }
 
 // TODO: Use struct instead of uint8_t*

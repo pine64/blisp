@@ -78,14 +78,26 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
     return ret;
   }
 
-  printf(
-      "BootROM version %d.%d.%d.%d, ChipID: "
-      "%02X%02X%02X%02X%02X%02X%02X%02X\n",
-      boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
-      boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
-      boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
-      boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
-      boot_info.chip_id[6], boot_info.chip_id[7]);
+  // TODO: Do we want this to print in big endian to match the output
+  //       of Bouffalo's software?
+  if (device->chip->type == BLISP_CHIP_BL70X) {
+    printf(
+        "BootROM version %d.%d.%d.%d, ChipID: "
+        "%02X%02X%02X%02X%02X%02X%02X%02X\n",
+        boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
+        boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
+        boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
+        boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
+        boot_info.chip_id[6], boot_info.chip_id[7]);
+  } else {
+    printf(
+        "BootROM version %d.%d.%d.%d, ChipID: "
+        "%02X%02X%02X%02X%02X%02X\n",
+        boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
+        boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
+        boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
+        boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5]);
+  }
 
   if (device->chip->type == BLISP_CHIP_BL808) {
     printf("Setting clock parameters ...\n");
