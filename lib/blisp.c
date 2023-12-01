@@ -234,7 +234,7 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
 
     if (device->chip->type == BLISP_CHIP_BL808) {
       sleep_ms(300);
-      const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+      const static uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
       ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
       if (ret < 0) {
         blisp_dlog("Second handshake write failed, ret %d", ret);
@@ -250,8 +250,16 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
         }
       }
     }
+
     if (!ok) {
-      blisp_dlog("Received no response from chip.");
+      blisp_dlog("Received incorrect handshake response from chip.");
+      blisp_dlog_no_nl("Could not find 0x%02X 0x%02X ('O', 'K') in: ", 'O', 'K');
+      if (ret) {
+        for (uint8_t j=0; j <= ret; j++) {
+          blisp_dlog_no_nl("0x%02X ", device->rx_buffer[j]);
+        }
+      }
+      blisp_dlog("");
       return BLISP_ERR_NO_RESPONSE;
     }
 
