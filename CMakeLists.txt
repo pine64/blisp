@@ -9,7 +9,7 @@ option(BLISP_USE_SYSTEM_LIBRARIES "Use system-installed libraries" "${CMAKE_USE_
 option(COMPILE_TESTS "Compile the tests" OFF)
 
 add_library(libblisp_obj OBJECT
-        lib/blisp.c lib/blisp_easy.c lib/crc.c
+        lib/blisp.c lib/blisp_easy.c
         lib/chip/blisp_chip_bl60x.c
         lib/chip/blisp_chip_bl70x.c
         lib/chip/blisp_chip_bl808.c)

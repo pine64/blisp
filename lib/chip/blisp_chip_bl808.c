@@ -5,7 +5,7 @@
 
 #include "blisp.h"
 #include "blisp_struct.h"
-#include "crc.h"
+#include "blisp_util.h"
 #include <stddef.h>
 
 struct blisp_chip blisp_chip_bl808 = {
@@ -225,7 +225,7 @@ struct bl808_bootheader_t bl808_header = {
 };
 
 void fill_crcs(struct bl808_bootheader_t *bh) {
-    bh->flash_cfg.crc32 = crc((unsigned char *) &bh->flash_cfg.cfg, sizeof(struct bl808_spi_flash_cfg_t));
-    bh->clk_cfg.crc32 = crc((unsigned char *) &bh->clk_cfg.cfg, sizeof(struct bl808_sys_clk_cfg_t));
-    bh->crc32 = crc((unsigned char *) bh, sizeof(struct bl808_bootheader_t) - 4);
+    bh->flash_cfg.crc32 = crc32_calculate((unsigned char *) &bh->flash_cfg.cfg, sizeof(struct bl808_spi_flash_cfg_t));
+    bh->clk_cfg.crc32 = crc32_calculate((unsigned char *) &bh->clk_cfg.cfg, sizeof(struct bl808_sys_clk_cfg_t));
+    bh->crc32 = crc32_calculate((unsigned char *) bh, sizeof(struct bl808_bootheader_t) - 4);
 }
