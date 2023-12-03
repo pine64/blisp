@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "blisp_easy.h"
+#include "blisp_util.h"
 #include "error_codes.h"
 #include "util.h"
 
@@ -31,6 +32,8 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
     chip = &blisp_chip_bl70x;
   } else if (strcmp(chip_type->sval[0], "bl60x") == 0) {
     chip = &blisp_chip_bl60x;
+  } else if (strcmp(chip_type->sval[0], "bl808") == 0) {
+    chip = &blisp_chip_bl808;
   } else {
     fprintf(stderr, "Chip type is invalid.\n");
     return BLISP_ERR_INVALID_CHIP_TYPE;
@@ -39,15 +42,17 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
   blisp_return_t ret;
   ret = blisp_device_init(device, chip);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to init device.\n");
+    fprintf(stderr, "Failed to init device, ret: %d\n", ret);
     return ret;
   }
   ret = blisp_device_open(device,
                           port_name->count == 1 ? port_name->sval[0] : NULL);
   if (ret != BLISP_OK) {
-    fprintf(stderr, ret == BLISP_ERR_DEVICE_NOT_FOUND
-                        ? "Device not found\n"
-                        : "Failed to open device.\n");
+    if (ret == BLISP_ERR_DEVICE_NOT_FOUND) {
+      fprintf(stderr, "Device not found\n");
+    } else {
+      fprintf(stderr, "Failed to open device, ret: %d\n", ret);
+    }
     return ret;
   }
 
@@ -64,25 +69,52 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
   printf("Sending a handshake...\n");
   ret = blisp_device_handshake(device, false);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to handshake with device.\n");
+    fprintf(stderr, "Failed to handshake with device, ret: %d\n", ret);
     return ret;
   }
   printf("Handshake successful!\nGetting chip info...\n");
   struct blisp_boot_info boot_info;
   ret = blisp_device_get_boot_info(device, &boot_info);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to get boot info.\n");
+    fprintf(stderr, "Failed to get boot info, ret: %d\n", ret);
     return ret;
   }
 
-  printf(
-      "BootROM version %d.%d.%d.%d, ChipID: "
-      "%02X%02X%02X%02X%02X%02X%02X%02X\n",
-      boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
-      boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
-      boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
-      boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
-      boot_info.chip_id[6], boot_info.chip_id[7]);
+  // TODO: Do we want this to print in big endian to match the output
+  //       of Bouffalo's software?
+  if (device->chip->type == BLISP_CHIP_BL70X) {
+    printf(
+        "BootROM version %d.%d.%d.%d, ChipID: "
+        "%02X%02X%02X%02X%02X%02X%02X%02X\n",
+        boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
+        boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
+        boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
+        boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
+        boot_info.chip_id[6], boot_info.chip_id[7]);
+  } else {
+    printf(
+        "BootROM version %d.%d.%d.%d, ChipID: "
+        "%02X%02X%02X%02X%02X%02X\n",
+        boot_info.boot_rom_version[0], boot_info.boot_rom_version[1],
+        boot_info.boot_rom_version[2], boot_info.boot_rom_version[3],
+        boot_info.chip_id[0], boot_info.chip_id[1], boot_info.chip_id[2],
+        boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5]);
+  }
+
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    printf("Setting clock parameters ...\n");
+    ret = bl808_load_clock_para(device, true, device->current_baud_rate);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to set clock parameters, ret: %d\n", ret);
+      return ret;
+    }
+    printf("Setting flash parameters...\n");
+    ret = bl808_load_flash_para(device);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to set flash parameters, ret: %d\n", ret);
+      return ret;
+    }
+  }
 
   if (device->chip->load_eflash_loader == NULL) {
     return BLISP_OK;
@@ -119,20 +151,20 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
 
   ret = blisp_device_check_image(device);
   if (ret != 0) {
-    fprintf(stderr, "Failed to check image.\n");
+    fprintf(stderr, "Failed to check image, ret: %d\n", ret);
     goto exit1;
   }
 
   ret = blisp_device_run_image(device);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to run image.\n");
+    fprintf(stderr, "Failed to run image, ret: %d\n", ret);
     goto exit1;
   }
 
   printf("Sending a handshake...\n");
   ret = blisp_device_handshake(device, true);
   if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to handshake with device.\n");
+    fprintf(stderr, "Failed to handshake with device, ret: %d\n", ret);
     goto exit1;
   }
   printf("Handshake with eflash_loader successful.\n");

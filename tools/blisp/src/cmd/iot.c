@@ -42,7 +42,7 @@ blisp_return_t blisp_single_download() {
   printf("Erasing the area, this might take a while...\n");
   ret = blisp_device_flash_erase(
       &device, *single_download_location->ival,
-      *single_download_location->ival + data_file_size + 1);
+      *single_download_location->ival + data_file_size - 1);
   if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to erase.\n");
     goto exit2;
