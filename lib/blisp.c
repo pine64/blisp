@@ -88,11 +88,7 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
   //  if (device->is_usb) {
   //    device->current_baud_rate = 2000000;
   //  } else {
-  if (device->chip->type == BLISP_CHIP_BL808) {
-    device->current_baud_rate = 2000000;
-  } else {
-    device->current_baud_rate = 460800;
-  }
+  device->current_baud_rate = 460800;
   //  }
 
 #if 0
