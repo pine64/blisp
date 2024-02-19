@@ -404,6 +404,17 @@ blisp_return_t blisp_device_flash_erase(struct blisp_device* device,
   return ret;
 }
 
+blisp_return_t blisp_device_chip_erase(struct blisp_device* device) {
+  blisp_return_t ret = blisp_send_command(device, 0x3C, NULL, 0, true);
+  if (ret != BLISP_OK)
+    return ret;
+  do {
+    ret = blisp_receive_response(device, false);
+  } while (ret == BLISP_ERR_PENDING);
+
+  return ret;
+}
+
 blisp_return_t blisp_device_flash_write(struct blisp_device* device,
                                         uint32_t start_address,
                                         uint8_t* payload,
