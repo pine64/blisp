@@ -115,7 +115,7 @@ blisp_return_t cmd_iot_args_init() {
   cmd_iot_argtable[4] = reset =
       arg_lit0(NULL, "reset", "Reset chip after write");
   cmd_iot_argtable[5] = single_download =
-      arg_file0("s", "single-down", "<file>", "Single download file");
+      arg_file1("s", "single-down", "<file>", "Single download file");
   cmd_iot_argtable[6] = single_download_location =
       arg_int0("l", "single-down-loc", NULL, "Single download offset");
   cmd_iot_argtable[7] = end = arg_end(10);
