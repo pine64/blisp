@@ -10,15 +10,27 @@ static struct arg_rex* cmd;
 static struct arg_file* single_download;
 static struct arg_int* single_download_location;
 static struct arg_str *port_name, *chip_type;  // TODO: Make this common
+static struct arg_int *baudrate;
 static struct arg_lit* reset;
 static struct arg_end* end;
-static void* cmd_iot_argtable[7];
+static void* cmd_iot_argtable[8];
 
-blisp_return_t blisp_single_download() {
+blisp_return_t blisp_single_download(void) {
   struct blisp_device device;
   blisp_return_t ret;
 
-  ret = blisp_common_init_device(&device, port_name, chip_type);
+  uint32_t baud = DEFAULT_BAUDRATE;
+  if (baudrate->count == 1) {
+    if (*baudrate->ival < 0) {
+      fprintf(stderr, "Baud rate cannot be negative!\n");
+      return BLISP_ERR_INVALID_COMMAND;
+    } else {
+      baud = *baudrate->ival;
+    }
+  }
+
+  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
+
   if (ret != BLISP_OK) {
     return ret;
   }
@@ -97,13 +109,16 @@ blisp_return_t cmd_iot_args_init() {
   cmd_iot_argtable[2] = port_name =
       arg_str0("p", "port", "<port_name>",
                "Name/Path to the Serial Port (empty for search)");
-  cmd_iot_argtable[3] = reset =
+  cmd_iot_argtable[3] = baudrate =
+      arg_int0("b", "baudrate", "<baud rate>",
+               "Serial baud rate (default: " XSTR(DEFAULT_BAUDRATE) ")");
+  cmd_iot_argtable[4] = reset =
       arg_lit0(NULL, "reset", "Reset chip after write");
-  cmd_iot_argtable[4] = single_download =
+  cmd_iot_argtable[5] = single_download =
       arg_file0("s", "single-down", "<file>", "Single download file");
-  cmd_iot_argtable[5] = single_download_location =
+  cmd_iot_argtable[6] = single_download_location =
       arg_int0("l", "single-down-loc", NULL, "Single download offset");
-  cmd_iot_argtable[6] = end = arg_end(10);
+  cmd_iot_argtable[7] = end = arg_end(10);
 
   if (arg_nullcheck(cmd_iot_argtable) != 0) {
     fprintf(stderr, "insufficient memory\n");

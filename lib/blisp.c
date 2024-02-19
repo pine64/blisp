@@ -30,7 +30,8 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
 }
 
 blisp_return_t blisp_device_open(struct blisp_device* device,
-                                 const char* port_name) {
+                                 const char* port_name,
+                                 uint32_t baudrate) {
   blisp_return_t ret;
   struct sp_port* serial_port = NULL;
 
@@ -85,11 +86,7 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
   int vid, pid;
   sp_get_port_usb_vid_pid(serial_port, &vid, &pid);
   device->is_usb = pid == 0xFFFF;
-  //  if (device->is_usb) {
-  //    device->current_baud_rate = 2000000;
-  //  } else {
-  device->current_baud_rate = 460800;
-  //  }
+  device->current_baud_rate = baudrate;
 
 #if 0
     int fd;

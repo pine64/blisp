@@ -17,9 +17,10 @@
 static struct arg_rex* cmd;
 static struct arg_file* binary_to_write;
 static struct arg_str *port_name, *chip_type;
+static struct arg_int *baudrate;
 static struct arg_lit* reset;
 static struct arg_end* end;
-static void* cmd_write_argtable[6];
+static void* cmd_write_argtable[7];
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   memcpy(boot_header->magiccode, "BFNP", 4);
@@ -165,10 +166,21 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   boot_header->crc32 = 0xDEADBEEF;
 }
 
-blisp_return_t blisp_flash_firmware() {
+blisp_return_t blisp_flash_firmware(void) {
   struct blisp_device device;
   blisp_return_t ret;
-  ret = blisp_common_init_device(&device, port_name, chip_type);
+
+  uint32_t baud = DEFAULT_BAUDRATE;
+  if (baudrate->count == 1) {
+    if (*baudrate->ival < 0) {
+      fprintf(stderr, "Baud rate cannot be negative!\n");
+      return BLISP_ERR_INVALID_COMMAND;
+    } else {
+      baud = *baudrate->ival;
+    }
+  }
+
+  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
 
   if (ret != 0) {
     return ret;
@@ -274,11 +286,14 @@ blisp_return_t cmd_write_args_init() {
   cmd_write_argtable[2] = port_name =
       arg_str0("p", "port", "<port_name>",
                "Name/Path to the Serial Port (empty for search)");
-  cmd_write_argtable[3] = reset =
+  cmd_write_argtable[3] = baudrate =
+      arg_int0("b", "baudrate", "<baud rate>",
+               "Serial baud rate (default: " XSTR(DEFAULT_BAUDRATE) ")");
+  cmd_write_argtable[4] = reset =
       arg_lit0(NULL, "reset", "Reset chip after write");
-  cmd_write_argtable[4] = binary_to_write =
+  cmd_write_argtable[5] = binary_to_write =
       arg_file1(NULL, NULL, "<input>", "Binary to write");
-  cmd_write_argtable[5] = end = arg_end(10);
+  cmd_write_argtable[6] = end = arg_end(10);
 
   if (arg_nullcheck(cmd_write_argtable) != 0) {
     fprintf(stderr, "insufficient memory\n");

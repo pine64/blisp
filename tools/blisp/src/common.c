@@ -20,7 +20,8 @@ void blisp_common_progress_callback(uint32_t current_value,
 
 blisp_return_t blisp_common_init_device(struct blisp_device* device,
                                         struct arg_str* port_name,
-                                        struct arg_str* chip_type) {
+                                        struct arg_str* chip_type,
+                                        uint32_t baudrate) {
   if (chip_type->count == 0) {
     fprintf(stderr, "Chip type is invalid.\n");
     return BLISP_ERR_INVALID_CHIP_TYPE;
@@ -46,7 +47,8 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
     return ret;
   }
   ret = blisp_device_open(device,
-                          port_name->count == 1 ? port_name->sval[0] : NULL);
+                          port_name->count == 1 ? port_name->sval[0] : NULL,
+                          baudrate);
   if (ret != BLISP_OK) {
     if (ret == BLISP_ERR_DEVICE_NOT_FOUND) {
       fprintf(stderr, "Device not found\n");

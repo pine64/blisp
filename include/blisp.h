@@ -32,7 +32,7 @@ struct blisp_boot_info {
 // image_run, image_check etc.
 
 int32_t blisp_device_init(struct blisp_device* device, struct blisp_chip* chip);
-int32_t blisp_device_open(struct blisp_device* device, const char* port_name);
+int32_t blisp_device_open(struct blisp_device* device, const char* port_name, uint32_t baudrate);
 int32_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader);
 int32_t blisp_device_get_boot_info(struct blisp_device* device,
                                    struct blisp_boot_info* boot_info);
