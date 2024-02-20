@@ -26,6 +26,16 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
   device->chip = chip;
   device->is_usb = false;
   fill_crcs(&bl808_header);
+
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    // TODO: For some reason the BL808 does not send pending ('PD') responses
+    //       during long (i.e. erase) operations, so we must disable response
+    //       timeouts. Further investigation is necessary.
+    device->serial_timeout = 0;
+  } else {
+    device->serial_timeout = 1000;
+  }
+
   return BLISP_OK;
 }
 
@@ -145,16 +155,9 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
                                       bool expect_payload) {
   // TODO: Check checksum
   int ret;
-  uint32_t read_timeout = 1000;
-  if (device->chip->type == BLISP_CHIP_BL808) {
-    // TODO: For some reason the BL808 does not send pending ('PD') responses
-    //       during long (i.e. erase) operations, so we must disable response
-    //       timeouts. Further investigation is necessary.
-    read_timeout = 0;  
-  }
 
   struct sp_port* serial_port = device->serial_port;
-  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, read_timeout);
+  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, device->serial_timeout);
   if (ret < 2) {
     blisp_dlog("Failed to receive response, ret: %d", ret);
     return BLISP_ERR_NO_RESPONSE;

@@ -67,19 +67,41 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
  */
 blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
   blisp_return_t ret = 0;
-
-  printf("Sending a handshake...\n");
-  ret = blisp_device_handshake(device, false);
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to handshake with device, ret: %d\n", ret);
-    return ret;
-  }
-  printf("Handshake successful!\nGetting chip info...\n");
+  uint32_t previous_timeout;
   struct blisp_boot_info boot_info;
+
+  // We may already be in communication with the chip from a previous
+  // invocation of this command. In that case, it will not respond to our
+  // handshake. We detect this by trying to send a command to it, using a
+  // (relatively) short timeout.
+  //
+  // NOTE: This appears to be how BouffaloLab software does it as well.
+  //
+  // NOTE: Modifying the timeout is mandatory for BL808;
+  //       see blisp.c:blisp_device_init()
+  previous_timeout = device->serial_timeout;
+  device->serial_timeout = 500;
+  printf("Testing if we can skip the handshake...\n");
   ret = blisp_device_get_boot_info(device, &boot_info);
-  if (ret != BLISP_OK) {
-    fprintf(stderr, "Failed to get boot info, ret: %d\n", ret);
-    return ret;
+  device->serial_timeout = previous_timeout;
+
+  if (ret == BLISP_OK) {
+    printf("Skipping handshake!\n");
+  } else {
+    printf("We can't; ignore the previous error.\n");
+    printf("Sending a handshake...\n");
+    ret = blisp_device_handshake(device, false);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to handshake with device, ret: %d\n", ret);
+      return ret;
+    }
+
+    printf("Handshake successful!\nGetting chip info...\n");
+    ret = blisp_device_get_boot_info(device, &boot_info);
+    if (ret != BLISP_OK) {
+      fprintf(stderr, "Failed to get boot info, ret: %d\n", ret);
+      return ret;
+    }
   }
 
   // TODO: Do we want this to print in big endian to match the output

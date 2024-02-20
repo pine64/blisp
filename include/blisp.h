@@ -16,6 +16,7 @@ struct blisp_segment_header {
 struct blisp_device {
   struct blisp_chip* chip;
   void* serial_port;
+  uint32_t serial_timeout; // in ms
   bool is_usb;
   uint32_t current_baud_rate;
   uint8_t rx_buffer[5000];  // TODO:
