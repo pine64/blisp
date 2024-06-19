@@ -13,6 +13,7 @@ struct cmd {
 };
 
 extern struct cmd cmd_write;
+extern struct cmd cmd_run;
 extern struct cmd cmd_iot;
 
 #endif  // BLISP_CMD_H

@@ -8,7 +8,10 @@
 struct blisp_easy_transport {
   uint8_t type;  // 0 - memory, 1 - FILE file_handle
   union {
-    FILE* file_handle;
+    struct {
+      FILE* file_handle;
+      int64_t file_size;
+    } file;
     struct {
       void* data_location;
       uint32_t data_size;

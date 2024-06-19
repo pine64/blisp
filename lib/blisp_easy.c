@@ -19,7 +19,7 @@ static blisp_return_t blisp_easy_transport_read(
     transport->data.memory.current_position += size;
     return size;
   } else {
-    return fread(buffer, size, 1, transport->data.file_handle);
+    return fread(buffer, size, 1, transport->data.file.file_handle);
   }
 }
 
@@ -28,9 +28,13 @@ static blisp_return_t blisp_easy_transport_size(
   if (transport->type == 0) {
     return transport->data.memory.data_size;
   } else {
-    // TODO: Implement
-    printf("%s() Warning: calling non-implemented function\n", __func__);
-    return BLISP_ERR_NOT_IMPLEMENTED;
+    if (transport->data.file.file_size == -1) {
+      FILE* handle = transport->data.file.file_handle;
+      fseek(handle, 0, SEEK_END);
+      transport->data.file.file_size = ftell(handle);
+      rewind(handle);
+    }
+    return transport->data.file.file_size;
   }
 }
 
@@ -43,7 +47,7 @@ static void blisp_easy_report_progress(blisp_easy_progress_callback callback,
 }
 
 struct blisp_easy_transport blisp_easy_transport_new_from_file(FILE* file) {
-  struct blisp_easy_transport transport = {.type = 1, .data.file_handle = file};
+  struct blisp_easy_transport transport = {.type = 1, .data.file.file_handle = file, .data.file.file_size = -1};
   return transport;
 }
 

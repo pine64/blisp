@@ -5,7 +5,7 @@
 #include "argtable3.h"
 #include "cmd.h"
 
-struct cmd* cmds[] = {&cmd_write, &cmd_iot};
+struct cmd* cmds[] = {&cmd_write, &cmd_run, &cmd_iot};
 
 static uint8_t cmds_count = sizeof(cmds) / sizeof(cmds[0]);
 

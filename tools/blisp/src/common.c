@@ -58,7 +58,8 @@ blisp_return_t blisp_common_init_device(struct blisp_device* device,
  * Prepares chip to access flash
  * this means performing handshake, and loading eflash_loader if needed.
  */
-blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
+blisp_return_t blisp_common_prepare_flash(struct blisp_device* device,
+                                          bool goto_eflash_loader) {
   blisp_return_t ret = 0;
 
   printf("Sending a handshake...\n");
@@ -84,7 +85,7 @@ blisp_return_t blisp_common_prepare_flash(struct blisp_device* device) {
       boot_info.chip_id[3], boot_info.chip_id[4], boot_info.chip_id[5],
       boot_info.chip_id[6], boot_info.chip_id[7]);
 
-  if (device->chip->load_eflash_loader == NULL) {
+  if (device->chip->load_eflash_loader == NULL || !goto_eflash_loader) {
     return BLISP_OK;
   }
 

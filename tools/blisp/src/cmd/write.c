@@ -174,7 +174,7 @@ blisp_return_t blisp_flash_firmware() {
     return ret;
   }
 
-  if (blisp_common_prepare_flash(&device) != 0) {
+  if (blisp_common_prepare_flash(&device, true) != 0) {
     // TODO: Error handling
     goto exit1;
   }

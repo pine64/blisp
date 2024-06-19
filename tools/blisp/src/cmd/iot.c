@@ -22,7 +22,7 @@ blisp_return_t blisp_single_download() {
   if (ret != BLISP_OK) {
     return ret;
   }
-  ret = blisp_common_prepare_flash(&device);
+  ret = blisp_common_prepare_flash(&device, true);
   if (ret != BLISP_OK) {
     // TODO: Error handling
     goto exit1;
