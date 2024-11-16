@@ -20,6 +20,7 @@ static struct arg_str *port_name, *chip_type;
 static struct arg_lit* reset;
 static struct arg_end* end;
 static void* cmd_write_argtable[6];
+static void cmd_write_args_print_glossary();
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   memcpy(boot_header->magiccode, "BFNP", 4);
@@ -168,6 +169,15 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
 blisp_return_t blisp_flash_firmware() {
   struct blisp_device device;
   blisp_return_t ret;
+
+  if (access(binary_to_write->filename[0], R_OK) != 0) {
+    // File not accessible, error out.
+    fprintf(stderr, "Input firmware not found: %s\n", binary_to_write->filename[0]);
+    cmd_write_args_print_glossary(); /* Print help to assist user */
+    /* No need to free memory, will now exit with ret code 1 */
+    return 1;
+  }
+
   ret = blisp_common_init_device(&device, port_name, chip_type);
 
   if (ret != 0) {
@@ -178,6 +188,7 @@ blisp_return_t blisp_flash_firmware() {
     // TODO: Error handling
     goto exit1;
   }
+
   parsed_firmware_file_t parsed_file;
   memset(&parsed_file, 0, sizeof(parsed_file));
   int parsed_result =
