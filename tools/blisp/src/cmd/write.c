@@ -222,13 +222,13 @@ blisp_return_t blisp_flash_firmware() {
 
   if (ret != BLISP_OK) {
     fprintf(stderr,
-            "Failed to erase flash. Tried to erase from 0x%08X to 0x%08X\n",
+            "Failed to erase flash. Tried to erase from 0x%08lu to 0x%08lu\n",
             parsed_file.payload_address,
             parsed_file.payload_address + parsed_file.payload_length + 1);
     goto exit2;
   }
 
-  printf("Flashing the firmware %d bytes @ 0x%08X...\n",
+  printf("Flashing the firmware %lu bytes @ 0x%08lu...\n",
          parsed_file.payload_length, parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
       blisp_easy_transport_new_from_memory(parsed_file.payload,
