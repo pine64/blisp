@@ -13,10 +13,19 @@ static struct arg_str *port_name, *chip_type;  // TODO: Make this common
 static struct arg_lit* reset;
 static struct arg_end* end;
 static void* cmd_iot_argtable[7];
+static void cmd_iot_args_print_glossary();
 
 blisp_return_t blisp_single_download() {
   struct blisp_device device;
   blisp_return_t ret;
+
+  if (access(single_download->filename[0], R_OK) != 0) {
+    // File not accessible, error out.
+    fprintf(stderr, "Input firmware not found: %s\n", single_download->filename[0]);
+    cmd_iot_args_print_glossary(); /* Print help to assist user */
+    /* No need to free memory, will now exit with ret code 1 */
+    return 1;
+  }
 
   ret = blisp_common_init_device(&device, port_name, chip_type);
   if (ret != BLISP_OK) {
