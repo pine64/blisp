@@ -2,6 +2,22 @@ name: Build
 on: [push, pull_request]
 
 jobs:
+  check-nix-flake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v30
+      - name: Check Nix Flake
+        run: nix flake check --print-build-logs
+
+  check-nix-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v30
+      - name: Build package
+        run: nix build --print-build-logs
+
   build-windows:
     runs-on: windows-2022
     defaults:
