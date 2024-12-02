@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 project(blisp C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 11)
@@ -42,11 +43,10 @@ set_target_properties(libblisp_static PROPERTIES
         OUTPUT_NAME "blisp")
 
 if(BLISP_USE_SYSTEM_LIBRARIES)
-    find_package(PkgConfig)
-    pkg_search_module(LIBSERIALPORT REQUIRED libserialport)
-    target_link_libraries(libblisp PUBLIC ${LIBSERIALPORT_LIBRARIES})
-    target_link_libraries(libblisp_static PUBLIC ${LIBSERIALPORT_LIBRARIES})
-    target_include_directories(libblisp_obj PUBLIC ${LIBSERIALPORT_INCLUDE_DIRS})
+    find_package(Libserialport REQUIRED)
+    target_link_libraries(libblisp PUBLIC Libserialport::Libserialport)
+    target_link_libraries(libblisp_static PUBLIC Libserialport::Libserialport)
+    target_include_directories(libblisp_obj PUBLIC ${Libserialport_INCLUDE_DIRS})
 else()
 	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
 	target_sources(libblisp_obj PRIVATE
