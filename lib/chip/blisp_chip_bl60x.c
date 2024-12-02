@@ -4,7 +4,7 @@
 #include "../../data/bl60x_eflash_loader.h"
 #include "blisp.h"
 
-int64_t blisp_chip_bl60x_get_eflash_loader(uint8_t clk_type, uint8_t** firmware_buf_ptr)
+int64_t blisp_chip_bl60x_get_eflash_loader([[maybe_unused]] uint8_t clk_type, uint8_t** firmware_buf_ptr)
 {
   uint8_t* firmware_buf = malloc(sizeof(bl60x_eflash_loader_bin));
   memcpy(firmware_buf, bl60x_eflash_loader_bin, sizeof(bl60x_eflash_loader_bin));

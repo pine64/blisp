@@ -13,7 +13,7 @@
 
 #define DEBUG
 
-static void drain(struct sp_port* port) {
+static void drain([[maybe_unused]] struct sp_port* port) {
 #if defined(__APPLE__) || defined(__FreeBSD__)
   sp_drain(port);
 #endif

@@ -10,10 +10,13 @@ option(COMPILE_TESTS "Compile the tests" OFF)
 
 add_library(libblisp_obj OBJECT
         lib/blisp.c
+        lib/blisp_easy.c
+        lib/blisp_util.c
         lib/chip/blisp_chip_bl60x.c
-        lib/chip/blisp_chip_bl70x.c lib/blisp_easy.c)
+        lib/chip/blisp_chip_bl70x.c)
 
 target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/include/)
+target_compile_options(libblisp_obj PRIVATE -Wall -Wextra -Wpedantic)
 
 set_property(TARGET libblisp_obj PROPERTY POSITION_INDEPENDENT_CODE 1)
 
