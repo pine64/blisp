@@ -82,7 +82,7 @@ jobs:
           name: blips-linux-x86_64.zip
           path: |
             build/tools/blisp/blisp
-          if-no-files-found: error 
+          if-no-files-found: error
 
   build-linux-alternative-arch:
     runs-on: ubuntu-latest
@@ -154,4 +154,4 @@ jobs:
           name: blisp-linux-${{ matrix.arch }}.zip
           path: |
             artifacts/blisp-*
-          if-no-files-found: error 
+          if-no-files-found: error
