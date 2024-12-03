@@ -24,7 +24,7 @@ jobs:
       run:
         shell: cmd
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - uses: lukka/get-cmake@latest
@@ -35,7 +35,7 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: blips-windows-x86_64.zip
           path: |
@@ -45,7 +45,7 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - uses: lukka/get-cmake@latest
@@ -56,7 +56,7 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: blips-apple-universal.zip
           path: |
@@ -66,7 +66,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - uses: lukka/get-cmake@latest
@@ -77,12 +77,12 @@ jobs:
           cmake .. -DBLISP_BUILD_CLI=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build .
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: blips-linux-x86_64.zip
           path: |
             build/tools/blisp/blisp
-          if-no-files-found: error 
+          if-no-files-found: error
 
   build-linux-alternative-arch:
     runs-on: ubuntu-latest
@@ -99,7 +99,7 @@ jobs:
           - arch: riscv64
             distro: ubuntu_latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - uses: uraimo/run-on-arch-action@v2
@@ -149,9 +149,9 @@ jobs:
             echo "Produced artifact at /artifacts/${artifact_name}"
 
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: blisp-linux-${{ matrix.arch }}.zip
           path: |
             artifacts/blisp-*
-          if-no-files-found: error 
+          if-no-files-found: error
