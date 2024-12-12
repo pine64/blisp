@@ -20,7 +20,7 @@ target_include_directories(blisp PRIVATE
         "${CMAKE_SOURCE_DIR}/include")
 
 target_link_libraries(blisp PRIVATE
-        argtable3
+        argtable3::argtable3
         libblisp_static file_parsers)
 
 if (WIN32)
