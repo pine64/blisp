@@ -17,7 +17,7 @@ Bouffalo Labs ISP (in-system-programming) tool & library: an open source tool to
 <br>
 
 ## Supported Devices 
- | System  | <img width="15" src="https://cdn.simpleicons.org/Windows11/5791ac" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple/5791ac" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/5791ac" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/5791ac" /> FreeBSD |
+ | System  | <img width="15" src="img/win32.png" /> Windows | <img width="15" src="https://cdn.simpleicons.org/Apple/5791ac" /> MacOS| <img width="17" src="https://cdn.simpleicons.org/Linux/5791ac" /> Linux| <img width="15" src="https://cdn.simpleicons.org/Freebsd/5791ac" /> FreeBSD |
  | :-----: | :------: | :------: | :------: | :------: |
  | Pinecil V2  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
  | Pinecone  |<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />|<img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" />| <img width="22" src="https://cdn.simpleicons.org/cachet/5791ac" /> |
