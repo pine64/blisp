@@ -360,13 +360,13 @@ blisp_return_t blisp_device_flash_erase(struct blisp_device* device,
   *(uint32_t*)(payload + 4) = end_address;
 
   blisp_return_t ret = blisp_send_command(device, 0x30, payload, 8, true);
-  if (ret < 0)
+  if (ret != BLISP_OK)
     return ret;
   do {
     ret = blisp_receive_response(device, false);
   } while (ret == BLISP_ERR_PENDING);
 
-  return 0;
+  return ret;
 }
 
 blisp_return_t blisp_device_flash_write(struct blisp_device* device,
