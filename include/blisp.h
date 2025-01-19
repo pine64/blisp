@@ -60,5 +60,4 @@ int32_t blisp_device_flash_write(struct blisp_device* device,
 int32_t blisp_device_program_check(struct blisp_device* device);
 int32_t blisp_device_reset(struct blisp_device* device);
 void blisp_device_close(struct blisp_device* device);
-
 #endif
