@@ -48,13 +48,13 @@ if(BLISP_USE_SYSTEM_LIBRARIES)
     target_link_libraries(libblisp_static PUBLIC Libserialport::Libserialport)
     target_include_directories(libblisp_obj PUBLIC ${Libserialport_INCLUDE_DIRS})
 else()
-	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-	target_sources(libblisp_obj PRIVATE
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+        target_sources(libblisp_obj PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/serialport.c
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/timing.c)
 
-	target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
-	endif()
+        target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+    endif()
 
     if(WIN32)
         target_link_libraries(libblisp PRIVATE Setupapi.lib)
@@ -92,7 +92,7 @@ else()
 endif()
 
 include(GNUInstallDirs)
-install(TARGETS libblisp libblisp_static 
+install(TARGETS libblisp libblisp_static
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -105,5 +105,6 @@ endif()
 
 
 if(COMPILE_TESTS)
-    add_subdirectory(tools/blisp/src/cmd/dfu/tests)
+    add_subdirectory(tools/blisp/src/file_parsers/dfu/tests)
+    add_subdirectory(tools/blisp/src/file_parsers/hex/tests)
 endif(COMPILE_TESTS)
