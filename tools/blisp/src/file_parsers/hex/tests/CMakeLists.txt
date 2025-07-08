@@ -20,7 +20,7 @@ target_link_libraries(hex_file_test
         PRIVATE
         GTest::GTest
         )
-include_directories(hex_file_test PRIVATE ../ )
+include_directories(hex_file_test PRIVATE ../ ../../)
 add_test(hex_file_test_gtests hex_file_test)
 
 configure_file(Config.h.in ${CMAKE_BINARY_DIR}/Config.h)
