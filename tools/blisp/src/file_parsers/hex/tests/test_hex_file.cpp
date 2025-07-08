@@ -1,9 +1,6 @@
-//
-// Created for Intel HEX file tests
-//
+// Intel hex file parser test
 
 #include <gtest/gtest.h>
-#include "Config.h"
 #include "hex_file.h"
 #include "parse_file.h"
 
@@ -11,10 +8,11 @@ TEST(HEX_FILE_PARSER, ParseTestFile) {
   uint8_t* payload = nullptr;
   size_t payload_size = 0;
   size_t payload_address = 0;
-  int res = hex_file_parse(SOURCE_DIR "/test.hex", &payload, &payload_size,
-                           &payload_address);
-
-  ASSERT_EQ(res, 1);
+  int res = hex_file_parse(SOURCE_DIR
+                           "/tools/blisp/src/file_parsers/hex/tests/test.hex",
+                           &payload, &payload_size, &payload_address);
+  // Shall return 0 on success
+  ASSERT_EQ(res, 0);
   // The expected base address is 0x230F0000 + 0xFC00 = 0x230FFC00
   ASSERT_EQ(payload_address, 0x230FFC00);
   // There are 7 data records of 16 bytes each, so payload size should be 0x70
