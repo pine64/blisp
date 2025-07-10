@@ -6,6 +6,8 @@
 
 int64_t blisp_chip_bl70x_get_eflash_loader(uint8_t clk_type, uint8_t** firmware_buf_ptr)
 {
+  (void) clk_type; // ununsed
+
   uint8_t* firmware_buf = malloc(sizeof(bl70x_eflash_loader_bin));
   memcpy(firmware_buf, bl70x_eflash_loader_bin, sizeof(bl70x_eflash_loader_bin));
   *(firmware_buf + 0xE0) = 1; // TODO: 32 MHz clock

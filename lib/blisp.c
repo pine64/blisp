@@ -16,6 +16,8 @@
 static void drain(struct sp_port* port) {
 #if defined(__APPLE__) || defined(__FreeBSD__)
   sp_drain(port);
+#else
+  (void)port; // unused
 #endif
 }
 
