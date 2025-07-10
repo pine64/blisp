@@ -30,7 +30,7 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
 
 blisp_return_t blisp_device_open(struct blisp_device* device,
                                  const char* port_name) {
-  blisp_return_t ret;
+  enum sp_return ret;
   struct sp_port* serial_port = NULL;
 
   if (port_name != NULL) {
