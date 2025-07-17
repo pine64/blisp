@@ -497,6 +497,9 @@ blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
   const uint8_t flash_clk_delay = 0;
   
   // Yes, these values are (slightly) different to the ones in blisp_chip_bl808.c
+  // These values were obtained by observing the raw bytes sent by Bouffalo's
+  // own flashing software. So for whatever reason, the flash configuration needs
+  // to be different when flashing the chip vs. when the chip is running normally.
   const static struct bl808_spi_flash_cfg_t cfg = {
     .ioMode = 0x04,
     .cReadSupport = 0x01,
