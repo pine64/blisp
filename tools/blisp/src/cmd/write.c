@@ -21,6 +21,7 @@ static struct arg_int *baudrate;
 static struct arg_lit* reset;
 static struct arg_end* end;
 static void* cmd_write_argtable[7];
+static void cmd_write_args_print_glossary();
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   memcpy(boot_header->magiccode, "BFNP", 4);
@@ -180,8 +181,15 @@ blisp_return_t blisp_flash_firmware(void) {
     }
   }
 
-  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
+  if (access(binary_to_write->filename[0], R_OK) != 0) {
+    // File not accessible, error out.
+    fprintf(stderr, "Input firmware not found: %s\n", binary_to_write->filename[0]);
+    cmd_write_args_print_glossary(); /* Print help to assist user */
+    /* No need to free memory, will now exit with ret code 1 */
+    return 1;
+  }
 
+  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
   if (ret != 0) {
     return ret;
   }
@@ -190,6 +198,7 @@ blisp_return_t blisp_flash_firmware(void) {
     // TODO: Error handling
     goto exit1;
   }
+
   parsed_firmware_file_t parsed_file;
   memset(&parsed_file, 0, sizeof(parsed_file));
   int parsed_result =
@@ -234,13 +243,13 @@ blisp_return_t blisp_flash_firmware(void) {
 
   if (ret != BLISP_OK) {
     fprintf(stderr,
-            "Failed to erase flash. Tried to erase from 0x%08X to 0x%08X\n",
+            "Failed to erase flash. Tried to erase from 0x%08lu to 0x%08lu\n",
             parsed_file.payload_address,
             parsed_file.payload_address + parsed_file.payload_length + 1);
     goto exit2;
   }
 
-  printf("Flashing the firmware %d bytes @ 0x%08X...\n",
+  printf("Flashing the firmware %lu bytes @ 0x%08lu...\n",
          parsed_file.payload_length, parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
       blisp_easy_transport_new_from_memory(parsed_file.payload,

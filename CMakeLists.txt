@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 project(blisp C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 11)
@@ -43,19 +44,18 @@ set_target_properties(libblisp_static PROPERTIES
         OUTPUT_NAME "blisp")
 
 if(BLISP_USE_SYSTEM_LIBRARIES)
-    find_package(PkgConfig)
-    pkg_search_module(LIBSERIALPORT REQUIRED libserialport)
-    target_link_libraries(libblisp PUBLIC ${LIBSERIALPORT_LIBRARIES})
-    target_link_libraries(libblisp_static PUBLIC ${LIBSERIALPORT_LIBRARIES})
-    target_include_directories(libblisp_obj PUBLIC ${LIBSERIALPORT_INCLUDE_DIRS})
+    find_package(Libserialport REQUIRED)
+    target_link_libraries(libblisp PUBLIC Libserialport::Libserialport)
+    target_link_libraries(libblisp_static PUBLIC Libserialport::Libserialport)
+    target_include_directories(libblisp_obj PUBLIC ${Libserialport_INCLUDE_DIRS})
 else()
-	if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-	target_sources(libblisp_obj PRIVATE
+    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
+        target_sources(libblisp_obj PRIVATE
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/serialport.c
         ${CMAKE_SOURCE_DIR}/vendor/libserialport/timing.c)
 
-	target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
-	endif()
+        target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/vendor/libserialport)
+    endif()
 
     if(WIN32)
         target_link_libraries(libblisp PRIVATE Setupapi.lib)
@@ -93,7 +93,7 @@ else()
 endif()
 
 include(GNUInstallDirs)
-install(TARGETS libblisp libblisp_static 
+install(TARGETS libblisp libblisp_static
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -106,5 +106,21 @@ endif()
 
 
 if(COMPILE_TESTS)
-    add_subdirectory(tools/blisp/src/cmd/dfu/tests)
+    # Bring in googletest & C++
+    enable_language(CXX)
+    enable_testing()
+    include(FetchContent)
+
+
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.17.0
+    )
+    FetchContent_MakeAvailable(googletest)
+    add_library(GTest::GTest INTERFACE IMPORTED)
+    target_link_libraries(GTest::GTest INTERFACE gtest_main)
+
+    add_subdirectory(tools/blisp/src/file_parsers/dfu/tests)
+    add_subdirectory(tools/blisp/src/file_parsers/hex/tests)
 endif(COMPILE_TESTS)

@@ -16,6 +16,7 @@ static struct arg_lit* reset;
 static struct arg_lit* chiperase;
 static struct arg_end* end;
 static void* cmd_iot_argtable[9];
+static void cmd_iot_args_print_glossary();
 
 blisp_return_t blisp_single_download(void) {
   struct blisp_device device;
@@ -31,8 +32,15 @@ blisp_return_t blisp_single_download(void) {
     }
   }
 
-  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
+  if (access(single_download->filename[0], R_OK) != 0) {
+    // File not accessible, error out.
+    fprintf(stderr, "Input firmware not found: %s\n", single_download->filename[0]);
+    cmd_iot_args_print_glossary(); /* Print help to assist user */
+    /* No need to free memory, will now exit with ret code 1 */
+    return 1;
+  }
 
+  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
   if (ret != BLISP_OK) {
     return ret;
   }
