@@ -2,6 +2,7 @@
 #include <string.h>
 #include "bin_file.h"
 #include "dfu_file.h"
+#include "hex_file.h"
 
 const char* get_filename_ext(const char* filename) {
   const char* dot = strrchr(filename, '.');
@@ -27,8 +28,13 @@ int parse_firmware_file(const char* file_path_on_disk,
     res = bin_file_parse(file_path_on_disk, &parsed_results->payload,
                          &parsed_results->payload_length,
                          &parsed_results->payload_address);
+  } else if (strncmp(ext, "hex", 3) == 0 || strncmp(ext, "HEX", 3) == 0) {
+    printf("Input file identified as a .hex file\n");
+    // Intel HEX file
+    res = hex_file_parse(file_path_on_disk, &parsed_results->payload,
+                         &parsed_results->payload_length,
+                         &parsed_results->payload_address);
   }
-  // If we wanted to support hex files, here would be where
 
   // Normalise address, some builds will base the firmware at flash start but
   // for the flasher we use 0 base (i.e. offsets into flash)

@@ -78,6 +78,7 @@ int dfu_file_parse(const char* file_path_on_disk,
                    size_t* payload_address) {
   uint8_t* dfu_file_contents = NULL;
   ssize_t file_size = get_file_contents(file_path_on_disk, &dfu_file_contents);
+  // Bubble up the result if it was an error instead of size (a negative value)
   if (file_size < 0) {
     return file_size;
   }

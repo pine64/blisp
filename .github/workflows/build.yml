@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
       - uses: lukka/get-cmake@latest
       - name: Build blisp tool
         run: |
@@ -101,7 +101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
       - uses: uraimo/run-on-arch-action@v2
         name: Build artifact
         id: build
@@ -155,3 +155,29 @@ jobs:
           path: |
             artifacts/blisp-*
           if-no-files-found: error
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+      - uses: lukka/get-cmake@latest
+      - name: Build blisp tool & unit tests
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBLISP_BUILD_CLI=ON -DCOMPILE_TESTS=ON
+          cmake --build .
+      - name: Run unit tests
+        run: |
+          cd build
+          for f in $(find . -type f -executable -iname "*_test"); do
+            echo "Running test file $f"
+            "$f"
+            status=$?
+            if [ $status -ne 0 ]; then
+              echo "Test $f failed with exit code $status"
+              exit $status
+            fi
+          done
