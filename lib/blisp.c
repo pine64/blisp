@@ -252,7 +252,7 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
     if (ok) {
       return BLISP_OK;
     } else {
-      blisp_dlog("Received incorrect handshake response from chip (attemp %d/5).", i+1);
+      blisp_dlog("Received incorrect handshake response from chip (attempt %d/5).", i+1);
       blisp_dlog_no_nl("Could not find 0x%02X 0x%02X ('O', 'K') in: ", 'O', 'K');
       if (ret) {
         for (uint8_t j=0; j <= ret; j++) {
