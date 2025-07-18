@@ -471,18 +471,18 @@ void blisp_device_close(struct blisp_device* device) {
 
 blisp_return_t bl808_load_clock_para(struct blisp_device* device,
                                      bool irq_en, uint32_t baudrate) {
-  // XXX: this may be a good place to increase the baudrate for subsequent comms
-  const uint32_t clock_para_size = sizeof(struct bl808_boot_clk_cfg_t);
-  const uint32_t payload_size = 8 + clock_para_size;
-  uint8_t payload[payload_size];
-  memset(payload, 0, payload_size);
+  #define bl808_load_clock_para_payload_size 36
+  static_assert(bl808_load_clock_para_payload_size == sizeof(struct bl808_boot_clk_cfg_t) + 8,
+    "BL808 clock parameter struct size mismatch");
+  uint8_t payload[bl808_load_clock_para_payload_size] = { 0 };
 
   uint32_t irq_enable = irq_en ? 1 : 0;
   memcpy(&payload[0], &irq_enable, 4);
   memcpy(&payload[4], &baudrate, 4);
-  memcpy(&payload[8], &bl808_header.clk_cfg, clock_para_size);
+  memcpy(&payload[8], &bl808_header.clk_cfg, sizeof(struct bl808_boot_clk_cfg_t));
 
-  blisp_return_t ret = blisp_send_command(device, 0x22, payload, payload_size, true);
+  blisp_return_t ret = blisp_send_command(device, 0x22, payload,
+    bl808_load_clock_para_payload_size, true);
   if (ret < 0)
     return ret;
   ret = blisp_receive_response(device, false);
@@ -585,17 +585,20 @@ blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
     .pdDelay = 0x03,
     .qeData = 0,
   };
-  
-  const uint32_t payload_size = 4 + sizeof(struct bl808_spi_flash_cfg_t);
-  uint8_t payload[payload_size];
-  memset(payload, 0, payload_size);
+
+  #define bl808_load_flash_para_payload_size 88
+  static_assert(bl808_load_flash_para_payload_size == sizeof(struct bl808_spi_flash_cfg_t) + 4,
+    "BL808 flash parameter struct size mismatch");
+  uint8_t payload[bl808_load_flash_para_payload_size] = { 0 };
+
   payload[0] = flash_pin;
   payload[1] = flash_clk_cfg;
   payload[2] = flash_io_mode;
   payload[3] = flash_clk_delay;
   memcpy(&payload[4], &cfg, sizeof(struct bl808_spi_flash_cfg_t));
 
-  blisp_return_t ret = blisp_send_command(device, 0x3b, payload, payload_size, true);
+  blisp_return_t ret = blisp_send_command(device, 0x3b, payload,
+    bl808_load_flash_para_payload_size, true);
   if (ret < 0)
     return ret;
   ret = blisp_receive_response(device, false);
