@@ -168,31 +168,35 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
 
 blisp_return_t blisp_flash_firmware() {
   struct blisp_device device;
-  blisp_return_t ret;
+  blisp_return_t ret = BLISP_OK;
 
   if (access(binary_to_write->filename[0], R_OK) != 0) {
     // File not accessible, error out.
     fprintf(stderr, "Input firmware not found: %s\n", binary_to_write->filename[0]);
     cmd_write_args_print_glossary(); /* Print help to assist user */
     /* No need to free memory, will now exit with ret code 1 */
-    return 1;
+    return BLISP_ERR_CANT_OPEN_FILE;
   }
 
   ret = blisp_common_init_device(&device, port_name, chip_type);
-
-  if (ret != 0) {
+  if (ret != BLISP_OK) {
     return ret;
   }
 
-  if (blisp_common_prepare_flash(&device) != 0) {
+  ret = blisp_common_prepare_flash(&device);
+  if (ret != BLISP_OK) {
     // TODO: Error handling
     goto exit1;
   }
 
   parsed_firmware_file_t parsed_file;
   memset(&parsed_file, 0, sizeof(parsed_file));
-  int parsed_result =
-      parse_firmware_file(binary_to_write->filename[0], &parsed_file);
+  if (parse_firmware_file(binary_to_write->filename[0], &parsed_file) < 0) {
+    // `parse_firmware_file` doesn't return `blisp_return_t`
+    // so we default to the generic error.
+    ret = BLISP_ERR_UNKNOWN;
+    goto exit1;
+  }
 
   // If we are injecting a bootloader section, make it, erase flash, and flash
   // it. Then when we do firmware later on; it will be located afterwards
@@ -233,13 +237,13 @@ blisp_return_t blisp_flash_firmware() {
 
   if (ret != BLISP_OK) {
     fprintf(stderr,
-            "Failed to erase flash. Tried to erase from 0x%08lu to 0x%08lu\n",
+            "Failed to erase flash. Tried to erase from 0x%08zx to 0x%08zx\n",
             parsed_file.payload_address,
             parsed_file.payload_address + parsed_file.payload_length + 1);
     goto exit2;
   }
 
-  printf("Flashing the firmware %lu bytes @ 0x%08lu...\n",
+  printf("Flashing the firmware %zu bytes @ 0x%08zx...\n",
          parsed_file.payload_length, parsed_file.payload_address);
   struct blisp_easy_transport data_transport =
       blisp_easy_transport_new_from_memory(parsed_file.payload,
@@ -249,7 +253,7 @@ blisp_return_t blisp_flash_firmware() {
       &device, &data_transport, parsed_file.payload_address,
       parsed_file.payload_length, blisp_common_progress_callback);
 
-  if (ret < BLISP_OK) {
+  if (ret != BLISP_OK) {
     fprintf(stderr, "Failed to write app to flash.\n");
     goto exit2;
   }
@@ -275,6 +279,8 @@ exit2:
     free(parsed_file.payload);
 exit1:
   blisp_device_close(&device);
+
+  return ret;
 }
 
 blisp_return_t cmd_write_args_init() {

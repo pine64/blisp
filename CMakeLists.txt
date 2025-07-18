@@ -11,10 +11,21 @@ option(COMPILE_TESTS "Compile the tests" OFF)
 
 add_library(libblisp_obj OBJECT
         lib/blisp.c
+        lib/blisp_easy.c
+        lib/blisp_util.c
         lib/chip/blisp_chip_bl60x.c
-        lib/chip/blisp_chip_bl70x.c lib/blisp_easy.c)
+        lib/chip/blisp_chip_bl70x.c)
 
 target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/include/)
+if (NOT CMAKE_C_COMPILER_ID MATCHES "MSVC")
+  target_compile_options(libblisp_obj PRIVATE -Wall -Wextra -Wpedantic)
+else()
+  # MSVC does not support 'extra' and 'pedantic' levels to warnings.
+  # `/Wall` seems to generate way too many non-actionable output marked as warnings.
+  # We settle for `/W4`.
+  # https://learn.microsoft.com/en-us/cpp/build/reference/compiler-option-warning-level?view=msvc-170
+  target_compile_options(libblisp_obj PRIVATE -W4)
+endif()
 
 set_property(TARGET libblisp_obj PROPERTY POSITION_INDEPENDENT_CODE 1)
 

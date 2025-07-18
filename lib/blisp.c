@@ -16,6 +16,8 @@
 static void drain(struct sp_port* port) {
 #if defined(__APPLE__) || defined(__FreeBSD__)
   sp_drain(port);
+#else
+  (void)port; // unused
 #endif
 }
 
@@ -28,7 +30,7 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
 
 blisp_return_t blisp_device_open(struct blisp_device* device,
                                  const char* port_name) {
-  blisp_return_t ret;
+  enum sp_return ret;
   struct sp_port* serial_port = NULL;
 
   if (port_name != NULL) {
@@ -190,8 +192,8 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
     sleep_ms(50);  // Wait a bit so BootROM can init
   }
 
-  uint32_t bytes_count = device->chip->handshake_byte_multiplier *
-                         (float)device->current_baud_rate / 10.0f;
+  uint32_t bytes_count = (uint32_t)(device->chip->handshake_byte_multiplier *
+                                    (float)device->current_baud_rate / 10.0f);
   if (bytes_count > 600)
     bytes_count = 600;
   memset(handshake_buffer, 'U', bytes_count);

@@ -23,6 +23,16 @@ target_link_libraries(blisp PRIVATE
         argtable3::argtable3
         libblisp_static file_parsers)
 
+if (NOT CMAKE_C_COMPILER_ID MATCHES "MSVC")
+  target_compile_options(libblisp_obj PRIVATE -Wall -Wextra -Wpedantic)
+else()
+  # MSVC does not support 'extra' and 'pedantic' levels to warnings.
+  # `/Wall` seems to generate way too many non-actionable output marked as warnings.
+  # We settle for `/W4`.
+  # https://learn.microsoft.com/en-us/cpp/build/reference/compiler-option-warning-level?view=msvc-170
+  target_compile_options(libblisp_obj PRIVATE -W4)
+endif()
+
 if (WIN32)
     target_link_libraries(blisp PRIVATE Setupapi.lib)
 elseif (APPLE)
