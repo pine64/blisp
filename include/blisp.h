@@ -33,12 +33,14 @@ struct blisp_boot_info {
 // image_run, image_check etc.
 
 blisp_return_t blisp_device_init(struct blisp_device* device, struct blisp_chip* chip);
-blisp_return_t blisp_device_open(struct blisp_device* device, const char* port_name, uint32_t baudrate);
+blisp_return_t blisp_device_open(struct blisp_device* device, const char* port_name,
+                                 uint32_t baudrate);
 blisp_return_t blisp_device_handshake(struct blisp_device* device, bool in_ef_loader);
 blisp_return_t blisp_device_get_boot_info(struct blisp_device* device,
                                           struct blisp_boot_info* boot_info);
 blisp_return_t blisp_device_load_boot_header(struct blisp_device* device,
                                              uint8_t* boot_header);
+
 blisp_return_t blisp_device_load_segment_header(
     struct blisp_device* device,
     struct blisp_segment_header* segment_header);
@@ -59,6 +61,7 @@ blisp_return_t blisp_device_flash_write(struct blisp_device* device,
                                         uint32_t start_address,
                                         uint8_t* payload,
                                         uint32_t payload_size);
+
 blisp_return_t blisp_device_program_check(struct blisp_device* device);
 blisp_return_t blisp_device_reset(struct blisp_device* device);
 void blisp_device_close(struct blisp_device* device);

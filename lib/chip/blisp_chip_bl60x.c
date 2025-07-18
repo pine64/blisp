@@ -6,6 +6,8 @@
 
 int64_t blisp_chip_bl60x_get_eflash_loader(uint8_t clk_type, uint8_t** firmware_buf_ptr)
 {
+  (void)clk_type; // unused
+
   uint8_t* firmware_buf = malloc(sizeof(bl60x_eflash_loader_bin));
   memcpy(firmware_buf, bl60x_eflash_loader_bin, sizeof(bl60x_eflash_loader_bin));
   *(firmware_buf + 0xE0) = 4; // TODO: 40 MHz clock

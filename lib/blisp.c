@@ -18,6 +18,8 @@
 static void drain(struct sp_port* port) {
 #if defined(__APPLE__) || defined(__FreeBSD__)
   sp_drain(port);
+#else
+  (void)port; // unused
 #endif
 }
 
@@ -42,7 +44,7 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
 blisp_return_t blisp_device_open(struct blisp_device* device,
                                  const char* port_name,
                                  uint32_t baudrate) {
-  blisp_return_t ret;
+  enum sp_return ret;
   struct sp_port* serial_port = NULL;
 
   if (port_name != NULL) {
@@ -202,8 +204,8 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
     sleep_ms(50);  // Wait a bit so BootROM can init
   }
 
-  uint32_t bytes_count = device->chip->handshake_byte_multiplier *
-                         (float)device->current_baud_rate / 10.0f;
+  uint32_t bytes_count = (uint32_t)(device->chip->handshake_byte_multiplier *
+                                    (float)device->current_baud_rate / 10.0f);
   if (bytes_count > 600)
     bytes_count = 600;
   memset(handshake_buffer, 'U', bytes_count);
@@ -230,7 +232,7 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
 
     if (device->chip->type == BLISP_CHIP_BL808) {
       sleep_ms(300);
-      const static uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+      static const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
       ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
       if (ret < 0) {
         blisp_dlog("Second handshake write failed, ret %d", ret);
@@ -247,8 +249,10 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
       }
     }
 
-    if (!ok) {
-      blisp_dlog("Received incorrect handshake response from chip.");
+    if (ok) {
+      return BLISP_OK;
+    } else {
+      blisp_dlog("Received incorrect handshake response from chip (attemp %d/5).", i+1);
       blisp_dlog_no_nl("Could not find 0x%02X 0x%02X ('O', 'K') in: ", 'O', 'K');
       if (ret) {
         for (uint8_t j=0; j <= ret; j++) {
@@ -256,11 +260,11 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
         }
       }
       blisp_dlog("");
-      return BLISP_ERR_NO_RESPONSE;
     }
-
-    return BLISP_OK;
   }
+
+  blisp_dlog("Did not receive correct response from chip after 5 attempts.");
+  return BLISP_ERR_NO_RESPONSE;
 }
 
 blisp_return_t blisp_device_get_boot_info(struct blisp_device* device,
@@ -470,7 +474,8 @@ blisp_return_t bl808_load_clock_para(struct blisp_device* device,
   // XXX: this may be a good place to increase the baudrate for subsequent comms
   const uint32_t clock_para_size = sizeof(struct bl808_boot_clk_cfg_t);
   const uint32_t payload_size = 8 + clock_para_size;
-  uint8_t payload[payload_size] = {};
+  uint8_t payload[payload_size];
+  memset(payload, 0, payload_size);
 
   uint32_t irq_enable = irq_en ? 1 : 0;
   memcpy(&payload[0], &irq_enable, 4);
@@ -500,7 +505,7 @@ blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
   // These values were obtained by observing the raw bytes sent by Bouffalo's
   // own flashing software. So for whatever reason, the flash configuration needs
   // to be different when flashing the chip vs. when the chip is running normally.
-  const static struct bl808_spi_flash_cfg_t cfg = {
+  static const struct bl808_spi_flash_cfg_t cfg = {
     .ioMode = 0x04,
     .cReadSupport = 0x01,
     .clkDelay = 0,
@@ -582,7 +587,8 @@ blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
   };
   
   const uint32_t payload_size = 4 + sizeof(struct bl808_spi_flash_cfg_t);
-  uint8_t payload[payload_size] = {};
+  uint8_t payload[payload_size];
+  memset(payload, 0, payload_size);
   payload[0] = flash_pin;
   payload[1] = flash_clk_cfg;
   payload[2] = flash_io_mode;
