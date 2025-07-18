@@ -173,7 +173,7 @@ struct blflash_segment_header {
 static_assert(sizeof(struct blflash_segment_header) == 16,
               "Segment header have wrong size");
 
-struct __attribute__((packed, aligned(4))) bl808_spi_flash_cfg_t {
+struct bl808_spi_flash_cfg_t {
     uint8_t ioMode;               /*!< Serail flash interface mode,bit0-3:IF mode,bit4:unwrap */
     uint8_t cReadSupport;         /*!< Support continuous read mode,bit0:continuous read mode support,bit1:read mode cfg */
     uint8_t clkDelay;             /*!< SPI clock delay,bit0-3:delay,bit4-6:pad delay */
@@ -248,13 +248,13 @@ struct __attribute__((packed, aligned(4))) bl808_spi_flash_cfg_t {
     uint8_t qeData;               /*!< QE set data */
 };
 
-struct __attribute__((packed, aligned(4))) bl808_boot_flash_cfg_t {
+struct bl808_boot_flash_cfg_t {
     uint32_t magiccode;
     struct bl808_spi_flash_cfg_t cfg;
     uint32_t crc32;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_sys_clk_cfg_t {
+struct bl808_sys_clk_cfg_t {
     uint8_t xtal_type;
     uint8_t mcu_clk;
     uint8_t mcu_clk_div;
@@ -281,13 +281,13 @@ struct __attribute__((packed, aligned(4))) bl808_sys_clk_cfg_t {
     uint8_t uhspll_pu;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_boot_clk_cfg_t {
+struct bl808_boot_clk_cfg_t {
     uint32_t magiccode;
     struct bl808_sys_clk_cfg_t cfg;
     uint32_t crc32;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_boot_basic_cfg_t {
+struct bl808_boot_basic_cfg_t {
     uint32_t sign_type          : 2; /* [1: 0]   for sign */
     uint32_t encrypt_type       : 2; /* [3: 2]   for encrypt */
     uint32_t key_sel            : 2; /* [5: 4]   key slot */
@@ -316,7 +316,7 @@ struct __attribute__((packed, aligned(4))) bl808_boot_basic_cfg_t {
     uint32_t hash[32 / 4]; /* hash of the image */
 };
 
-struct __attribute__((packed, aligned(4))) bl808_boot_cpu_cfg_t {
+struct bl808_boot_cpu_cfg_t {
     uint8_t config_enable;     /* coinfig this cpu */
     uint8_t halt_cpu;          /* halt this cpu */
     uint8_t cache_enable  : 1; /* cache setting */
@@ -334,24 +334,24 @@ struct __attribute__((packed, aligned(4))) bl808_boot_cpu_cfg_t {
     uint32_t msp_val;              /* msp value */
 };
 
-struct __attribute__((packed, aligned(4))) bl808_aesiv_cfg_t {
+struct bl808_aesiv_cfg_t {
     uint8_t aesiv[16];
     uint32_t crc32;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_pkey_cfg_t {
+struct bl808_pkey_cfg_t {
     uint8_t eckeyx[32]; /* ec key in boot header */
     uint8_t eckeyy[32]; /* ec key in boot header */
     uint32_t crc32;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_sign_cfg_t {
+struct bl808_sign_cfg_t {
     uint32_t sig_len;
     uint8_t signature[32];
     uint32_t crc32;
 };
 
-struct __attribute__((packed, aligned(4))) bl808_bootheader_t {
+struct bl808_bootheader_t {
     uint32_t magiccode; /* 4 */
     uint32_t rivison;   /* 4 */
 
