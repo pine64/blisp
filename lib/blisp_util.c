@@ -21,6 +21,13 @@ void blisp_dlog(const char* format, ...)
   fputc('\n', stderr);
 }
 
+void blisp_dlog_no_nl(const char* format, ...) {
+  fflush(stdout);
+  va_list args;
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+}
 
 void sleep_ms(int milliseconds) {
 #ifdef WIN32

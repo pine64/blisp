@@ -17,9 +17,10 @@
 static struct arg_rex* cmd;
 static struct arg_file* binary_to_write;
 static struct arg_str *port_name, *chip_type;
+static struct arg_int *baudrate;
 static struct arg_lit* reset;
 static struct arg_end* end;
-static void* cmd_write_argtable[6];
+static void* cmd_write_argtable[7];
 static void cmd_write_args_print_glossary();
 
 void fill_up_boot_header(struct bfl_boot_header* boot_header) {
@@ -166,9 +167,19 @@ void fill_up_boot_header(struct bfl_boot_header* boot_header) {
   boot_header->crc32 = 0xDEADBEEF;
 }
 
-blisp_return_t blisp_flash_firmware() {
+blisp_return_t blisp_flash_firmware(void) {
   struct blisp_device device;
   blisp_return_t ret = BLISP_OK;
+
+  uint32_t baud = DEFAULT_BAUDRATE;
+  if (baudrate->count == 1) {
+    if (*baudrate->ival < 0) {
+      fprintf(stderr, "Baud rate cannot be negative!\n");
+      return BLISP_ERR_INVALID_COMMAND;
+    } else {
+      baud = *baudrate->ival;
+    }
+  }
 
   if (access(binary_to_write->filename[0], R_OK) != 0) {
     // File not accessible, error out.
@@ -178,7 +189,7 @@ blisp_return_t blisp_flash_firmware() {
     return BLISP_ERR_CANT_OPEN_FILE;
   }
 
-  ret = blisp_common_init_device(&device, port_name, chip_type);
+  ret = blisp_common_init_device(&device, port_name, chip_type, baud);
   if (ret != BLISP_OK) {
     return ret;
   }
@@ -283,19 +294,24 @@ exit1:
   return ret;
 }
 
-blisp_return_t cmd_write_args_init() {
-  cmd_write_argtable[0] = cmd =
+blisp_return_t cmd_write_args_init(void) {
+  size_t index = 0;
+
+  cmd_write_argtable[index++] = cmd =
       arg_rex1(NULL, NULL, "write", NULL, REG_ICASE, NULL);
-  cmd_write_argtable[1] = chip_type =
+  cmd_write_argtable[index++] = chip_type =
       arg_str1("c", "chip", "<chip_type>", "Chip Type");
-  cmd_write_argtable[2] = port_name =
+  cmd_write_argtable[index++] = port_name =
       arg_str0("p", "port", "<port_name>",
                "Name/Path to the Serial Port (empty for search)");
-  cmd_write_argtable[3] = reset =
+  cmd_write_argtable[index++] = baudrate =
+      arg_int0("b", "baudrate", "<baud rate>",
+               "Serial baud rate (default: " XSTR(DEFAULT_BAUDRATE) ")");
+  cmd_write_argtable[index++] = reset =
       arg_lit0(NULL, "reset", "Reset chip after write");
-  cmd_write_argtable[4] = binary_to_write =
+  cmd_write_argtable[index++] = binary_to_write =
       arg_file1(NULL, NULL, "<input>", "Binary to write");
-  cmd_write_argtable[5] = end = arg_end(10);
+  cmd_write_argtable[index++] = end = arg_end(10);
 
   if (arg_nullcheck(cmd_write_argtable) != 0) {
     fprintf(stderr, "insufficient memory\n");
@@ -304,7 +320,7 @@ blisp_return_t cmd_write_args_init() {
   return BLISP_OK;
 }
 
-void cmd_write_args_print_glossary() {
+void cmd_write_args_print_glossary(void) {
   fputs("Usage: blisp", stdout);
   arg_print_syntax(stdout, cmd_write_argtable, "\n");
   puts("Writes firmware to SPI Flash");
@@ -323,11 +339,11 @@ blisp_return_t cmd_write_parse_exec(int argc, char** argv) {
   return BLISP_ERR_INVALID_COMMAND;
 }
 
-void cmd_write_args_print_syntax() {
+void cmd_write_args_print_syntax(void) {
   arg_print_syntax(stdout, cmd_write_argtable, "\n");
 }
 
-void cmd_write_free() {
+void cmd_write_free(void) {
   arg_freetable(cmd_write_argtable,
                 sizeof(cmd_write_argtable) / sizeof(cmd_write_argtable[0]));
 }

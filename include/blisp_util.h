@@ -11,6 +11,8 @@
 
 void blisp_dlog(const char* format, ...);
 
+void blisp_dlog_no_nl(const char* format, ...);
+
 void sleep_ms(int milliseconds);
 
 uint32_t crc32_calculate(const void *data, size_t data_len);

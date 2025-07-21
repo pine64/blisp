@@ -11,6 +11,8 @@
 #include <sys/ioctl.h>
 #endif
 
+#include <blisp_struct.h>
+
 #define DEBUG
 
 static void drain(struct sp_port* port) {
@@ -25,11 +27,23 @@ blisp_return_t blisp_device_init(struct blisp_device* device,
                                  struct blisp_chip* chip) {
   device->chip = chip;
   device->is_usb = false;
+  fill_crcs(&bl808_header);
+
+  if (device->chip->type == BLISP_CHIP_BL808) {
+    // TODO: For some reason the BL808 does not send pending ('PD') responses
+    //       during long (i.e. erase) operations, so we must disable response
+    //       timeouts. Further investigation is necessary.
+    device->serial_timeout = 0;
+  } else {
+    device->serial_timeout = 1000;
+  }
+
   return BLISP_OK;
 }
 
 blisp_return_t blisp_device_open(struct blisp_device* device,
-                                 const char* port_name) {
+                                 const char* port_name,
+                                 uint32_t baudrate) {
   enum sp_return ret;
   struct sp_port* serial_port = NULL;
 
@@ -84,11 +98,7 @@ blisp_return_t blisp_device_open(struct blisp_device* device,
   int vid, pid;
   sp_get_port_usb_vid_pid(serial_port, &vid, &pid);
   device->is_usb = pid == 0xFFFF;
-  //  if (device->is_usb) {
-  //    device->current_baud_rate = 2000000;
-  //  } else {
-  device->current_baud_rate = 460800;
-  //  }
+  device->current_baud_rate = baudrate;
 
 #if 0
     int fd;
@@ -147,8 +157,9 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
                                       bool expect_payload) {
   // TODO: Check checksum
   int ret;
+
   struct sp_port* serial_port = device->serial_port;
-  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, 1000);
+  ret = sp_blocking_read(serial_port, &device->rx_buffer[0], 2, device->serial_timeout);
   if (ret < 2) {
     blisp_dlog("Failed to receive response, ret: %d", ret);
     return BLISP_ERR_NO_RESPONSE;
@@ -179,6 +190,7 @@ blisp_return_t blisp_receive_response(struct blisp_device* device,
 blisp_return_t blisp_device_handshake(struct blisp_device* device,
                                       bool in_ef_loader) {
   int ret;
+  bool ok = false;
   uint8_t handshake_buffer[600];
   struct sp_port* serial_port = device->serial_port;
 
@@ -218,14 +230,40 @@ blisp_return_t blisp_device_handshake(struct blisp_device* device,
       sp_flush(serial_port, SP_BUF_INPUT);  // Flush garbage out of RX
     }
 
-    ret = sp_blocking_read(serial_port, device->rx_buffer, 2, 50);
-    if (ret >= 2) {
-      if (device->rx_buffer[0] == 'O' && device->rx_buffer[1] == 'K') {
-        return BLISP_OK;
+    if (device->chip->type == BLISP_CHIP_BL808) {
+      sleep_ms(300);
+      static const uint8_t second_handshake[] = { 0x50, 0x00, 0x08, 0x00, 0x38, 0xF0, 0x00, 0x20, 0x00, 0x00, 0x00, 0x18 };
+      ret = sp_blocking_write(serial_port, second_handshake, sizeof(second_handshake), 300);
+      if (ret < 0) {
+        blisp_dlog("Second handshake write failed, ret %d", ret);
+        return BLISP_ERR_API_ERROR;
       }
     }
+
+    ret = sp_blocking_read(serial_port, device->rx_buffer, 20, 50);
+    if (ret >= 2) {
+      for (uint8_t j = 0; j < (ret - 1); j++) {
+        if (device->rx_buffer[j] == 'O' && device->rx_buffer[j + 1] == 'K') {
+          ok = true;
+        }
+      }
+    }
+
+    if (ok) {
+      return BLISP_OK;
+    } else {
+      blisp_dlog("Received incorrect handshake response from chip (attempt %d/5).", i+1);
+      blisp_dlog_no_nl("Could not find 0x%02X 0x%02X ('O', 'K') in: ", 'O', 'K');
+      if (ret) {
+        for (uint8_t j=0; j <= ret; j++) {
+          blisp_dlog_no_nl("0x%02X ", device->rx_buffer[j]);
+        }
+      }
+      blisp_dlog("");
+    }
   }
-  blisp_dlog("Received no response from chip.");
+
+  blisp_dlog("Did not receive correct response from chip after 5 attempts.");
   return BLISP_ERR_NO_RESPONSE;
 }
 
@@ -241,13 +279,15 @@ blisp_return_t blisp_device_get_boot_info(struct blisp_device* device,
   if (ret < 0)
     return ret;
 
-  memcpy(boot_info->boot_rom_version, &device->rx_buffer[0],
-         4);  // TODO: Endianess; this may break on big endian machines
+  // TODO: Endianess; this may break on big endian machines
+  memcpy(boot_info->boot_rom_version, &device->rx_buffer[0], 4);
 
   if (device->chip->type == BLISP_CHIP_BL70X) {
     memcpy(boot_info->chip_id, &device->rx_buffer[16], 8);
+  } else {
+    memcpy(boot_info->chip_id, &device->rx_buffer[12], 6);
   }
-  // TODO: BL60X
+
   return BLISP_OK;
 }
 
@@ -362,13 +402,24 @@ blisp_return_t blisp_device_flash_erase(struct blisp_device* device,
   *(uint32_t*)(payload + 4) = end_address;
 
   blisp_return_t ret = blisp_send_command(device, 0x30, payload, 8, true);
-  if (ret < 0)
+  if (ret != BLISP_OK)
     return ret;
   do {
     ret = blisp_receive_response(device, false);
   } while (ret == BLISP_ERR_PENDING);
 
-  return 0;
+  return ret;
+}
+
+blisp_return_t blisp_device_chip_erase(struct blisp_device* device) {
+  blisp_return_t ret = blisp_send_command(device, 0x3C, NULL, 0, true);
+  if (ret != BLISP_OK)
+    return ret;
+  do {
+    ret = blisp_receive_response(device, false);
+  } while (ret == BLISP_ERR_PENDING);
+
+  return ret;
 }
 
 blisp_return_t blisp_device_flash_write(struct blisp_device* device,
@@ -416,4 +467,143 @@ blisp_return_t blisp_device_reset(struct blisp_device* device) {
 void blisp_device_close(struct blisp_device* device) {
   struct sp_port* serial_port = device->serial_port;
   sp_close(serial_port);
+}
+
+blisp_return_t bl808_load_clock_para(struct blisp_device* device,
+                                     bool irq_en, uint32_t baudrate) {
+  #define bl808_load_clock_para_payload_size 36
+  static_assert(bl808_load_clock_para_payload_size == sizeof(struct bl808_boot_clk_cfg_t) + 8,
+    "BL808 clock parameter struct size mismatch");
+  uint8_t payload[bl808_load_clock_para_payload_size] = { 0 };
+
+  uint32_t irq_enable = irq_en ? 1 : 0;
+  memcpy(&payload[0], &irq_enable, 4);
+  memcpy(&payload[4], &baudrate, 4);
+  memcpy(&payload[8], &bl808_header.clk_cfg, sizeof(struct bl808_boot_clk_cfg_t));
+
+  blisp_return_t ret = blisp_send_command(device, 0x22, payload,
+    bl808_load_clock_para_payload_size, true);
+  if (ret < 0)
+    return ret;
+  ret = blisp_receive_response(device, false);
+  if (ret < 0)
+    return ret;
+
+  return BLISP_OK;
+}
+
+blisp_return_t bl808_load_flash_para(struct blisp_device* device) {
+  // TODO: I don't understand why these parameters are the way they are,
+  //       but at least they are labeled. Also, flash_io_mode and flash_clk_delay
+  //       seem to be duplicated in the main spi_flash_cfg_t struct?
+  const uint8_t flash_pin = 0x4;
+  const uint8_t flash_clk_cfg = 0x41;
+  const uint8_t flash_io_mode = 0x01;
+  const uint8_t flash_clk_delay = 0;
+  
+  // Yes, these values are (slightly) different to the ones in blisp_chip_bl808.c
+  // These values were obtained by observing the raw bytes sent by Bouffalo's
+  // own flashing software. So for whatever reason, the flash configuration needs
+  // to be different when flashing the chip vs. when the chip is running normally.
+  static const struct bl808_spi_flash_cfg_t cfg = {
+    .ioMode = 0x04,
+    .cReadSupport = 0x01,
+    .clkDelay = 0,
+    .clkInvert = 0,
+    .resetEnCmd = 0x66,
+    .resetCmd = 0x99,
+    .resetCreadCmd = 0xff,
+    .resetCreadCmdSize = 0x03,
+    .jedecIdCmd = 0x9f,
+    .jedecIdCmdDmyClk = 0,
+    .enter32BitsAddrCmd = 0xb7,
+    .exit32BitsAddrCmd = 0xe9,
+    .sectorSize = 0x04,
+    .mid = 0xef,
+    .pageSize = 0x100,
+    .chipEraseCmd = 0xc7,
+    .sectorEraseCmd = 0x20,
+    .blk32EraseCmd = 0x52,
+    .blk64EraseCmd = 0xd8,
+    .writeEnableCmd = 0x06,
+    .pageProgramCmd = 0x02,
+    .qpageProgramCmd = 0x32,
+    .qppAddrMode = 0,
+    .fastReadCmd = 0x0b,
+    .frDmyClk = 0x01,
+    .qpiFastReadCmd = 0x0b,
+    .qpiFrDmyClk = 0x01,
+    .fastReadDoCmd = 0x3b,
+    .frDoDmyClk = 0x01,
+    .fastReadDioCmd = 0xbb,
+    .frDioDmyClk = 0,
+    .fastReadQoCmd = 0x6b,
+    .frQoDmyClk = 0x01,
+    .fastReadQioCmd = 0xeb,
+    .frQioDmyClk = 0x02,
+    .qpiFastReadQioCmd = 0xeb,
+    .qpiFrQioDmyClk = 0x02,
+    .qpiPageProgramCmd = 0x02,
+    .writeVregEnableCmd = 0x50,
+    .wrEnableIndex = 0,
+    .qeIndex = 0x01,
+    .busyIndex = 0,
+    .wrEnableBit = 0x01,
+    .qeBit = 0x01,
+    .busyBit = 0,
+    .wrEnableWriteRegLen = 0x02,
+    .wrEnableReadRegLen = 0x01,
+    .qeWriteRegLen = 0x01,
+    .qeReadRegLen = 0x01,
+    .releasePowerDown = 0xab,
+    .busyReadRegLen = 0x01,
+    .readRegCmd[0] = 0x05,
+    .readRegCmd[1] = 0x35,
+    .readRegCmd[2] = 0,
+    .readRegCmd[3] = 0,
+    .writeRegCmd[0] = 0x01,
+    .writeRegCmd[1] = 0x31,
+    .writeRegCmd[2] = 0,
+    .writeRegCmd[3] = 0,
+    .enterQpi = 0x38,
+    .exitQpi = 0xff,
+    .cReadMode = 0xa0,
+    .cRExit = 0xff,
+    .burstWrapCmd = 0x77,
+    .burstWrapCmdDmyClk = 0x03,
+    .burstWrapDataMode = 0x02,
+    .burstWrapData = 0x40,
+    .deBurstWrapCmd = 0x77,
+    .deBurstWrapCmdDmyClk = 0x03,
+    .deBurstWrapDataMode = 0x02,
+    .deBurstWrapData = 0xf0,
+    .timeEsector = 0x12c,
+    .timeE32k = 0x4b0,
+    .timeE64k = 0x4b0,
+    .timePagePgm = 0x05,
+    .timeCe = 0x80e8,
+    .pdDelay = 0x03,
+    .qeData = 0,
+  };
+
+  #define bl808_load_flash_para_payload_size 88
+  static_assert(bl808_load_flash_para_payload_size == sizeof(struct bl808_spi_flash_cfg_t) + 4,
+    "BL808 flash parameter struct size mismatch");
+  uint8_t payload[bl808_load_flash_para_payload_size] = { 0 };
+
+  payload[0] = flash_pin;
+  payload[1] = flash_clk_cfg;
+  payload[2] = flash_io_mode;
+  payload[3] = flash_clk_delay;
+  memcpy(&payload[4], &cfg, sizeof(struct bl808_spi_flash_cfg_t));
+
+  blisp_return_t ret = blisp_send_command(device, 0x3b, payload,
+    bl808_load_flash_para_payload_size, true);
+  if (ret < 0)
+    return ret;
+  ret = blisp_receive_response(device, false);
+  if (ret < 0)
+    return ret;
+
+  return BLISP_OK;
 }

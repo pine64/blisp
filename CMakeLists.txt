@@ -14,7 +14,8 @@ add_library(libblisp_obj OBJECT
         lib/blisp_easy.c
         lib/blisp_util.c
         lib/chip/blisp_chip_bl60x.c
-        lib/chip/blisp_chip_bl70x.c)
+        lib/chip/blisp_chip_bl70x.c
+        lib/chip/blisp_chip_bl808.c)
 
 target_include_directories(libblisp_obj PRIVATE ${CMAKE_SOURCE_DIR}/include/)
 if (NOT CMAKE_C_COMPILER_ID MATCHES "MSVC")
