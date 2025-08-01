@@ -13,7 +13,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "blisp";
-  version = "0.0.4-unstable";
+  version = "0.0.5-unstable";
   src = self;
 
   nativeBuildInputs = [

@@ -1,7 +1,7 @@
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fpine64%2Fblisp&count_bg=%235791AC&title_bg=%23555555&icon=airplayaudio.svg&icon_color=%23D2D9DD&title=hits&edge_flat=false)](https://github.com/pine64/blisp/wiki/Update-Pinecil-V2)
-[![GitHub all downloads](https://img.shields.io/github/downloads/pine64/blisp/total?color=5791ac&logo=docusign&logoColor=white)](https://github.com/pine64/blisp/releases/tag/v0.0.4)
+[![GitHub all downloads](https://img.shields.io/github/downloads/pine64/blisp/total?color=5791ac&logo=docusign&logoColor=white)](https://github.com/pine64/blisp/releases/tag/v0.0.5)
 [![Discord](https://img.shields.io/discord/463237927984693259?color=5791ac&logo=discord&logoColor=white)](https://discord.com/invite/pine64)
-[![GitHub release](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)](https://github.com/pine64/blisp/releases/tag/v0.0.4)
+[![GitHub release](https://img.shields.io/github/v/release/pine64/blisp?color=5791ac)](https://github.com/pine64/blisp/releases/tag/v0.0.5)
 
 <img src="./img/Gradient-white-blue-03.png" align="left" width="60" > <br clear="left" />
 # BLISP
